@@ -1,0 +1,20 @@
+//重置raid资源
+Function resetRaidResource()
+	Dir.Delete ("/sdcard/boss.png")
+	Dir.Delete ("/sdcard/shi.png")
+	Dir.Delete ("/sdcard/self.png")	
+	ShowMessage ("重置成功")
+	
+	
+//	Dir.Delete "/sdcard/boss.png"
+//	Dir.Delete "/sdcard/shi.png"
+End Function
+
+
+Function recordSelfBoss()
+	ShowMessage("等待五秒")
+	RunApp "com.stairs.destinychild"	
+	Delay 5000
+	SnapShot "/sdcard/self.png", 31, 944, 316, 977
+	ShowMessage("操作成功")
+End Function
