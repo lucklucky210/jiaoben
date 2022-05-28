@@ -17,8 +17,8 @@ itemHeight = 324
 
 //设定sr弹框的第一个boss起始寻找点-
 Dim srDialogBossStartX = 310,srDialogBossStartY = 584
-Dim normalBossStartX = 315,normalBossStartY = 945
-Dim normalBossStartENDY = 970
+Dim normalBossStartX = 315,normalBossStartY = 761
+Dim normalBossStartENDY = 1076
 // boss坐标下边界
 Dim srDialogBossBottomY = 1324
 Dim srNormalBossBottomY = 1780
@@ -36,6 +36,11 @@ Dim battleAutoControlStartX=935
 Dim battleAutoControlStartY=99
 Dim battleAutoControlEndX=1063
 Dim battleAutoControlEndY=172
+
+Dim srTagStartX = 780
+Dim srTagStartY = 476
+Dim srTagEndX = 1049
+Dim srTagEndY = 547
 
 
 
@@ -103,6 +108,8 @@ Dim migonglvset = 0
 Dim migongNanduSet = 0
 //每日PVP
 Dim pvp = False
+//极速模式
+Dim fastmode = False
 //重置时间设置
 Dim resetTimeSet = 3
 //测试功能开关
@@ -112,32 +119,32 @@ TracePrint "测试功能开关",raidTest
 
 resetTimeSet = ReadUIConfig("resetTimeSet", 0)
 If resetTimeSet Then 
-	resetTimeSet = CInt(resetTimeSet)
+    resetTimeSet = CInt(resetTimeSet)
 Else 
-	resetTimeSet = 0
+    resetTimeSet = 0
 End If
 
 migongNanduSet = ReadUIConfig("migongNanduSet", 0)
 If migongNanduSet Then 
-	migongNanduSet = CInt(migongNanduSet)
+    migongNanduSet = CInt(migongNanduSet)
 Else 
-	migongNanduSet = 0
+    migongNanduSet = 0
 End If
 TracePrint "迷宫难度：",migongNanduSet
 
 migonglvset = ReadUIConfig("migonglvset", 0)
 If migonglvset Then 
-	migonglvset = CInt(migonglvset)
+    migonglvset = CInt(migonglvset)
 Else 
-	migonglvset = 0
+    migonglvset = 0
 End If
 TracePrint "迷宫等级:",migonglvset
 
 ditieNandu = ReadUIConfig("ditieNandu", 0)
 If (ditieNandu) Then 
-	ditieNandu = CInt(ditieNandu)
+    ditieNandu = CInt(ditieNandu)
 Else 
-	ditieNandu = 0
+    ditieNandu = 0
 End If
 TracePrint "地铁难度：",ditieNandu
 
@@ -155,16 +162,16 @@ TracePrint "srselect:",srNomal
 
 facheMode = ReadUIConfig("facheSet", 0)
 If facheMode Then 
-	facheMode = CInt(facheMode)
+    facheMode = CInt(facheMode)
 Else 
-	facheMode = 0
+    facheMode = 0
 End If
 TracePrint "发车模式：",facheMode
 facheCount = ReadUIConfig("facheCountSet", 0)
 If facheCount Then 
-	facheCount = CInt(facheCount)
+    facheCount = CInt(facheCount)
 Else 
-	facheCount = 0
+    facheCount = 0
 End If
 TracePrint "发车次数设置：",facheCount
 
@@ -186,6 +193,7 @@ If battlpauseinshi < 10 Then
 End If
 
 
+
 TracePrint "shiCount:",shiCount
 
 
@@ -204,6 +212,8 @@ TracePrint "暂停时间:",tempbattlpauseinshi*1000
 //FindPic 0, 0, 0, 0, "Attachment:srtag.png", "000000", 0, 0.8, targetX, targetY
 //TracePrint targetX,targetY
 //isSR
+//yesBtn
+//clickNormalRefresh
 //EndScript
 //testBattle 
 
@@ -237,6 +247,7 @@ Delay 4000
 //myOcrText2ticketNum
 // FindPic 811, 396, 1066, 521, "Attachment:doubleda.png", "000000", 0, 0.8, targetX, targetY
 // TracePrint targetX,targetY
+
 //EndScript
 //
 //If raidTest Then 
@@ -246,9 +257,9 @@ Delay 4000
 //End If
 Log.Open 
  
- Function clickReward()
+Function clickReward()
  	
- End Function
+End Function
 
 ///////////////
 
@@ -267,14 +278,16 @@ Dim bossPicPath = "/sdcard/boss.png"
 Dim shiPicPath = "/sdcard/shi.png"
 Dim bossPicCount = 0
 Dim shiPicCount = 0
-Dim targetBossPicPath
-Dim targetShiPicPath
+Dim targetBossPicPath =Null
+Dim targetShiPicPath =Null
 Dim freeTicketEnable = True
 Dim freeTicketRecordDate =""
 //boss战斗标记
 Dim bossKilled = False
 
 Dim selfBossNamePath = "/sdcard/self.png"
+// 一直发车，蹲史莱姆的时候也发车
+Dim chekaiguan = False
 
 //买票成功
 Dim isTicketBuyDone = False
@@ -283,9 +296,9 @@ Dim ticketBuyCount = 0
 
 ticketBuyCount = ReadUIConfig("ticketBuyCount", 0)
 If ticketBuyCount Then 
-	ticketBuyCount = CInt(ticketBuyCount)
+    ticketBuyCount = CInt(ticketBuyCount)
 Else 
-	ticketBuyCount = 0
+    ticketBuyCount = 0
 End If
 
 TracePrint "设定买票次数，",ticketBuyCount
@@ -351,7 +364,17 @@ Dim totalShiCount = 0
 //findNoticeDialog
 
 //matchColor
-//yesBtn
+//findshiInNormalMode
+//findAndClickBtn_width_260_height_90 29, 368, 1061, 1410
+//result = findRaidStore()
+//TracePrint result
+//findAndClickBtn_width_260_height_90_static(screenX \ 2, screenY \ 4, screenX, screenY * 3 \ 4)
+//targetX = -1
+//targetY = -1
+//FindPic 332, 1434, 767, 1591, "Attachment:che_start.png", "000000", 0, 0.8, targetX, targetY
+//TracePrint targetX,targetY
+//result = isRaidFreeTicketEnable()
+//TracePrint result
 //EndScript
 //
 //////////////
@@ -359,141 +382,147 @@ setConfig
 
 Function setConfig()
 
-	pvp = ReadUIConfig("pvp", False)
-	TracePrint "每日PVP：",pvp
+    pvp = ReadUIConfig("pvp", False)
+    TracePrint "每日PVP：",pvp
 
-	migongMode = ReadUIConfig("migong",False)
-	If migongMode Then 
-		migongMode = CBool(migongMode)
-	Else 
-		migongMode = False
-	End If
-	TracePrint "每日迷宫：",migongMode
+    migongMode = ReadUIConfig("migong",False)
+    If migongMode Then 
+        migongMode = CBool(migongMode)
+    Else 
+        migongMode = False
+    End If
+    TracePrint "每日迷宫：",migongMode
 	
-	raidfree = ReadUIConfig("raidfree", False)
-	TracePrint "raidfree",raidfree
+    raidfree = ReadUIConfig("raidfree", False)
+    TracePrint "raidfree",raidfree
 	
-	getaward = ReadUIConfig("getaward", False)
-	TracePrint "getaward",getaward
+    chekaiguan = ReadUIConfig("chekaiguan", False)
+    TracePrint "chekaiguan",chekaiguan
 	
-	startGetAward = ReadUIConfig("startGetAward", False)
-	TracePrint "startGetAward",startGetAward
+    getaward = ReadUIConfig("getaward", False)
+    TracePrint "getaward",getaward
 	
-	shiColor = ReadUIConfig("shiColor",0)
-	If shiColor Then 
-		shiColor = CInt(shiColor)
-	Else 
-		shiColor = 0
-	End If
-	TracePrint "shiColor",shiColor
+    startGetAward = ReadUIConfig("startGetAward", False)
+    TracePrint "startGetAward",startGetAward
 	
-	ditie = ReadUIConfig("ditie", False)
-	TracePrint "ditie",ditie
+    shiColor = ReadUIConfig("shiColor",0)
+    If shiColor Then 
+        shiColor = CInt(shiColor)
+    Else 
+        shiColor = 0
+    End If
+    TracePrint "shiColor",shiColor
 	
-	skillup = ReadUIConfig("skillup", False)
-	TracePrint "skillup,",skillup
-	dailyDate = Date()
-	TracePrint "日常设置时间：",dailyDate
+    fastmode = ReadUIConfig("fastmode", False)
+    TracePrint "fastmode",fastmode
+	
+    ditie = ReadUIConfig("ditie", False)
+    TracePrint "ditie",ditie
+	
+    skillup = ReadUIConfig("skillup", False)
+    TracePrint "skillup,",skillup
+    dailyDate = Date()
+    TracePrint "日常设置时间：",dailyDate
 End Function
 
 Dim isAppOnStart = False
 While True
-	targetX = -1
-	targetY = -1
-	startY = 0
-	lastY = 0
-	count = 0
-	isAppRunning = -1
-	isShi = False
+    targetX = -1
+    targetY = -1
+    startY = 0
+    lastY = 0
+    count = 0
+    isAppRunning = -1
+    isShi = False
 	
-	Delay 1000
+    Delay 1000
 	
-	arr=GetRunningApp() //获取所有应用程序包名并将它们合并到arr数组中保存
-	For Each n In arr
-    	If 0 = StrComp(n, "com.stairs.destinychild", 1) Then 
-        	RunApp "com.stairs.destinychild"
-        	isAppRunning = 0
-        	isAppOnStart = False
-        	// app自动重启
-        	While reset And True
-//        		result = appIsSuspend()
-				result = True
-        		If Not result Then 
-        			reset = False
-        			resetCount = 0
-        			Exit While
-        		End If
-        		resetCount = resetCount + 1
-        		//当连续四次遇到重置时，游戏可能无法恢复，需要杀掉重启
-        		If resetCount > 4 Then     			
-        			exitApp 
+    arr=GetRunningApp() //获取所有应用程序包名并将它们合并到arr数组中保存
+    For Each n In arr
+        If 0 = StrComp(n, "com.stairs.destinychild", 1) Then 
+            RunApp "com.stairs.destinychild"
+            isAppRunning = 0
+            isAppOnStart = False
+            // app自动重启
+            While reset And True
+                //        		result = appIsSuspend()
+                result = True
+                If Not result Then 
+                    reset = False
+                    resetCount = 0
+                    Exit While
+                End If
+                resetCount = resetCount + 1
+                //当连续四次遇到重置时，游戏可能无法恢复，需要杀掉重启
+                If resetCount > 4 Then     			
+                    exitApp 
         			
-        			Exit For
-        		End If
+                    Exit For
+                End If
         		
-            	result = isStartUp()
-            	If result And True Then 
-                	startup()
-            	End If
+                result = isStartUp()
+                If result And True Then 
+                    startup()
+                End If
             	
-            	clickDaily
-            	clickNotice 
-            	loading 
+                clickDaily
+                clickNotice 
+                loading 
 		
-            	backToHome
+                backToHome
             	
-//            	noBtn
-            	loading 
+                //            	noBtn
+                loading 
            		
-            	If isHome() Then 
-            		reset = False
-            		resetCount = 0
-            	Else 
-            		reset = True	
-            	End If
-            	Delay 2000
-        	Wend
+                If isHome() Then 
+                    reset = False
+                    resetCount = 0
+                Else 
+                    reset = True	
+                End If
+                Delay 2000
+            Wend
       	
-//        	If StrComp(Date(), dailyDate) <> 0 And DateTime.Hour() = resetTimeSet Then 
-//        		setConfig 
-//        		exitApp 
-//        		Exit For
-//        	End If
-//        	runDaily
-        	runRaid 
+            //        	If StrComp(Date(), dailyDate) <> 0 And DateTime.Hour() = resetTimeSet Then 
+            //        		setConfig 
+            //        		exitApp 
+            //        		Exit For
+            //        	End If
+            //        	runDaily
+            runRaid 
         	
-        	TracePrint "app 已开启,执行raid"
-    	End If
-	Next
+            TracePrint "app 已开启,执行raid"
+        End If
+    Next
 	
-	If isAppRunning <> 0 Then 
-    	TracePrint "app未开启,开启app"
-    	startupAPP 	
-	End If
+    If isAppRunning <> 0 Then 
+        TracePrint "app未开启,开启app"
+        startupAPP 	
+    End If
 	
-	Delay 1000
+    Delay 1000
 	
 Wend
 
 //app是否卡死
 Function appIsSuspend()
-	Dim color = GetPixelColor (223,1404,0)
-	Dim temColor
-	Dim count = 0
-	While count < 10
-		Delay 1000
-		temColor = GetPixelColor (223,1404,0)
-		count = count + 1
-		If color <> temColor Then 
-			Exit While
-		End If 	
-	Wend
-	TracePrint "app卡死",(count = 10)
-	If count = 10 Then 
-		appIsSuspend = True
-		Else 
-		appIsSuspend = False
-	End If
+    Dim color = GetPixelColor (223,1404,0)
+    Dim temColor
+    Dim count = 0
+    While count < 10
+        Delay 1000
+        temColor = GetPixelColor (223,1404,0)
+        count = count + 1
+        If color <> temColor Then 
+            Exit While
+        End If 	
+    Wend
+    TracePrint "app卡死",(count = 10)
+    If count = 10 Then 
+        appIsSuspend = True
+    Else 
+        appIsSuspend = False
+    End If
 	
 End Function
 
@@ -514,7 +543,7 @@ End Function
 
 Function startupAPP()
     RunApp "com.stairs.destinychild"
-	isAppOnStart = True
+    isAppOnStart = True
     loading 
 	
     startup()
@@ -541,7 +570,7 @@ Function clickNotice()
     FindPic 340, 2, 1073, 85, "Attachment:notice.png", "000000", 0, 0.9, intX, intY
     TracePrint "找通知消息"
     While intX = -1 And intY = -1 And tempCount < 20
-    	Delay 200
+        Delay 200
         FindPic 340, 2, 1073, 85, "Attachment:notice.png", "000000", 0, 0.9, intX, intY
         tempCount = tempCount +1
     Wend
@@ -572,718 +601,718 @@ End Function
 
 //日常
 Function runDaily()
-	//PVP
-	If pvp Then 
-		pvp = Not runPvp()
-	End If
-	//技能升级
-	If skillup Then 
-		skillup = Not dailySkill()	
-	End If
-	//是否在首页
-	If ditie Then 
-		ditie = Not dailyDitie()
-	End If
-	If migongMode Then 
-		If runMigong() Then 
-			migongMode = False
-		End If
-	End If
+    //PVP
+    If pvp Then 
+        pvp = Not runPvp()
+    End If
+    //技能升级
+    If skillup Then 
+        skillup = Not dailySkill()	
+    End If
+    //是否在首页
+    If ditie Then 
+        ditie = Not dailyDitie()
+    End If
+    If migongMode Then 
+        If runMigong() Then 
+            migongMode = False
+        End If
+    End If
 	
 End Function
 
 Function dailyDitie()
-	If Not isHome() Then 
-    	resetScript 
-    	dailyDitie = False
-    	Exit Function
+    If Not isHome() Then 
+        resetScript 
+        dailyDitie = False
+        Exit Function
     End If
-	//点击夜世界
-	Touch 962, 1513, 200
-	TracePrint "点击夜世界"
-	Delay 2000
-	//点击地铁入口
-	If Not FindMultiColorAndClick2Dismiss(100,120,516,1797,"134155","-24|12|294F6A,-32|31|153F5A,-26|51|1C455F,0|63|6E9CC4,25|53|195567,32|31|7BACD3,16|5|265069,1|30|2AA774,-17|19|28C995") Then 
-		dailyDitie = False
-		backToHome
-		Exit Function
-	End If
-	Dim nanduPic = "Attachment:ditie_qiang.png" 
-	Dim ruchangPic = "Attachment:ditie_ruchang.png"
-	Dim naduStartY,nanduEndY
-	If ditieNandu = 0 Then 
-		//低难度
-		nanduPic = "Attachment:ditie_ruo.png"
-		ruchangPic = "Attachment:ditie_ruo_ruchang.png"
-		naduStartY = 498
-		nanduEndY = 688
-	ElseIf ditieNandu = 1 Then
-		//中难度
-		nanduPic = "Attachment:ditie_zhong.png"
-		nanduPic = "Attachment:ditie_zhong_ruchang.png"
-		naduStartY = 837
-		nanduEndY = 1000
-	ElseIf ditieNandu = 2 Then
-		//强难度
-		nanduPic = "Attachment:ditie_qiang.png"
-		ruchangPic = "Attachment:ditie_ruchang.png"
-		naduStartY = 1160
-		nanduEndY = 1366
-	End If
-	//找强地铁，点强地铁
-	If findAndContinueClick2Dismiss(416, naduStartY, 669, nanduEndY, "Attachment:ditie_qiang.png") Then 
-		//找入场，点入场
-		If Not findAndContinueClick2Dismiss(839, naduStartY, 1015, nanduEndY, "Attachment:ditie_ruchang.png") Then 
-			dailyDitie = True
-			backToHome
-			Exit Function
-		End If
-	Else 
-		dailyDitie = True
-		backToHome
-		Exit Function
-	End If
-	loading
-	Dim intX = -1,intY = -1,count = 0		
-//	While intX = -1 And intY = -1 And count < 10
-//		Delay 500
-//		FindPic 416, 1160, 669, 1366, "Attachment:ditie_qiang.png", "000000", 0, 0.8, intX, intY
-//		count = count+1
-//	Wend
-//	TracePrint "强地铁：",intX,intY
-//	If count = 10 Then 
-//		dailyDitie = False
-//		resetScript
-//		Exit Function
-//	End If
-//	Touch intX, intY, 200
+    //点击夜世界
+    Touch 962, 1513, 200
+    TracePrint "点击夜世界"
+    Delay 2000
+    //点击地铁入口
+    If Not FindMultiColorAndClick2Dismiss(100,120,516,1797,"134155","-24|12|294F6A,-32|31|153F5A,-26|51|1C455F,0|63|6E9CC4,25|53|195567,32|31|7BACD3,16|5|265069,1|30|2AA774,-17|19|28C995") Then 
+        dailyDitie = False
+        backToHome
+        Exit Function
+    End If
+    Dim nanduPic = "Attachment:ditie_qiang.png" 
+    Dim ruchangPic = "Attachment:ditie_ruchang.png"
+    Dim naduStartY,nanduEndY
+    If ditieNandu = 0 Then 
+        //低难度
+        nanduPic = "Attachment:ditie_ruo.png"
+        ruchangPic = "Attachment:ditie_ruo_ruchang.png"
+        naduStartY = 498
+        nanduEndY = 688
+    ElseIf ditieNandu = 1 Then
+        //中难度
+        nanduPic = "Attachment:ditie_zhong.png"
+        nanduPic = "Attachment:ditie_zhong_ruchang.png"
+        naduStartY = 837
+        nanduEndY = 1000
+    ElseIf ditieNandu = 2 Then
+        //强难度
+        nanduPic = "Attachment:ditie_qiang.png"
+        ruchangPic = "Attachment:ditie_ruchang.png"
+        naduStartY = 1160
+        nanduEndY = 1366
+    End If
+    //找强地铁，点强地铁
+    If findAndContinueClick2Dismiss(416, naduStartY, 669, nanduEndY, "Attachment:ditie_qiang.png") Then 
+        //找入场，点入场
+        If Not findAndContinueClick2Dismiss(839, naduStartY, 1015, nanduEndY, "Attachment:ditie_ruchang.png") Then 
+            dailyDitie = True
+            backToHome
+            Exit Function
+        End If
+    Else 
+        dailyDitie = True
+        backToHome
+        Exit Function
+    End If
+    loading
+    Dim intX = -1,intY = -1,count = 0		
+    //	While intX = -1 And intY = -1 And count < 10
+    //		Delay 500
+    //		FindPic 416, 1160, 669, 1366, "Attachment:ditie_qiang.png", "000000", 0, 0.8, intX, intY
+    //		count = count+1
+    //	Wend
+    //	TracePrint "强地铁：",intX,intY
+    //	If count = 10 Then 
+    //		dailyDitie = False
+    //		resetScript
+    //		Exit Function
+    //	End If
+    //	Touch intX, intY, 200
 
-//	intX = -1
-//	intY = -1
-//	count = 0
-//	While intX = -1 And intY = -1 And count < 10
-//		Delay 500
-//		FindPic 839, 1189, 1015, 1349, "Attachment:ditie_ruchang.png", "000000", 0, 0.8, intX, intY
-//		count = count+1
-//	Wend
-//	TracePrint "地铁入场：",intX,intY
-//	If count = 10 Then 
-//		dailyDitie = True
-//		Exit Function
-//	End If
-//	Touch intX, intY, 200
+    //	intX = -1
+    //	intY = -1
+    //	count = 0
+    //	While intX = -1 And intY = -1 And count < 10
+    //		Delay 500
+    //		FindPic 839, 1189, 1015, 1349, "Attachment:ditie_ruchang.png", "000000", 0, 0.8, intX, intY
+    //		count = count+1
+    //	Wend
+    //	TracePrint "地铁入场：",intX,intY
+    //	If count = 10 Then 
+    //		dailyDitie = True
+    //		Exit Function
+    //	End If
+    //	Touch intX, intY, 200
 
-	//找选中，点选中
-	intX = -1
-	intY = -1
-	count = 0	
- 	While intX = -1 And intY = -1 And count < 10
- 		Delay 200
- 		//todo 测试不同节点的选中图标是否都能识别
- 		FindPic 0,0,0,0,"Attachment:ditie_select.png|Attachment:ditie_select2.png","000000",0,0.8,intX,intY
- 		count= count+1
-	Wend
-	TracePrint "地铁选中：",intX,intY
-	If count = 10 Then 
-		dailyDitie = True
-		backToHome
-		Exit Function
-	End If
-	Touch intX + 100, intY, 200
-	TracePrint "点击：",intX + 100, intY
+    //找选中，点选中
+    intX = -1
+    intY = -1
+    count = 0	
+    While intX = -1 And intY = -1 And count < 10
+        Delay 200
+        //todo 测试不同节点的选中图标是否都能识别
+        FindPic 0,0,0,0,"Attachment:ditie_select.png|Attachment:ditie_select2.png","000000",0,0.8,intX,intY
+        count= count+1
+    Wend
+    TracePrint "地铁选中：",intX,intY
+    If count = 10 Then 
+        dailyDitie = True
+        backToHome
+        Exit Function
+    End If
+    Touch intX + 100, intY, 200
+    TracePrint "点击：",intX + 100, intY
 
-	//找准备按钮，点准备
-	If Not findAndContinueClick2Dismiss(386, 1248, 707, 1359, "Attachment:ditie_zhunbei.png|Attachment:ditie_zhunbei2.png") Then 
-		Touch 532, 1307, 200
-		TracePrint "点击：", 532, 1307
-	End If
-	loading
-//	intX = -1
-//	intY = -1
-//	count = 0
-//	While intX = -1 And intY = -1 And count < 10
-// 		Delay 500
-// 		FindPic 386,1248,707,1359,"Attachment:ditie_zhunbei.png","000000",0,0.8,intX,intY
-// 		count= count+1
-//	Wend
-//	TracePrint "地铁准备：",intX,intY
-//	If count = 10 Then 
-//		dailyDitie = False
-//		Exit Function
-//	End If
-//	Touch intX, intY, 200
+    //找准备按钮，点准备
+    If Not findAndContinueClick2Dismiss(386, 1248, 707, 1359, "Attachment:ditie_zhunbei.png|Attachment:ditie_zhunbei2.png") Then 
+        Touch 532, 1307, 200
+        TracePrint "点击：", 532, 1307
+    End If
+    loading
+    //	intX = -1
+    //	intY = -1
+    //	count = 0
+    //	While intX = -1 And intY = -1 And count < 10
+    // 		Delay 500
+    // 		FindPic 386,1248,707,1359,"Attachment:ditie_zhunbei.png","000000",0,0.8,intX,intY
+    // 		count= count+1
+    //	Wend
+    //	TracePrint "地铁准备：",intX,intY
+    //	If count = 10 Then 
+    //		dailyDitie = False
+    //		Exit Function
+    //	End If
+    //	Touch intX, intY, 200
 	
-	//找地铁开始，点连续设定
-	intX = -1
-	intY = -1
-	count = 0
-	While intX = -1 And intY = -1 And count < 10
- 		Delay 500
- 		FindPic 291,1730,826,1881,"Attachment:ditie_kaishi.png","000000",0,0.8,intX,intY
- 		count= count+1
-	Wend
-	TracePrint "地铁开始：",intX,intY
-	If count = 10 Then 
-		dailyDitie = False
-		backToHome
-		Exit Function
-	End If
-	Delay 1000
-	//点连续设定按钮
-	TracePrint "点连续设定按钮"
-	Touch 531, 1684, 500
-	//设置连续战斗弹框
-	TracePrint "设置连续战斗弹框"
-	setFightEndlessModeNext2
-	setFightEndelssModeNext 
-	//找地铁开始，点开始
-	TracePrint "找地铁开始，点开始"
-	If findAndClick(291, 1730, 826, 1881, "Attachment:ditie_kaishi.png") Then 
-		TracePrint "等待战斗结束"
-		count = 0
-		While Not findMultiColorResult(219, 395, 707, 519, "0099E6", "0|8|0072D6,3|19|0070E6,23|22|006EE6,44|29|0060DA,62|-5|0C006B,90|-21|07005C,113|12|080024,86|35|010109,123|10|0071D6") And count < 900
-			loading
-			count = count +1
-		Wend
-		TracePrint "战斗结束，count:",count
-		If count <> 900 Then 
-			findAndClickBtn_width_260_height_90 380, 1468, 700, 1598
-//			findAndClick 380, 1468, 700, 1598, "Attachment:whitequeren_4.png"	
-		End If
-		dailyDitie = True
-	Else 
-		dailyDitie = False
-	End If
-	backToHome
+    //找地铁开始，点连续设定
+    intX = -1
+    intY = -1
+    count = 0
+    While intX = -1 And intY = -1 And count < 10
+        Delay 500
+        FindPic 291,1730,826,1881,"Attachment:ditie_kaishi.png","000000",0,0.8,intX,intY
+        count= count+1
+    Wend
+    TracePrint "地铁开始：",intX,intY
+    If count = 10 Then 
+        dailyDitie = False
+        backToHome
+        Exit Function
+    End If
+    Delay 1000
+    //点连续设定按钮
+    TracePrint "点连续设定按钮"
+    Touch 531, 1684, 500
+    //设置连续战斗弹框
+    TracePrint "设置连续战斗弹框"
+    setFightEndlessModeNext2
+    setFightEndelssModeNext 
+    //找地铁开始，点开始
+    TracePrint "找地铁开始，点开始"
+    If findAndClick(291, 1730, 826, 1881, "Attachment:ditie_kaishi.png") Then 
+        TracePrint "等待战斗结束"
+        count = 0
+        While Not findMultiColorResult(219, 395, 707, 519, "0099E6", "0|8|0072D6,3|19|0070E6,23|22|006EE6,44|29|0060DA,62|-5|0C006B,90|-21|07005C,113|12|080024,86|35|010109,123|10|0071D6") And count < 900
+            loading
+            count = count +1
+        Wend
+        TracePrint "战斗结束，count:",count
+        If count <> 900 Then 
+            findAndClickBtn_width_260_height_90 380, 1468, 700, 1598
+            //			findAndClick 380, 1468, 700, 1598, "Attachment:whitequeren_4.png"	
+        End If
+        dailyDitie = True
+    Else 
+        dailyDitie = False
+    End If
+    backToHome
 	
 End Function
 
 Function testFindPic(picX1, picY1, picX2, picY2, pic)
-	Dim intX = -1,intY = -1,count = 0
-	While count < 20
-		Delay 500
-		FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
-		TracePrint pic,intX,intY
-		count = count+1
-	Wend
+    Dim intX = -1,intY = -1,count = 0
+    While count < 20
+        Delay 500
+        FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
+        TracePrint pic,intX,intY
+        count = count+1
+    Wend
 	
 End Function
 
 Function findNoticeDialog()
-	Dim intX,intY
-	Delay 200
-	FindMultiColor 29,368,screenX\2,1410,"00C4FF","0|-22|00C4FF,10|-10|00C4FF,17|-4|00C4FF,10|-27|333333,9|1|333333,18|-22|00C4FF,18|-3|00C4FF",0,0.9,intX,intY
-	TracePrint "notice:",intX,intY
-	If intX > -1 And intY > -1 Then 		
-		findNoticeDialog = True
-	Else 
-		findNoticeDialog = False
-	End If
+    Dim intX,intY
+    Delay 200
+    FindMultiColor 29,368,screenX\2,1410,"00C4FF","0|-22|00C4FF,10|-10|00C4FF,17|-4|00C4FF,10|-27|333333,9|1|333333,18|-22|00C4FF,18|-3|00C4FF",0,0.9,intX,intY
+    TracePrint "notice:",intX,intY
+    If intX > -1 And intY > -1 Then 		
+        findNoticeDialog = True
+    Else 
+        findNoticeDialog = False
+    End If
 
 End Function
 
 //方法名后缀为static表示该判断是要静态连续生效的，比如图片必须是该图片连续符合要求，而不是动态图偶尔符合要求
 Function findMultiColorResult_static(x1, y1, x2, y2, startColor, multicolor)
-	Dim intX = -1,intY = -1,count= 0
-	Delay 200
-	FindMultiColor x1,y1,x2,y2,startColor,multicolor,0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then 
-		While intX > -1 And intY > -1 And count < 5
-			Delay 500
-			FindMultiColor x1, y1, x2, y2, startColor, multicolor, 0, 0.9, intX, intY
-			count = count + 1
-		Wend
-		If count < 5 Then 
-			findMultiColorResult_static = False
-		Else 
-			findMultiColorResult_static = True
-		End If
-	Else 
-		findMultiColorResult_static = False
-	End If
+    Dim intX = -1,intY = -1,count= 0
+    Delay 200
+    FindMultiColor x1,y1,x2,y2,startColor,multicolor,0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then 
+        While intX > -1 And intY > -1 And count < 5
+            Delay 500
+            FindMultiColor x1, y1, x2, y2, startColor, multicolor, 0, 0.9, intX, intY
+            count = count + 1
+        Wend
+        If count < 5 Then 
+            findMultiColorResult_static = False
+        Else 
+            findMultiColorResult_static = True
+        End If
+    Else 
+        findMultiColorResult_static = False
+    End If
 End Function
 
 Function findMultiColorResult(x1,y1,x2,y2,startColor,multicolor)
-	Dim intX = -1,intY = -1
-	Delay 200
-//	FindMultiColor 219,395,707,519,"0099E6","0|8|0072D6,3|19|0070E6,23|22|006EE6,44|29|0060DA,62|-5|0C006B,90|-21|07005C,113|12|080024,86|35|010109,123|10|0071D6",0,0.9,intX,intY
-	FindMultiColor x1,y1,x2,y2,startColor,multicolor,0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then 
-		findMultiColorResult = True
-	Else 
-		findMultiColorResult = False
-	End If
+    Dim intX = -1,intY = -1
+    Delay 200
+    //	FindMultiColor 219,395,707,519,"0099E6","0|8|0072D6,3|19|0070E6,23|22|006EE6,44|29|0060DA,62|-5|0C006B,90|-21|07005C,113|12|080024,86|35|010109,123|10|0071D6",0,0.9,intX,intY
+    FindMultiColor x1,y1,x2,y2,startColor,multicolor,0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then 
+        findMultiColorResult = True
+    Else 
+        findMultiColorResult = False
+    End If
 End Function
 
 //可以设置总共寻找时间，单位是秒
 Function findMultiColorUntilExist(x1, y1, x2, y2, startColor, multicolor, maxTime)
-	Dim intX = -1,intY = -1,count = 0
-	//可以设置总共寻找时间，单位是秒
-	While intX = -1 And intY = -1 And count < maxTime*2
-		Delay 500
-		count = count+1
-		FindMultiColor x1,y1,x2,y2,startColor,multicolor,0,0.9,intX,intY
-	Wend
-	If count = maxTime*2 Then 
-		findMultiColorUntilExist = False
-	Else 
-		findMultiColorUntilExist = True
-	End If
+    Dim intX = -1,intY = -1,count = 0
+    //可以设置总共寻找时间，单位是秒
+    While intX = -1 And intY = -1 And count < maxTime*2
+        Delay 500
+        count = count+1
+        FindMultiColor x1,y1,x2,y2,startColor,multicolor,0,0.9,intX,intY
+    Wend
+    If count = maxTime*2 Then 
+        findMultiColorUntilExist = False
+    Else 
+        findMultiColorUntilExist = True
+    End If
 End Function
 
 Function FindMultiColorAndClick2Dismiss(x1,y1,x2,y2,startColor,multicolor)
-	Dim intX = -1,intY = -1,count = 0
-	While intX = -1 And intY = -1 And count < 10
-		Delay 500
-		count = count+1
-		FindMultiColor x1,y1,x2,y2,startColor,multicolor,0,0.9,intX,intY
-	Wend
-	If count = 10 Then 
-		FindMultiColorAndClick2Dismiss = False
-		Exit Function
-	End If
-	count =0
-	While intX > -1 And intY > -1 And count < 10
-		Touch intX,intY,200
-		Delay 500
-		count = count + 1
-		FindMultiColor x1,y1,x2,y2,startColor,multicolor,0,0.9,intX,intY
-	Wend
-	If count = 10 Then 
-		FindMultiColorAndClick2Dismiss = False
-		Exit Function
-	End If
-	FindMultiColorAndClick2Dismiss = True
+    Dim intX = -1,intY = -1,count = 0
+    While intX = -1 And intY = -1 And count < 10
+        Delay 500
+        count = count+1
+        FindMultiColor x1,y1,x2,y2,startColor,multicolor,0,0.9,intX,intY
+    Wend
+    If count = 10 Then 
+        FindMultiColorAndClick2Dismiss = False
+        Exit Function
+    End If
+    count =0
+    While intX > -1 And intY > -1 And count < 10
+        Touch intX,intY,200
+        Delay 500
+        count = count + 1
+        FindMultiColor x1,y1,x2,y2,startColor,multicolor,0,0.9,intX,intY
+    Wend
+    If count = 10 Then 
+        FindMultiColorAndClick2Dismiss = False
+        Exit Function
+    End If
+    FindMultiColorAndClick2Dismiss = True
 
 End Function
 
 Function findPicResultWithCount(picX1, picY1, picX2, picY2, pic, tempCount)
-	Dim intX = -1,intY = -1,count = 0
-	While intX = -1 And intY = -1 And count < tempCount
-		Delay 500
-		FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
-		TracePrint pic,intX,intY
-		count = count+1
-	Wend
-	If count = tempCount And intX= -1 And intY = -1 Then 
-	 	findPicResultWithCount = False
-		Exit Function
-	End If
-	findPicResultWithCount = True
+    Dim intX = -1,intY = -1,count = 0
+    While intX = -1 And intY = -1 And count < tempCount
+        Delay 500
+        FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
+        TracePrint pic,intX,intY
+        count = count+1
+    Wend
+    If count = tempCount And intX= -1 And intY = -1 Then 
+        findPicResultWithCount = False
+        Exit Function
+    End If
+    findPicResultWithCount = True
 End Function
 Function findPicResult(picX1,picY1,picX2,picY2,pic)
-	Dim intX = -1,intY = -1,count = 0
-	While intX = -1 And intY = -1 And count < 10
-		Delay 500
-		FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
-		TracePrint pic,intX,intY
-		count = count+1
-	Wend
-	If count = 10 Then 
-	 	findPicResult = False
-		Exit Function
-	End If
-	findPicResult = True
+    Dim intX = -1,intY = -1,count = 0
+    While intX = -1 And intY = -1 And count < 10
+        Delay 500
+        FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
+        TracePrint pic,intX,intY
+        count = count+1
+    Wend
+    If count = 10 Then 
+        findPicResult = False
+        Exit Function
+    End If
+    findPicResult = True
 End Function
 
 
 
 Function findAndContinueClick2Dismiss(picX1, picY1, picX2, picY2, pic)
-	Dim intX = -1,intY = -1,count = 0
-	While intX = -1 And intY = -1 And count < 10
-		Delay 500
-		FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
-		TracePrint pic,intX,intY
-		count = count+1
-	Wend	
-	If count = 10 Then 
-	 	findAndContinueClick2Dismiss = False
-		Exit Function
-	End If
-	count = 0
-	While intX > -1 And intY > -1 And count < 5
-		Touch intX, intY, 200
-		count = count+1
-		Delay 1000
-		FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
-		TracePrint pic,intX,intY
-	Wend
-	If count = 5 Then 
-		findAndContinueClick2Dismiss = False
-		Exit Function
-	End If
-	findAndContinueClick2Dismiss = True
+    Dim intX = -1,intY = -1,count = 0
+    While intX = -1 And intY = -1 And count < 10
+        Delay 500
+        FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
+        TracePrint pic,intX,intY
+        count = count+1
+    Wend	
+    If count = 10 Then 
+        findAndContinueClick2Dismiss = False
+        Exit Function
+    End If
+    count = 0
+    While intX > -1 And intY > -1 And count < 5
+        Touch intX, intY, 200
+        count = count+1
+        Delay 1000
+        FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
+        TracePrint pic,intX,intY
+    Wend
+    If count = 5 Then 
+        findAndContinueClick2Dismiss = False
+        Exit Function
+    End If
+    findAndContinueClick2Dismiss = True
 End Function
 
 Function findAndClick(picX1,picY1,picX2,picY2,pic)
-	Dim intX = -1,intY = -1,count = 0
-	While intX = -1 And intY = -1 And count < 10
-		Delay 500
-		FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
-		TracePrint pic,intX,intY
-		count = count+1
-	Wend
+    Dim intX = -1,intY = -1,count = 0
+    While intX = -1 And intY = -1 And count < 10
+        Delay 500
+        FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
+        TracePrint pic,intX,intY
+        count = count+1
+    Wend
 	
-	If count = 10 Then 
-	 	findAndClick = False
-		Exit Function
-	End If
-	Touch intX, intY, 200
-	findAndClick = True
+    If count = 10 Then 
+        findAndClick = False
+        Exit Function
+    End If
+    Touch intX, intY, 200
+    findAndClick = True
 End Function
 
 //勾选攻击
 Function selectGongji()
-	Dim intX,intY
-	Delay 200
-	FindPic 135,630,407,744,"Attachment:gongji_gouxuan.png","000000",0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then
-		TracePrint "攻击坐标:",intX,intY
-	Else 
-		Touch 279,684,200
-	End If
+    Dim intX,intY
+    Delay 200
+    FindPic 135,630,407,744,"Attachment:gongji_gouxuan.png","000000",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        TracePrint "攻击坐标:",intX,intY
+    Else 
+        Touch 279,684,200
+    End If
 End Function
 //勾选防御
 Function selectFangyu()
-	Dim intX,intY
-	Delay 200
-	FindPic 401,626,677,743,"Attachment:fangyu_gouxuan.png","000000",0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then
-		TracePrint "防御坐标:",intX,intY
-	Else 
-		Touch 532,676,200
-	End If	
+    Dim intX,intY
+    Delay 200
+    FindPic 401,626,677,743,"Attachment:fangyu_gouxuan.png","000000",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        TracePrint "防御坐标:",intX,intY
+    Else 
+        Touch 532,676,200
+    End If	
 End Function
 //勾选妨害
 Function selectFanghai()
-	Dim intX,intY
-	Delay 200
-	FindPic 669,624,947,748,"Attachment:fanghai_gouxuan.png","000000",0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then
-		TracePrint "妨害坐标：",intX,intY
-	Else 
-		Touch 778,676,200
-	End If
+    Dim intX,intY
+    Delay 200
+    FindPic 669,624,947,748,"Attachment:fanghai_gouxuan.png","000000",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        TracePrint "妨害坐标：",intX,intY
+    Else 
+        Touch 778,676,200
+    End If
 End Function
 
 Function selectHuifu()
-	Dim intX,intY
-	Delay 200
-	FindPic 130,747,409,870,"Attachment:huifu_gouxuan.png","000000",0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then
-		TracePrint "回复坐标：",intX,intY
-	Else 
-		Touch 267,807,200
-	End If
+    Dim intX,intY
+    Delay 200
+    FindPic 130,747,409,870,"Attachment:huifu_gouxuan.png","000000",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        TracePrint "回复坐标：",intX,intY
+    Else 
+        Touch 267,807,200
+    End If
 End Function
 Function selectFuzhu()
-	Dim intX,intY
-	Delay 200
-	FindPic 399,746,682,869,"Attachment:fuzhu_gouxuan.png","000000",0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then
-		TracePrint "辅助坐标：",intX,intY
-	Else 
-		Touch 528,803,200
-	End If
+    Dim intX,intY
+    Delay 200
+    FindPic 399,746,682,869,"Attachment:fuzhu_gouxuan.png","000000",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        TracePrint "辅助坐标：",intX,intY
+    Else 
+        Touch 528,803,200
+    End If
 End Function
 //不勾选强化
 Function unselectQianghua()
-	Dim intX,intY
-	FindPic 668,742,950,880,"Attachment:qianghua_bugouxuan.png","000000",0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then
-		TracePrint "强化坐标:",intX,intY
-	Else 
-		Touch 786,812,200
-	End If
+    Dim intX,intY
+    FindPic 668,742,950,880,"Attachment:qianghua_bugouxuan.png","000000",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        TracePrint "强化坐标:",intX,intY
+    Else 
+        Touch 786,812,200
+    End If
 End Function
 //进化不勾选
 Function unselectJinhua()
-	Dim intX,intY
-	FindPic 131,874,409,994,"Attachment:jinghua_bugouxuan.png","000000",0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then
-		TracePrint "进化坐标：",intX,intY
-	Else 
-		Touch 260,930,200
-	End If
+    Dim intX,intY
+    FindPic 131,874,409,994,"Attachment:jinghua_bugouxuan.png","000000",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        TracePrint "进化坐标：",intX,intY
+    Else 
+        Touch 260,930,200
+    End If
 End Function
 
 
 Function waitUiltMenuExist(maxTime)
-	waitUiltMenuExist = findMultiColorUntilExist(100, 120, 516, 1797, "134155", "-24|12|294F6A,-32|31|153F5A,-26|51|1C455F,0|63|6E9CC4,25|53|195567,32|31|7BACD3,16|5|265069,1|30|2AA774,-17|19|28C995", maxTime)
+    waitUiltMenuExist = findMultiColorUntilExist(100, 120, 516, 1797, "134155", "-24|12|294F6A,-32|31|153F5A,-26|51|1C455F,0|63|6E9CC4,25|53|195567,32|31|7BACD3,16|5|265069,1|30|2AA774,-17|19|28C995", maxTime)
 End Function
 
 //日常技能
 Function dailySkill()
-	If Not isHome() Then 
-    	resetScript 
-    	dailySkill = False
-    	Exit Function
+    If Not isHome() Then 
+        resetScript 
+        dailySkill = False
+        Exit Function
     End If
 
-	Dim intX = -1,intY = -1,count= 0
-	Dim timeRecord = TickCount()
-	//点击 夜世界
-	Touch 264, 1812, 200
-	Delay 1000
-	//定位天子界面的天子栏下方的横线
-	While intX = -1 And intY = -1 And count < 5
-		FindMultiColor 0, 526, 1070, 1571, "525252", "0|3|040403,28|1|525252,29|1|404040,33|-2|000000,36|4|010101,441|0|404040,1046|2|404040,1044|-2|010101,1041|4|020101", 0, 0.9, intX, intY
-		Delay 1000
-		count = count +1
-	Wend	
-	TracePrint "天子界面卡片下方的横线坐标XY：",intX,intY
-	If intX = -1 And intY = -1 Then 
-		dailySkill = False
-		Exit Function
-	End If
-	Dim conditionSetX,conditionSetY
-	//变更按钮可以改变横线的坐标，所以这里要判断两个坐标
-	If getNumberDiff(intY, 1130) <= 50 Then 
-		//这里是详细信息显示的状态
-		conditionSetX = 981
-		conditionSetY = 630
-	ElseIf getNumberDiff(intY, 1415) <= 50 Then
-		//这里是详细信息关闭显示的状态
-		conditionSetX = 950
-		conditionSetY = 747
-	Else 
-		dailySkill = False
-		Exit Function
-	End If
+    Dim intX = -1,intY = -1,count= 0
+    Dim timeRecord = TickCount()
+    //点击 夜世界
+    Touch 264, 1812, 200
+    Delay 1000
+    //定位天子界面的天子栏下方的横线
+    While intX = -1 And intY = -1 And count < 5
+        FindMultiColor 0, 526, 1070, 1571, "525252", "0|3|040403,28|1|525252,29|1|404040,33|-2|000000,36|4|010101,441|0|404040,1046|2|404040,1044|-2|010101,1041|4|020101", 0, 0.9, intX, intY
+        Delay 1000
+        count = count +1
+    Wend	
+    TracePrint "天子界面卡片下方的横线坐标XY：",intX,intY
+    If intX = -1 And intY = -1 Then 
+        dailySkill = False
+        Exit Function
+    End If
+    Dim conditionSetX,conditionSetY
+    //变更按钮可以改变横线的坐标，所以这里要判断两个坐标
+    If getNumberDiff(intY, 1130) <= 50 Then 
+        //这里是详细信息显示的状态
+        conditionSetX = 981
+        conditionSetY = 630
+    ElseIf getNumberDiff(intY, 1415) <= 50 Then
+        //这里是详细信息关闭显示的状态
+        conditionSetX = 950
+        conditionSetY = 747
+    Else 
+        dailySkill = False
+        Exit Function
+    End If
 
-	Touch conditionSetX, conditionSetY, 200
-	Delay 200
-	KeepCapture
-	selectGongji 
-	Delay 200
-	selectFanghai 
-	Delay 200
-	selectFangyu 
-	Delay 200
-	selectFuzhu 
-	Delay 200
-	selectHuifu 
-	Delay 200
-	unselectQianghua 
-	Delay 200
-	unselectJinhua 
-	Delay 200
-	Touch 723, 1720, 200
-	ReleaseCapture 
-	Dim needSlide = False
-	Dim kapaiY = intY - 50
+    Touch conditionSetX, conditionSetY, 200
+    Delay 200
+    KeepCapture
+    selectGongji 
+    Delay 200
+    selectFanghai 
+    Delay 200
+    selectFangyu 
+    Delay 200
+    selectFuzhu 
+    Delay 200
+    selectHuifu 
+    Delay 200
+    unselectQianghua 
+    Delay 200
+    unselectJinhua 
+    Delay 200
+    Touch 723, 1720, 200
+    ReleaseCapture 
+    Dim needSlide = False
+    Dim kapaiY = intY - 50
 
-	Dim skillupfinished = False
-	While Not skillupfinished
-		If TickCount() - timeRecord >10*60*1000 Then 
-			TracePrint "单次功能执行超过10分钟，超时，退出此功能"
-			dailySkill = False
-			resetScript
-			Exit Function
-		End If
-		//点击第一个卡牌
-		TracePrint "点击第一个卡牌"
-		Touch 269, kapaiY, 200
+    Dim skillupfinished = False
+    While Not skillupfinished
+        If TickCount() - timeRecord >10*60*1000 Then 
+            TracePrint "单次功能执行超过10分钟，超时，退出此功能"
+            dailySkill = False
+            resetScript
+            Exit Function
+        End If
+        //点击第一个卡牌
+        TracePrint "点击第一个卡牌"
+        Touch 269, kapaiY, 200
 		
-		Delay 2000
-		//点击技能图标
-		TracePrint "点击技能图标"
-		Touch 934, 1257, 200
-		Delay 2000
-		FindPic 815,481,1043,584,"Attachment:jinengmanji.png","000000",0,0.9,intX,intY
-		If intX > -1 And intY > -1 Then
-			TracePrint "技能满级"
-			backToChild 
-			needSlide = True
-		Else 
-			TracePrint "点击第一个技能升级"
-			Touch 934, 526, 200
-			Delay 2000
-			TracePrint "识别技能是否达到上限"
-			If findNoticeDialog() Then 
-				TracePrint "技能需要突破上限"
-				backToChild 
-				needSlide = True
-			Else 
-				TracePrint "技能升级成功"
-				skillupfinished = True
-			End If
-		End If	
-		Delay 1000		
-		If needSlide Then 
-			zm.Swipe 441, kapaiY, 269, kapaiY, 200
-			TracePrint "左滑一个卡片的位置"
-			needSlide = False
-		End If
-	Wend
+        Delay 2000
+        //点击技能图标
+        TracePrint "点击技能图标"
+        Touch 934, 1257, 200
+        Delay 2000
+        FindPic 815,481,1043,584,"Attachment:jinengmanji.png","000000",0,0.9,intX,intY
+        If intX > -1 And intY > -1 Then
+            TracePrint "技能满级"
+            backToChild 
+            needSlide = True
+        Else 
+            TracePrint "点击第一个技能升级"
+            Touch 934, 526, 200
+            Delay 2000
+            TracePrint "识别技能是否达到上限"
+            If findNoticeDialog() Then 
+                TracePrint "技能需要突破上限"
+                backToChild 
+                needSlide = True
+            Else 
+                TracePrint "技能升级成功"
+                skillupfinished = True
+            End If
+        End If	
+        Delay 1000		
+        If needSlide Then 
+            zm.Swipe 441, kapaiY, 269, kapaiY, 200
+            TracePrint "左滑一个卡片的位置"
+            needSlide = False
+        End If
+    Wend
 	
-	backToHome
-	dailySkill = True
+    backToHome
+    dailySkill = True
 End Function
 
 Function backToChild()
-	Dim back2finished = False
-	Dim intX,intY
-	While Not back2finished
-		KeyPress "back"
-		Delay 1000
-		FindMultiColor 0, 526, 1070, 1571, "525252", "0|3|040403,28|1|525252,29|1|404040,33|-2|000000,36|4|010101,441|0|404040,1046|2|404040,1044|-2|010101,1041|4|020101", 0, 0.9, intX, intY
-		If getNumberDiff(intY, 1130) <= 50 Then 
-			//这里是详细信息显示的状态
-			back2finished = True
-		ElseIf getNumberDiff(intY, 1415) <= 50 Then
-			//这里是详细信息关闭显示的状态
-			back2finished = True
-		Else 
-			back2finished = False
-		End If
-	Wend
+    Dim back2finished = False
+    Dim intX,intY
+    While Not back2finished
+        KeyPress "back"
+        Delay 1000
+        FindMultiColor 0, 526, 1070, 1571, "525252", "0|3|040403,28|1|525252,29|1|404040,33|-2|000000,36|4|010101,441|0|404040,1046|2|404040,1044|-2|010101,1041|4|020101", 0, 0.9, intX, intY
+        If getNumberDiff(intY, 1130) <= 50 Then 
+            //这里是详细信息显示的状态
+            back2finished = True
+        ElseIf getNumberDiff(intY, 1415) <= 50 Then
+            //这里是详细信息关闭显示的状态
+            back2finished = True
+        Else 
+            back2finished = False
+        End If
+    Wend
 	
 End Function
 
 //两个数之间的绝对值
 Function getNumberDiff(n1, n2)
-	If n1 > n2 Then 
-		getNumberDiff = n1 - n2
-	Else 
-		getNumberDiff = n2 - n1
-	End If
+    If n1 > n2 Then 
+        getNumberDiff = n1 - n2
+    Else 
+        getNumberDiff = n2 - n1
+    End If
 End Function
 
 Function selectCondition()
-	condition_querenX = -1
+    condition_querenX = -1
     condition_querenY = -1
     condition_timeX = -1
     condition_timeY = -1
     condition_weicanjiaX = -1
     condition_weicanjiaY = -1
-	count=0
-	While condition_querenX = -1 And condition_querenY = -1 And count < 20
-		//点击设定按钮
-		Touch 958, 645, 200
-		TracePrint "点击设定按钮"
-		Delay 500
-		FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
-		count = count + 1	
-	Wend
-	//点击设定按钮可能受到loading干扰导致点击失败
-	If count = 20 And condition_querenX = -1 And condition_querenY = -1 Then 
-		TracePrint "点击设定按钮可能受到loading干扰导致点击失败,检测loading"
-		loading 
-		Touch 958, 645, 200
-		TracePrint "点击设定按钮"
-		Delay 500
-		While condition_querenX = -1 And condition_querenY = -1 And count <20
-			FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
-			count = count + 1
-			Delay 500	
-		Wend
-	End If
-	count = 0
-	TracePrint "条件确认按钮XY：",condition_querenX,condition_querenY
-	If condition_querenX = -1 And condition_querenY = -1 Then 
-		TracePrint "未找到条件确认按钮 ，流程错误，重置"
-		Exit Function
-	End If
+    count=0
+    While condition_querenX = -1 And condition_querenY = -1 And count < 20
+        //点击设定按钮
+        Touch 939,709, 200
+        TracePrint "点击设定按钮"
+        Delay 500
+        FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
+        count = count + 1	
+    Wend
+    //点击设定按钮可能受到loading干扰导致点击失败
+    If count = 20 And condition_querenX = -1 And condition_querenY = -1 Then 
+        TracePrint "点击设定按钮可能受到loading干扰导致点击失败,检测loading"
+        loading 
+        Touch 939,709, 200
+        TracePrint "点击设定按钮"
+        Delay 500
+        While condition_querenX = -1 And condition_querenY = -1 And count <20
+            FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
+            count = count + 1
+            Delay 500	
+        Wend
+    End If
+    count = 0
+    TracePrint "条件确认按钮XY：",condition_querenX,condition_querenY
+    If condition_querenX = -1 And condition_querenY = -1 Then 
+        TracePrint "未找到条件确认按钮 ，流程错误，重置"
+        Exit Function
+    End If
 	
-	//设定时间
-	While condition_timeX = -1 And condition_timeY = -1 And count < 20
-		Delay 200
-		FindPic 542, 1604, 763, 1734,"Attachment:condition_time.png", "000000", 0, 0.6, condition_timeX, condition_timeY
-		count = count + 1
-	Wend
-	TracePrint "设定时间XY：",condition_timeX,condition_timeY
-	If count = 20 And condition_timeX = -1 And condition_timeY = -1 Then 
-		loading 
-		FindPic 542, 1604, 763, 1734,"Attachment:condition_time.png", "000000", 0, 0.6, condition_timeX, condition_timeY
-	End If
-	count = 0
-	If condition_timeX = -1 And condition_timeY = -1 Then 
-		TracePrint "设定时间按钮未找到，重置"
-		Exit Function
-	End If
+    //设定时间
+    While condition_timeX = -1 And condition_timeY = -1 And count < 20
+        Delay 200
+        FindPic 542, 1604, 763, 1734,"Attachment:condition_time.png", "000000", 0, 0.6, condition_timeX, condition_timeY
+        count = count + 1
+    Wend
+    TracePrint "设定时间XY：",condition_timeX,condition_timeY
+    If count = 20 And condition_timeX = -1 And condition_timeY = -1 Then 
+        loading 
+        FindPic 542, 1604, 763, 1734,"Attachment:condition_time.png", "000000", 0, 0.6, condition_timeX, condition_timeY
+    End If
+    count = 0
+    If condition_timeX = -1 And condition_timeY = -1 Then 
+        TracePrint "设定时间按钮未找到，重置"
+        Exit Function
+    End If
 	
-	While condition_timeX > -1 And condition_timeY > -1 And count < 20
-		Touch condition_timeX + 50, condition_timeY + 50, 200
-		count = count + 1
-		Delay 200
-		FindPic 542, 1604, 763, 1734,"Attachment:condition_time.png", "000000", 0, 0.6, condition_timeX, condition_timeY
-	Wend
-	If count = 20 And condition_timeX > -1 And condition_timeY > -1 Then 
-		loading 
-		Touch condition_timeX + 50, condition_timeY + 50, 200
-		Delay 200
-		FindPic 542, 1604, 763, 1734,"Attachment:condition_time.png", "000000", 0, 0.6, condition_timeX, condition_timeY
-	End If
-	count = 0
+    While condition_timeX > -1 And condition_timeY > -1 And count < 20
+        Touch condition_timeX + 50, condition_timeY + 50, 200
+        count = count + 1
+        Delay 200
+        FindPic 542, 1604, 763, 1734,"Attachment:condition_time.png", "000000", 0, 0.6, condition_timeX, condition_timeY
+    Wend
+    If count = 20 And condition_timeX > -1 And condition_timeY > -1 Then 
+        loading 
+        Touch condition_timeX + 50, condition_timeY + 50, 200
+        Delay 200
+        FindPic 542, 1604, 763, 1734,"Attachment:condition_time.png", "000000", 0, 0.6, condition_timeX, condition_timeY
+    End If
+    count = 0
 	
-	If condition_timeX > -1 And condition_timeY > -1 Then 
-		Exit Function
-	End If
+    If condition_timeX > -1 And condition_timeY > -1 Then 
+        Exit Function
+    End If
 	
 	
-	Delay 1000
-	//设定-<未打过>
-	While condition_weicanjiaX = -1 And condition_weicanjiaY = -1 And count <20
-		Delay 200
-		FindPic 517, 1804, 765, 1900, "Attachment:condition_weicanjia.png", "000000", 0, 0.6, condition_weicanjiaX, condition_weicanjiaY
-		count = count + 1
-	Wend
-	TracePrint "<未打过设定按钮>XY:",condition_weicanjiaX,condition_weicanjiaY
-	//判断是否loading导致未找到按钮
-	If count = 20 And condition_weicanjiaX = -1 And condition_weicanjiaY = -1 Then 
-		TracePrint "设定时间后刷新超时,走loading后再读取一次<未打过按钮>坐标"
-		loading 
-		FindPic 517, 1804, 765, 1900, "Attachment:condition_weicanjia.png", "000000", 0, 0.6, condition_weicanjiaX, condition_weicanjiaY
-		TracePrint "<未打过设定按钮>XY:",condition_weicanjiaX,condition_weicanjiaY
-	End If
-	count = 0
+    Delay 1000
+    //设定-<未打过>
+    While condition_weicanjiaX = -1 And condition_weicanjiaY = -1 And count <20
+        Delay 200
+        FindPic 517, 1804, 765, 1900, "Attachment:condition_weicanjia.png", "000000", 0, 0.6, condition_weicanjiaX, condition_weicanjiaY
+        count = count + 1
+    Wend
+    TracePrint "<未打过设定按钮>XY:",condition_weicanjiaX,condition_weicanjiaY
+    //判断是否loading导致未找到按钮
+    If count = 20 And condition_weicanjiaX = -1 And condition_weicanjiaY = -1 Then 
+        TracePrint "设定时间后刷新超时,走loading后再读取一次<未打过按钮>坐标"
+        loading 
+        FindPic 517, 1804, 765, 1900, "Attachment:condition_weicanjia.png", "000000", 0, 0.6, condition_weicanjiaX, condition_weicanjiaY
+        TracePrint "<未打过设定按钮>XY:",condition_weicanjiaX,condition_weicanjiaY
+    End If
+    count = 0
 	
-	If condition_weicanjiaX = -1 And condition_weicanjiaY = -1 Then 
-		TracePrint "未找到<未打过按钮>，重置"
-		Exit Function
-	End If
-	// 当勾选完时间后，确保<未打过按钮> 从 未勾选状态 变成勾选状态 
-	While condition_weicanjiaX > -1 And condition_weicanjiaY > -1 And count <20 
-		Touch condition_weicanjiaX + 50, condition_weicanjiaY + 30, 200
-		count = count+1
-		Delay 200
-		FindPic 517, 1804, 765, 1900, "Attachment:condition_weicanjia.png", "000000", 0, 0.6, condition_weicanjiaX, condition_weicanjiaY
-	Wend
-	//超过限制时间，<未打过按钮>没有被点击成功,排除loading导致没点击成功(假定loading能识别到按钮)
-	If count = 20 And condition_weicanjiaX > -1 And condition_weicanjiaY > -1 Then 
-		loading 
-		Touch condition_weicanjiaX + 50, condition_weicanjiaY + 30, 200
-		Delay 200
-		FindPic 517, 1804, 765, 1900, "Attachment:condition_weicanjia.png", "000000", 0, 0.6, condition_weicanjiaX, condition_weicanjiaY
-	End If	
-	If condition_weicanjiaX > -1 And condition_weicanjiaY > -1 Then 
-		TracePrint "<未打过按钮>点击无反应"
-		Exit Function
-	End If
+    If condition_weicanjiaX = -1 And condition_weicanjiaY = -1 Then 
+        TracePrint "未找到<未打过按钮>，重置"
+        Exit Function
+    End If
+    // 当勾选完时间后，确保<未打过按钮> 从 未勾选状态 变成勾选状态 
+    While condition_weicanjiaX > -1 And condition_weicanjiaY > -1 And count <20 
+        Touch condition_weicanjiaX + 50, condition_weicanjiaY + 30, 200
+        count = count+1
+        Delay 200
+        FindPic 517, 1804, 765, 1900, "Attachment:condition_weicanjia.png", "000000", 0, 0.6, condition_weicanjiaX, condition_weicanjiaY
+    Wend
+    //超过限制时间，<未打过按钮>没有被点击成功,排除loading导致没点击成功(假定loading能识别到按钮)
+    If count = 20 And condition_weicanjiaX > -1 And condition_weicanjiaY > -1 Then 
+        loading 
+        Touch condition_weicanjiaX + 50, condition_weicanjiaY + 30, 200
+        Delay 200
+        FindPic 517, 1804, 765, 1900, "Attachment:condition_weicanjia.png", "000000", 0, 0.6, condition_weicanjiaX, condition_weicanjiaY
+    End If	
+    If condition_weicanjiaX > -1 And condition_weicanjiaY > -1 Then 
+        TracePrint "<未打过按钮>点击无反应"
+        Exit Function
+    End If
 	
-	Delay 200
-	//都勾选完毕之后，确保确定按钮被点击消失并且只点一一次确认按钮
-	Touch condition_querenX + 50, condition_querenY + 50, 200
-	Delay 200
-	FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY		
-	If condition_querenX > -1 And condition_querenY > -1 Then 
-		loading 
-		Touch condition_querenX + 50, condition_querenY + 50, 200
-		Delay 200
-		FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
-	End If
+    Delay 200
+    //都勾选完毕之后，确保确定按钮被点击消失并且只点一一次确认按钮
+    Touch condition_querenX + 50, condition_querenY + 50, 200
+    Delay 200
+    FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY		
+    If condition_querenX > -1 And condition_querenY > -1 Then 
+        loading 
+        Touch condition_querenX + 50, condition_querenY + 50, 200
+        Delay 200
+        FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
+    End If
 	
-	If condition_querenX > -1 And condition_querenY > -1 Then 
-		TracePrint "点击条件设定确定按钮失败"
+    If condition_querenX > -1 And condition_querenY > -1 Then 
+        TracePrint "点击条件设定确定按钮失败"
 		
-	End If
+    End If
 End Function
 
 //raid
 Function runRaid()
 	
-	srMode = True
+    srMode = True
     timeRecord = TickCount()
     targetX = -1
     targetY = -1
@@ -1305,7 +1334,7 @@ Function runRaid()
         Touch 955, 969, 200
         Delay 1000
     End If
-     //不在raid界面
+    //不在raid界面
     result = isSR()
     TracePrint "isRaid:",result
     If result = False Then 
@@ -1315,61 +1344,61 @@ Function runRaid()
     
     //开始领奖，领完再进行raid
     If startGetAward Then 
-    	clickNormalRefresh
-    	While autoGetAward()
-    		Delay 2000
-    	Wend
-    	startGetAward = False
+        clickNormalRefresh
+        While autoGetAward()
+            Delay 2000
+        Wend
+        startGetAward = False
     End If
 	
 
 
-	//raid自動領獎
-	TracePrint "getaward",getaward
-	If bossKilled And getaward Then 
-		clickNormalRefresh
-		autoGetAward 
-	End If
+    //raid自動領獎
+    TracePrint "getaward",getaward
+    If bossKilled And getaward Then 
+        clickNormalRefresh
+        autoGetAward 
+    End If
 	
 	
 	
-	count = 0
+    count = 0
     Dim ticketstr = myOcrText2ticketNum()
     
     If ticketstr Then 
         ticketNum = CInt(ticketstr)
     Else 
-    	ticketNum = 0
+        ticketNum = 0
     End If
     
     If isTicketBuyDone And ticketNum>0  Then 
-    	ticketBuyCount = ticketBuyCount - 1
-    	isTicketBuyDone = False
+        ticketBuyCount = ticketBuyCount - 1
+        isTicketBuyDone = False
     End If
 		
     //没票时退出
     If ticketNum = 0 Then 
     
-    	If ticketBuyCount > 0 Then 
-    		TracePrint "点击加号买票"
-    		Touch 1024,376, 200
-    		Delay 1000
-    		yesBtn
-    		isTicketBuyDone = True
-    	End If
+        If ticketBuyCount > 0 Then 
+            TracePrint "点击加号买票"
+            Touch 1026,436, 200
+            Delay 1000
+            yesBtn
+            isTicketBuyDone = True
+        End If
         Delay 1000
         Exit Function
     End If
 		
-	//设定展示顺序
-	result = isCondition_OFF()
+    //设定展示顺序
+    result = isCondition_OFF()
 	
-	If result And True Then 		
-		selectCondition
-	Else 
-		 clickNormalRefresh 	
+    If result And True Then 		
+        selectCondition
+    Else 
+        clickNormalRefresh 	
 			
-	End If  
+    End If  
 		
     findshiInNormalMode 
 		
@@ -1388,125 +1417,125 @@ Function runRaid()
         
         
        
-        //低于5票时只打屎
+        //低于设定票数时只打屎
         If ticketNum <> -1 And ticketNum <= shiCount Then 
-            //5秒刷新一次，找屎
+            
             srMode = True
             
             TracePrint "sr支援标记",srExit
-        	TracePrint "raidfree,",raidfree
-        	TracePrint "srExit,",srExit
-        	TracePrint "facheCount,",facheCount
-        	TracePrint "facheMode,",facheMode
-        	TracePrint "srNomal,",srNomal
+            TracePrint "raidfree,",raidfree
+            TracePrint "srExit,",srExit
+            TracePrint "facheCount,",facheCount
+            TracePrint "facheMode,",facheMode
+            TracePrint "srNomal,",srNomal
             //发车
-    		//当前是否有车
-    		TracePrint "识别援助按钮"
-    		srExit = findPicResultWithCount(306, 605, 542, 698, "Attachment:friend_help.png", 2)
-    		If srExit And callSrHelp And facheMode <>2 Then 
-    			TracePrint "识别到援助标记"
-    			If findSr_help() Then 
-    				TracePrint "点击援助按钮"
-    				//点击援助
-    				Touch 647, 645, 200
-    				//点击确认按钮
-    				Delay 1000
-    				TracePrint "点击确认按钮"
-    				findAndClickBtn_width_260_height_90 340, 929, 741, 1199
-    				Delay 1000
-    			End If
-    		End If
-        	If facheMode = 2 Then 
-        		TracePrint "只发不打，所以蹲屎的时候也可以发车"	
+            //当前是否有车
+            TracePrint "识别援助按钮"
+            srExit = findPicResultWithCount(307,670,533,756, "Attachment:friend_help.png", 2)
+            If srExit And callSrHelp And facheMode <>2 Then 
+                TracePrint "识别到援助标记"
+                If findSr_help() Then 
+                    TracePrint "点击援助按钮"
+                    //点击援助
+                    Touch 647, 645, 200
+                    //点击确认按钮
+                    Delay 1000
+                    TracePrint "点击确认按钮"
+                    findAndClickBtn_width_260_height_90 340, 929, 741, 1199
+                    Delay 1000
+                End If
+            End If
+            If facheMode = 2 And chekaiguan Then 
+                TracePrint "只发不打，所以蹲屎的时候也可以发车"	
         		
-        		//发车时 先使用免费票
-            	If raidfree Then 
-            		//发的车被打完后
-            		If Not srExit Then 
-            			If runFreeTicket()  Then 
-            				raidfree = False
-            			Else 
-            				//免费票功能没有完成，继续等待
-            				TracePrint "免费票功能没有完成，继续等待"
-            				Exit Function
-            			End If
-            		Else 
-            			//发的车没被打完，继续等待
-            			TracePrint "发的车没被打完，继续等待"
-            		End If	
+                //发车时 先使用免费票
+                If raidfree Then 
+                    //发的车被打完后
+                    If Not srExit Then 
+                        If runFreeTicket()  Then 
+                            raidfree = False
+                        Else 
+                            //免费票功能没有完成，继续等待
+                            TracePrint "免费票功能没有完成，继续等待"
+                            Exit Function
+                        End If
+                    Else 
+                        //发的车没被打完，继续等待
+                        TracePrint "发的车没被打完，继续等待"
+                    End If	
 					
-				End If
+                End If
 				
-				If Not raidfree Then 
-					//发车,大于保留票，发车次数剩余 才会发车
-            		If facheCount > 0 And facheMode <> 0 Then 
-            			If Not srExit Then 
-            				If facheche() Then 
-								facheCount = facheCount - 1
-								Exit Function
-							End If	
-            			End If
-					End If
-				End If
+                If Not raidfree Then 
+                    //发车,大于保留票，发车次数剩余 才会发车
+                    If facheCount > 0 And facheMode <> 0 Then 
+                        If Not srExit Then 
+                            If facheche() Then 
+                                facheCount = facheCount - 1
+                                Exit Function
+                            End If	
+                        End If
+                    End If
+                End If
         		
-        	End If
+            End If
             Delay 1000
             Exit Function
 			
         Else 
-    		//当前是否有车
-    		TracePrint "识别援助按钮"
-    		srExit = findPicResultWithCount(306, 605, 542, 698, "Attachment:friend_help.png",2)
-    		If srExit And callSrHelp And facheMode <>2 Then 
-    			TracePrint "识别到援助标记"
-    			If findSr_help() Then 
-    				TracePrint "点击援助按钮"
-    				//点击援助
-    				Touch 647, 645, 200
-    				//点击确认按钮
-    				Delay 1000
-    				TracePrint "点击确认按钮"
-    				findAndClickBtn_width_260_height_90 340, 929, 741, 1199
-    				Delay 1000
-    			End If
-    		End If
-			TracePrint "sr支援标记",srExit
-        	TracePrint "raidfree,",raidfree
-        	TracePrint "srExit,",srExit
-        	TracePrint "facheCount,",facheCount
-        	TracePrint "facheMode,",facheMode
-        	TracePrint "srNomal,",srNomal
+            //当前是否有车
+            TracePrint "识别援助按钮"
+            srExit = findPicResultWithCount(306, 605, 542, 698, "Attachment:friend_help.png",2)
+            If srExit And callSrHelp And facheMode <>2 Then 
+                TracePrint "识别到援助标记"
+                If findSr_help() Then 
+                    TracePrint "点击援助按钮"
+                    //点击援助
+                    Touch 647, 645, 200
+                    //点击确认按钮
+                    Delay 1000
+                    TracePrint "点击确认按钮"
+                    findAndClickBtn_width_260_height_90 340, 929, 741, 1199
+                    Delay 1000
+                End If
+            End If
+            TracePrint "sr支援标记",srExit
+            TracePrint "raidfree,",raidfree
+            TracePrint "srExit,",srExit
+            TracePrint "facheCount,",facheCount
+            TracePrint "facheMode,",facheMode
+            TracePrint "srNomal,",srNomal
             //大于5票才打ssr
             If ticketNum > shiCount Then 
-             	//发车时 先使用免费票
-            	If raidfree Then 
-            		//发的车被打完后
-            		If Not srExit Then 
-            			If runFreeTicket()  Then 
-            				raidfree = False
-            			Else 
-            				//免费票功能没有完成，继续等待
-            				TracePrint "免费票功能没有完成，继续等待"
-            				Exit Function
-            			End If
-            		Else 
-            			//发的车没被打完，继续等待
-            			TracePrint "发的车没被打完，继续等待"
-            		End If	
+                //发车时 先使用免费票
+                If raidfree Then 
+                    //发的车被打完后
+                    If Not srExit Then 
+                        If runFreeTicket()  Then 
+                            raidfree = False
+                        Else 
+                            //免费票功能没有完成，继续等待
+                            TracePrint "免费票功能没有完成，继续等待"
+                            Exit Function
+                        End If
+                    Else 
+                        //发的车没被打完，继续等待
+                        TracePrint "发的车没被打完，继续等待"
+                    End If	
 					
-				End If
+                End If
 				
-				If Not raidfree Then 
-					//发车,大于保留票，发车次数剩余 才会发车
-            		If facheCount > 0 And facheMode <> 0 Then 
-            			If Not srExit Then 
-            				If facheche() Then 
-								facheCount = facheCount - 1
-								Exit Function
-							End If	
-            			End If
-					End If
-				End If
+                If Not raidfree Then 
+                    //发车,大于保留票，发车次数剩余 才会发车
+                    If facheCount > 0 And facheMode <> 0 Then 
+                        If Not srExit Then 
+                            If facheche() Then 
+                                facheCount = facheCount - 1
+                                Exit Function
+                            End If	
+                        End If
+                    End If
+                End If
             	
                 
                 //不是只打SR车时，将srmode设置为false
@@ -1523,10 +1552,10 @@ Function runRaid()
                     End If
                     
                     If targetY > srDialogBossBottomY Then 
-                    	lastY =0
-                    	targetY = -1
-                    	targetX = -1
-               		End If
+                        lastY =0
+                        targetY = -1
+                        targetX = -1
+                    End If
                		
                 Else 
                     targetX = -1
@@ -1537,33 +1566,33 @@ Function runRaid()
                     findshiInNormalMode 
                     
                     If targetY > srNormalBossBottomY Then 
-        				lastY =0
-        				targetY = -1
-        				targetX = -1
+                        lastY =0
+                        targetY = -1
+                        targetX = -1
        					
-    				End If
-    				//如果好友车没有找到，就打sr
-    				If srNomal = 0 And ticketNum <= 8 Then 
-    						result = False
-    				ElseIf srNomal = 1 And ticketNum <= shiCount Then
-    						result = False
-    				Else 
-    					result = True
-    				End If
-    				If result And targetX = -1 And targetY = -1 Then 
-    					findBossInSrMode 
-    					If srMode And targetY = -1 And targetX = -1 Then 
-                        	TracePrint "sr模式下没有找到boss"
-                        	findAndClickBtn_width_260_height_90 0, 1475, screenX, screenY
-                    	End If
+                    End If
+                    //如果好友车没有找到，就打sr
+                    If srNomal = 0 And ticketNum <= 8 Then 
+                        result = False
+                    ElseIf srNomal = 1 And ticketNum <= shiCount Then
+                        result = False
+                    Else 
+                        result = True
+                    End If
+                    If result And targetX = -1 And targetY = -1 Then 
+                        findBossInSrMode 
+                        If srMode And targetY = -1 And targetX = -1 Then 
+                            TracePrint "sr模式下没有找到boss"
+                            findAndClickBtn_width_260_height_90 0, 1475, screenX, screenY
+                        End If
                     		
-                    	If targetY > srDialogBossBottomY Then 
-                    		lastY =0
-                    		targetY = -1
-                    		targetX = -1
-               			End If
+                        If targetY > srDialogBossBottomY Then 
+                            lastY =0
+                            targetY = -1
+                            targetX = -1
+                        End If
     					
-    				End If
+                    End If
     				 
                 End If	
                 
@@ -1592,7 +1621,7 @@ Function runRaid()
         If daResult And True Then 
             //等待打完
             If isShi Then 
-            	totalShiCount = totalShiCount+1	
+                totalShiCount = totalShiCount+1	
             End If
             dawan() 
 			
@@ -1603,25 +1632,25 @@ Function runRaid()
         End If
     End If
 	
-	If reset Then 
-		Exit Function
-	End If
+    If reset Then 
+        Exit Function
+    End If
    
 End Function
 
 
 //raid界面，条件是否未设置
 Function isCondition_OFF
-	Dim ocrchar
-	Delay 200
-	UseDict (0)
-	Delay 200
-	ocrchar = Ocr(782, 647, 842, 687, "808080", 0.9)
-	If StrComp("OFF", ocrchar) = 0 Then 
-		isCondition_OFF = True
-	Else 
-		isCondition_OFF = False
-	End If
+    Dim ocrchar
+    Delay 200
+    UseDict (0)
+    Delay 200
+    ocrchar = Ocr(776,711,847,753, "808080", 0.9)
+    If StrComp("OFF", ocrchar) = 0 Then 
+        isCondition_OFF = True
+    Else 
+        isCondition_OFF = False
+    End If
 End Function
 
 
@@ -1632,7 +1661,7 @@ Function startup()
     Delay 200
     FindPic 30, 1851, 1078, 1919, "Attachment:startapp.png", "000000", 0, 0.7, intX, intY
     TracePrint "startup坐标xy",intX,intY
-	Dim count = 0
+    Dim count = 0
     While intX =  -1 And intY = -1 And count <300
 		
         Delay 1000
@@ -1640,11 +1669,11 @@ Function startup()
         count = count +1
 		
     Wend
-	If count >= 300 Then 
-		intX = 1
-		intY = 1
-	End If
-	count = 0
+    If count >= 300 Then 
+        intX = 1
+        intY = 1
+    End If
+    count = 0
 	
     While intX > -1 And intY > -1 And count < 300
         TracePrint "startup坐标xy",intX,intY
@@ -1656,7 +1685,7 @@ Function startup()
     Wend
     
     If count = 300 Then 
-    	resetScript
+        resetScript
     End If
 	
 End Function
@@ -1674,86 +1703,86 @@ End Function
 
 
 Function runPvp()
-	TracePrint "执行每日PVP功能"
-	If Not isHome() Then 
-		TracePrint "当前不是首页"
-		runPvp = False
-	End If
-	//点击夜世界
-	Touch 962, 1513, 200
-	TracePrint "点击夜世界按钮，等待进入菜单页面"
-	If Not waitUiltMenuExist(10) Then 
-		TracePrint "等待进入菜单页面超时"
-		runPvp = False
-		Exit Function
-	End If
-	Touch 332, 913, 200
-	Delay 200
-	TracePrint "等待进入PVP界面"
-	loading
-	If Not findMultiColorUntilExist(37, 1764, 200, 1906, "05E0FF", "-7|0|0A0707,5|-2|0C0A0A,-1|3|00DEFF,0|14|0B0E11,0|26|04D0FF,-28|29|14B1FE,29|28|0DD0FF,-26|22|0B0808,-10|35|010101", 10) Then 
-		runPvp = False
-		TracePrint "等待进入PVP界面超时"
-		resetScript
-		Exit Function
-	End If
-	TracePrint "点击连续战斗按钮直到弹框出现"
-	Dim count= 0
-	While Not findMultiColorResult(557, 1620, 873, 1765, "06B5FF", "250|10|01A3FF,121|-32|2BE0FF,121|55|007CF8,52|-25|0086F9,100|47|27DBFF,16|-5|FFFFFF,235|1|FFFFFF,94|15|02B3FF") And count <20
-		Touch 922, 627, 200
-		Delay 200
-		count = count +1	
-	Wend
-	TracePrint "循环次数:",count
+    TracePrint "执行每日PVP功能"
+    If Not isHome() Then 
+        TracePrint "当前不是首页"
+        runPvp = False
+    End If
+    //点击夜世界
+    Touch 962, 1513, 200
+    TracePrint "点击夜世界按钮，等待进入菜单页面"
+    If Not waitUiltMenuExist(10) Then 
+        TracePrint "等待进入菜单页面超时"
+        runPvp = False
+        Exit Function
+    End If
+    Touch 332, 913, 200
+    Delay 200
+    TracePrint "等待进入PVP界面"
+    loading
+    If Not findMultiColorUntilExist(37, 1764, 200, 1906, "05E0FF", "-7|0|0A0707,5|-2|0C0A0A,-1|3|00DEFF,0|14|0B0E11,0|26|04D0FF,-28|29|14B1FE,29|28|0DD0FF,-26|22|0B0808,-10|35|010101", 10) Then 
+        runPvp = False
+        TracePrint "等待进入PVP界面超时"
+        resetScript
+        Exit Function
+    End If
+    TracePrint "点击连续战斗按钮直到弹框出现"
+    Dim count= 0
+    While Not findMultiColorResult(557, 1620, 873, 1765, "06B5FF", "250|10|01A3FF,121|-32|2BE0FF,121|55|007CF8,52|-25|0086F9,100|47|27DBFF,16|-5|FFFFFF,235|1|FFFFFF,94|15|02B3FF") And count <20
+        Touch 922, 627, 200
+        Delay 200
+        count = count +1	
+    Wend
+    TracePrint "循环次数:",count
 	
-	If Not findMultiColorUntilExist(557, 1620, 873, 1765, "06B5FF", "250|10|01A3FF,121|-32|2BE0FF,121|55|007CF8,52|-25|0086F9,100|47|27DBFF,16|-5|FFFFFF,235|1|FFFFFF,94|15|02B3FF", 5) Then 
-		TracePrint "等待连续战斗弹框超时，当做PVP已完成"
-		runPvp = True
-		Exit Function
-	End If
-	TracePrint "勾选全员"
-	Touch 154, 485, 200
-	Delay 200
-	TracePrint "开始战斗"
-	If Not FindMultiColorAndClick2Dismiss(557, 1620, 873, 1765, "06B5FF", "250|10|01A3FF,121|-32|2BE0FF,121|55|007CF8,52|-25|0086F9,100|47|27DBFF,16|-5|FFFFFF,235|1|FFFFFF,94|15|02B3FF") Then 
-		TracePrint "进入战斗失败"
-		runPvp = False
-		resetScript 
-		Exit Function
-	End If
-	TracePrint "点击确认连续战斗"
-	yesBtn 
-	Delay 200
-	loading 
-	Dim timeRecord = TickCount()
-	While Not findAndClickBtn_width_260_height_90_static(389, 1356, 728, 1485)
-		If TickCount() - timeRecord > 30*60*1000 Then 
-			TracePrint "连续战斗超过30分钟,游戏卡死"
-			exitApp 
-			Exit Function
-		End If
-		loading
-	Wend
-	loading
-	runPvp = True
-	TracePrint "战斗结束,确认当前是否为pvp界面"
-	If Not findMultiColorUntilExist(37, 1764, 200, 1906, "05E0FF", "-7|0|0A0707,5|-2|0C0A0A,-1|3|00DEFF,0|14|0B0E11,0|26|04D0FF,-28|29|14B1FE,29|28|0DD0FF,-26|22|0B0808,-10|35|010101", 10) Then 
-		TracePrint "不是pvp界面，返回首页"
-		backToHome 
-	Else 
-		TracePrint "领取pvp奖励"
-		Touch 548, 1819, 200
-		loading 
-		TracePrint "点击一键领取"
-		Touch 858, 1519, 200
-		loading 
-		If findNoticeDialog() Then 
-			findAndClickBtn_width_260_height_90 366, 1004, 739, 1133
-		Else 
-			findAndClickBtn_width_260_height_90 366, 1004, 739, 1133
-		End If
-		backToHome
-	End If
+    If Not findMultiColorUntilExist(557, 1620, 873, 1765, "06B5FF", "250|10|01A3FF,121|-32|2BE0FF,121|55|007CF8,52|-25|0086F9,100|47|27DBFF,16|-5|FFFFFF,235|1|FFFFFF,94|15|02B3FF", 5) Then 
+        TracePrint "等待连续战斗弹框超时，当做PVP已完成"
+        runPvp = True
+        Exit Function
+    End If
+    TracePrint "勾选全员"
+    Touch 154, 485, 200
+    Delay 200
+    TracePrint "开始战斗"
+    If Not FindMultiColorAndClick2Dismiss(557, 1620, 873, 1765, "06B5FF", "250|10|01A3FF,121|-32|2BE0FF,121|55|007CF8,52|-25|0086F9,100|47|27DBFF,16|-5|FFFFFF,235|1|FFFFFF,94|15|02B3FF") Then 
+        TracePrint "进入战斗失败"
+        runPvp = False
+        resetScript 
+        Exit Function
+    End If
+    TracePrint "点击确认连续战斗"
+    yesBtn 
+    Delay 200
+    loading 
+    Dim timeRecord = TickCount()
+    While Not findAndClickBtn_width_260_height_90_static(389, 1356, 728, 1485)
+        If TickCount() - timeRecord > 30*60*1000 Then 
+            TracePrint "连续战斗超过30分钟,游戏卡死"
+            exitApp 
+            Exit Function
+        End If
+        loading
+    Wend
+    loading
+    runPvp = True
+    TracePrint "战斗结束,确认当前是否为pvp界面"
+    If Not findMultiColorUntilExist(37, 1764, 200, 1906, "05E0FF", "-7|0|0A0707,5|-2|0C0A0A,-1|3|00DEFF,0|14|0B0E11,0|26|04D0FF,-28|29|14B1FE,29|28|0DD0FF,-26|22|0B0808,-10|35|010101", 10) Then 
+        TracePrint "不是pvp界面，返回首页"
+        backToHome 
+    Else 
+        TracePrint "领取pvp奖励"
+        Touch 548, 1819, 200
+        loading 
+        TracePrint "点击一键领取"
+        Touch 858, 1519, 200
+        loading 
+        If findNoticeDialog() Then 
+            findAndClickBtn_width_260_height_90 366, 1004, 739, 1133
+        Else 
+            findAndClickBtn_width_260_height_90 366, 1004, 739, 1133
+        End If
+        backToHome
+    End If
 	
 End Function
 
@@ -1762,58 +1791,58 @@ End Function
 
 //首页图标是否存在
 Function isHomeExist()
-	isHomeExist =  findMultiColorResult(22, 1681, 190, 1913, "0B0B11", "0|11|00CAFF,-1|35|00C2FF,-37|45|00BCFF,-33|87|00AAFF,28|87|00AAFF,32|48|00BAFF,23|30|040406,-23|30|040306,-14|36|00C2FF")
+    isHomeExist =  findMultiColorResult(22, 1681, 190, 1913, "0B0B11", "0|11|00CAFF,-1|35|00C2FF,-37|45|00BCFF,-33|87|00AAFF,28|87|00AAFF,32|48|00BAFF,23|30|040406,-23|30|040306,-14|36|00C2FF")
 End Function
 
 //首页event图标是否存在
 Function isDailyExist()
-	isDailyExist =  findMultiColorResult(19,206,283,412,"000000","-1|4|F9F9F9,-6|7|000000,-10|7|F3F3F3,-5|17|F8F8F8,-1|16|121212,-4|21|DCDCDC,-6|26|000000,-10|42|F9F9F9,-6|47|0A0A0A")
+    isDailyExist =  findMultiColorResult(19,206,283,412,"000000","-1|4|F9F9F9,-6|7|000000,-10|7|F3F3F3,-5|17|F8F8F8,-1|16|121212,-4|21|DCDCDC,-6|26|000000,-10|42|F9F9F9,-6|47|0A0A0A")
 End Function
 
 //是否停留并选中了首页
 Function isHome()
-	Delay 200
+    Delay 200
 	
-	If isHomeBtnExist() Then 
-		TracePrint "当前是在首页"
-		isHome = True
-	Else 
-		TracePrint "当前不是在首页"
-		isHome = False
-	End If
-//	If isHomeExist() And isDailyExist() Then 
-//		TracePrint "当前是在首页"
-//		isHome = True
-//	Else 
-//		TracePrint "当前不是在首页"
-//		isHome = False
-//	End If
+    If isHomeBtnExist() Then 
+        TracePrint "当前是在首页"
+        isHome = True
+    Else 
+        TracePrint "当前不是在首页"
+        isHome = False
+    End If
+    //	If isHomeExist() And isDailyExist() Then 
+    //		TracePrint "当前是在首页"
+    //		isHome = True
+    //	Else 
+    //		TracePrint "当前不是在首页"
+    //		isHome = False
+    //	End If
 	
-//	isHome = findMultiColorResult(22,1681,190,1913,"0B0B11","0|11|00CAFF,-1|35|00C2FF,-37|45|00BCFF,-33|87|00AAFF,28|87|00AAFF,32|48|00BAFF,23|30|040406,-23|30|040306,-14|36|00C2FF")
-//    isHome =findPicResultWithCount (0,1747,194,1913,"Attachment:home.png",1)
+    //	isHome = findMultiColorResult(22,1681,190,1913,"0B0B11","0|11|00CAFF,-1|35|00C2FF,-37|45|00BCFF,-33|87|00AAFF,28|87|00AAFF,32|48|00BAFF,23|30|040406,-23|30|040306,-14|36|00C2FF")
+    //    isHome =findPicResultWithCount (0,1747,194,1913,"Attachment:home.png",1)
 End Function
 
 //首页home剧情存在
 Function isHomeJuqingExist()
-	Dim intX,intY
-	FindMultiColor 11,24,1055,1886,"0E0D0E","-18|-4|0086E1,-68|4|04090C,-59|13|009EFE,-67|35|00A8FF,-18|33|191718,33|42|00A5FF,49|67|231F1F,48|84|00A8FF",0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then
-		isHomeJuqingExist = True
-	Else 
-		isHomeJuqingExist = False
-	End If
+    Dim intX,intY
+    FindMultiColor 11,24,1055,1886,"0E0D0E","-18|-4|0086E1,-68|4|04090C,-59|13|009EFE,-67|35|00A8FF,-18|33|191718,33|42|00A5FF,49|67|231F1F,48|84|00A8FF",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        isHomeJuqingExist = True
+    Else 
+        isHomeJuqingExist = False
+    End If
 
 End Function
 
 // 首页底部
 Function isHomeBtnExist()
-	Dim intX,intY
-	FindMultiColor 11,24,1055,1886,"0E0D0E","-18|-4|0086E1,-68|4|04090C,-59|13|009EFE,-67|35|00A8FF,-18|33|191718,33|42|00A5FF,49|67|231F1F,48|84|00A8FF",0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then
-		isHomeBtnExist = True
-	Else 
-		isHomeBtnExist = False
-	End If
+    Dim intX,intY
+    FindMultiColor 11,24,1055,1886,"0E0D0E","-18|-4|0086E1,-68|4|04090C,-59|13|009EFE,-67|35|00A8FF,-18|33|191718,33|42|00A5FF,49|67|231F1F,48|84|00A8FF",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        isHomeBtnExist = True
+    Else 
+        isHomeBtnExist = False
+    End If
 End Function
 
 
@@ -1822,7 +1851,7 @@ Function clickNormalRefresh()
     TracePrint "clickNormalRefresh"
     Dim intX,intY
     Delay 200
-    FindPic 25,610,245,694,"Attachment:refresh.png","000000",0,0.7,intX,intY
+    FindPic 40,683,222,748,"Attachment:refresh.png","000000",0,0.7,intX,intY
     If intX > -1 And intY > -1 Then
         TracePrint "点击刷新"
         Touch intX, intY, 200
@@ -1832,46 +1861,46 @@ End Function
 
 //正在加载中
 Function loading()
-	While True
-		Dim intX =-1 ,intY =-1
-    	Dim tempX = -1,tempY = -1
-    	Dim num = 0
-    	//捕获请求开始
-    	//请求时间短，最低延时4秒
-    	TracePrint "等待loading"
-    	While intX = -1 And intY = -1 And num < 10
-    		Delay 200
-        	FindPic 430, 1743, 672, 1865, "Attachment:loading.png", "000000", 0, 0.8, intX, intY
-        	num = num + 1
-        	//		TracePrint "检测刷新条xy",intX,intY
+    While True
+        Dim intX =-1 ,intY =-1
+        Dim tempX = -1,tempY = -1
+        Dim num = 0
+        //捕获请求开始
+        //请求时间短，最低延时4秒
+        TracePrint "等待loading"
+        While intX = -1 And intY = -1 And num < 10
+            Delay 200
+            FindPic 430, 1743, 672, 1865, "Attachment:loading.png", "000000", 0, 0.8, intX, intY
+            num = num + 1
+            //		TracePrint "检测刷新条xy",intX,intY
         	
-    	Wend
-    	//捕获请求结束
-    	//请求超时 
-    	TracePrint "等待loading超时"
-    	While intX > -1 And intY > -1
-        	TracePrint "检测是否超时,转圈中"
-        	Delay 200
-        	FindPic 430, 1743, 672, 1865, "Attachment:loading.png", "000000", 0, 0.8, intX, intY
-        	Delay 1000
-        	If intX = -1 And intY = -1 Then 
-            	TracePrint "停止转圈,判断超时弹框"
-            	Delay 200
-            	FindPic 0, 0, 0, 0, "Attachment:yes.png", "000000", 0, 0.8, tempX, tempY
-            	TracePrint tempX
-            	TracePrint tempY
-            	If tempX > -1 And tempY > -1 Then 
-                	TracePrint "超时-点击是按钮"
-                	Touch tempX + 50, tempY + 50, 100
-                	Delay 1000
+        Wend
+        //捕获请求结束
+        //请求超时 
+        TracePrint "等待loading超时"
+        While intX > -1 And intY > -1
+            TracePrint "检测是否超时,转圈中"
+            Delay 200
+            FindPic 430, 1743, 672, 1865, "Attachment:loading.png", "000000", 0, 0.8, intX, intY
+            Delay 1000
+            If intX = -1 And intY = -1 Then 
+                TracePrint "停止转圈,判断超时弹框"
+                Delay 200
+                FindPic 0, 0, 0, 0, "Attachment:yes.png", "000000", 0, 0.8, tempX, tempY
+                TracePrint tempX
+                TracePrint tempY
+                If tempX > -1 And tempY > -1 Then 
+                    TracePrint "超时-点击是按钮"
+                    Touch tempX + 50, tempY + 50, 100
+                    Delay 1000
                 	
-            	End If
-        	End If
-    	Wend
-    	If tempX = -1 And tempY = -1 Then 
-    		Exit While
-    	End If
-	Wend
+                End If
+            End If
+        Wend
+        If tempX = -1 And tempY = -1 Then 
+            Exit While
+        End If
+    Wend
    
 	
 End Function
@@ -1888,8 +1917,8 @@ Function findBOSS2()
     End If
 End Function
 Function findBoss3()
-	 Dim intX,intY
-	 Delay 200
+    Dim intX,intY
+    Delay 200
     FindPic 0,1040,screenX,screenY,"Attachment:boss.png","000000",0,0.5,intX,intY
     If intX > -1 And intY > -1 Then
         findBoss3 = True
@@ -1914,30 +1943,30 @@ Function findBossInSrMode()
     //判断sr模式未开启
     Delay 200
     If findNoticeDialog() Then 
-    	findAndClickBtn_width_260_height_90 29, 368, 1061, 1410
-    	srMode = False
+        findAndClickBtn_width_260_height_90 29, 368, 1061, 1410
+        srMode = False
     Else 
-    	srMode = True
+        srMode = True
     End If
     TracePrint "sr模式是否开启:",srMode
-//   FindPic 0, 0, 0, 0, "Attachment:test888.png|Attachment:test888_2.png|Attachment:test888_3.png", "000000", 0, 0.8, targetX, targetY
-//    TracePrint "sr模式未开启XY:",targetX,targetY
-//    
-//    If targetX > -1 And targetY > -1 Then 
-//        Touch targetX + 50, targetY + 50, 200
-//        targetX = -1
-//        targetY = -1
-//        srMode = False
-//    Else 
-//        targetX = -1
-//        targetY = -1
-//        srMode = True
-//    End If
+    //   FindPic 0, 0, 0, 0, "Attachment:test888.png|Attachment:test888_2.png|Attachment:test888_3.png", "000000", 0, 0.8, targetX, targetY
+    //    TracePrint "sr模式未开启XY:",targetX,targetY
+    //    
+    //    If targetX > -1 And targetY > -1 Then 
+    //        Touch targetX + 50, targetY + 50, 200
+    //        targetX = -1
+    //        targetY = -1
+    //        srMode = False
+    //    Else 
+    //        targetX = -1
+    //        targetY = -1
+    //        srMode = True
+    //    End If
     //SR模式未开启时，发车标记为true
     If Not srMode Then 
-    	faChe = True
+        faChe = True
     Else 
-    	faChe = False
+        faChe = False
     End If
     
     //在当前界面寻找boss
@@ -1957,8 +1986,8 @@ Function findBossInSrMode()
             //滑动之后从初始位置找
             startY = srDialogBossStartY
             zm.Swipe 100, startY + itemHeight, 100, startY,500,3
-//            zm.Swipe 100, startY + itemHeight, 100, startY, 200
-//            zm.Swipe 100, startY + itemHeight , 100, startY, 200
+            //            zm.Swipe 100, startY + itemHeight, 100, startY, 200
+            //            zm.Swipe 100, startY + itemHeight , 100, startY, 200
             count = count + 1
             TracePrint "上滑",count,"次"
             Delay 200
@@ -2021,29 +2050,29 @@ Function isAssitTagInSrMode(xuetiaoX,xuetiaoY)
         TracePrint "有援助"
         isAssitTagInSrMode = True
     Else 
-		isAssitTagInSrMode = False
+        isAssitTagInSrMode = False
     End If
 	
 End Function
 
 Function isTimeOut(xuetiaoX,xuetiaoY)
-	Dim ocrchar,tempX,tempY
-	Delay 200
-	UseDict(0)
-	FindStr 454, xuetiaoY - 220, 729, xuetiaoY-167, "时间将要结束", "2F2FFF", 0.8, tempX, tempY
-	If tempX > -1 And tempY > -1 Then 
-		ocrchar = "时间将要结束"
-		Else 
-		ocrchar = ""
-	End If
-//	ocrchar=Ocr(xuetiaoX,xuetiaoY-210,screenX,xuetiaoY,"2F2FFF",0.8)
-	If StrComp("时间将要结束", ocrchar) = 0 Then 
-		isTimeOut = True
-		TracePrint "该boss 时间将要结束：TRUE"
-	Else 
-		isTimeOut = False
-		TracePrint "该boss 时间将要结束：FALSE"
-	End If
+    Dim ocrchar,tempX,tempY
+    Delay 200
+    UseDict(0)
+    FindStr 454, xuetiaoY - 220, 729, xuetiaoY-167, "时间将要结束", "2F2FFF", 0.8, tempX, tempY
+    If tempX > -1 And tempY > -1 Then 
+        ocrchar = "时间将要结束"
+    Else 
+        ocrchar = ""
+    End If
+    //	ocrchar=Ocr(xuetiaoX,xuetiaoY-210,screenX,xuetiaoY,"2F2FFF",0.8)
+    If StrComp("时间将要结束", ocrchar) = 0 Then 
+        isTimeOut = True
+        TracePrint "该boss 时间将要结束：TRUE"
+    Else 
+        isTimeOut = False
+        TracePrint "该boss 时间将要结束：FALSE"
+    End If
 End Function
 	
 
@@ -2054,85 +2083,85 @@ End Function
 
 //发车，返回值表示发车成功一次
 Function facheche()
-	result = findAndClickSrCheBtn()
-	TracePrint "找到发车按钮：",result
-	If Not result Then 
-		facheche = False
-		resetScript
-		Exit Function
-	End If
-	Dim count = 0
-	While Not confirmStaySrChe() And count <60
-		findAndClickSrCheBtn
-		count = count+1
-		Delay 1000
+    result = findAndClickSrCheBtn()
+    TracePrint "找到发车按钮：",result
+    If Not result Then 
+        facheche = False
+        resetScript
+        Exit Function
+    End If
+    Dim count = 0
+    While Not confirmStaySrChe() And count <60
+        findAndClickSrCheBtn
+        count = count+1
+        Delay 1000
 		
-	Wend
-	count = 0
-	zm.Swipe 459, 759, 459, 500, 200
-	zm.Swipe 459, 759, 459, 500, 200
-	zm.Swipe 459, 759, 459, 500, 200
-	TracePrint "滑动到底部"
-	Touch 607, 1332, 200
-	TracePrint "点击1-8"
-	Delay 2000
-	//战斗设定并点击战斗
-	If Not findAndClickFightBtn() Then 
-		facheche = False
-		resetScript
-		Exit Function
-	End If
+    Wend
+    count = 0
+    zm.Swipe 459, 759, 459, 500, 200
+    zm.Swipe 459, 759, 459, 500, 200
+    zm.Swipe 459, 759, 459, 500, 200
+    TracePrint "滑动到底部"
+    Touch 607, 1332, 200
+    TracePrint "点击1-8"
+    Delay 2000
+    //战斗设定并点击战斗
+    If Not findAndClickFightBtn() Then 
+        facheche = False
+        resetScript
+        Exit Function
+    End If
 
-	Dim intX = -1
-	Dim intY = -1
-	Dim isChe = False
-	While intX = -1 And intY = -1 And count <450
-//		KeepCapture 
-		Delay 200
-		FindPic 306, 1467, 803, 1627, "Attachment:fache_queren.png", "000000", 0, 0.8, intX, intY
-		If intX > -1 And intY > -1 Then 
-			isChe = True	
-		End If
-//		// todo 体力耗尽时的确认
-//		ReleaseCapture 
-		count = count+1
-		Delay 2000
-	Wend
-	If isChe Then 
-		TracePrint "出车，准备进车"
-		Touch 528, 1527, 200
-		Delay 200
-		Touch 541, 1513, 200
-		Delay 5000
-		If facheMode <> 1 Then 
-			TracePrint "不是自发自打，退出打车界面"
-			KeyPress "Back"
-			Delay 2000
-			facheche = True
-			Exit Function
-		End If 
+    Dim intX = -1
+    Dim intY = -1
+    Dim isChe = False
+    While intX = -1 And intY = -1 And count <450
+        //		KeepCapture 
+        Delay 200
+        FindPic 306, 1467, 803, 1627, "Attachment:fache_queren.png", "000000", 0, 0.8, intX, intY
+        If intX > -1 And intY > -1 Then 
+            isChe = True	
+        End If
+        //		// todo 体力耗尽时的确认
+        //		ReleaseCapture 
+        count = count+1
+        Delay 2000
+    Wend
+    If isChe Then 
+        TracePrint "出车，准备进车"
+        Touch 528, 1527, 200
+        Delay 200
+        Touch 541, 1513, 200
+        Delay 5000
+        If facheMode <> 1 Then 
+            TracePrint "不是自发自打，退出打车界面"
+            KeyPress "Back"
+            Delay 2000
+            facheche = True
+            Exit Function
+        End If 
 		
-		Dim daResult = daRaid()
+        Dim daResult = daRaid()
         loading 
         loading
         If daResult And True Then 
             //等待打完
             If isShi Then 
-            	totalShiCount = totalShiCount+1	
+                totalShiCount = totalShiCount+1	
             End If
             dawan() 
 			
         Else 
             // 没打成,返回sr界面
-           findAndClickBtn_width_260_height_90 0, 1475, screenX, screenY
+            findAndClickBtn_width_260_height_90 0, 1475, screenX, screenY
 			
         End If
         facheche = True
     ElseIf count = 450 Then
-    	TracePrint "等待发车超时"
-    	facheche = False
-    	resetScript 	
-	End If
+        TracePrint "等待发车超时"
+        facheche = False
+        resetScript 	
+    End If
 	
 	
 End Function
@@ -2140,269 +2169,274 @@ End Function
 
 
 Function isFightEndlessSetEnable()
-	Dim endlessX,endlessY
-	Delay 200
-	FindPic 847, 379, 1083, 495, "Attachment:fight_endless_lock.png|Attachment:fight_endless_lock2.png", "000000", 0, 0.8, endlessX, endlessY
-	TracePrint "连续战斗已锁:",endlessX,endlessY
-	If endlessX > -1 And endlessY > -1 Then 
-		isFightEndlessSetEnable = False
-	Else 
-		isFightEndlessSetEnable = True
-	End If
+    Dim endlessX,endlessY
+    Delay 200
+    FindPic 847, 379, 1083, 495, "Attachment:fight_endless_lock.png|Attachment:fight_endless_lock2.png", "000000", 0, 0.8, endlessX, endlessY
+    TracePrint "连续战斗已锁:",endlessX,endlessY
+    If endlessX > -1 And endlessY > -1 Then 
+        isFightEndlessSetEnable = False
+    Else 
+        isFightEndlessSetEnable = True
+    End If
 End Function
 
 //连续战斗设定，是战斗设定的一部分
 Function setFightEndelssMode()
-	Dim endlessX,endlessY
-	Delay 200
-	FindPic 847, 379, 1083, 495, "Attachment:fight_endless.png", "000000", 0, 0.8, endlessX, endlessY
-	TracePrint "连续战斗未勾选:",endlessX,endlessY
-	If endlessX > -1 And endlessY > -1 Then
-		Touch endlessX + 50, endlessY + 30, 200
-		TracePrint "点击连续战斗按钮"
-		Delay 1000
-		setFightEndlessModeNext2
-		setFightEndelssModeNext 
-		Delay 200
-		setFightEndelssMode = True
-	Else 
-		// 这里是JJC的连续战斗
-		Dim intX,intY
-		FindMultiColor 903,810,1044,859,"2D2822","-5|6|181512,-10|11|3C352E,5|6|352F28,1|12|151210,-6|17|443C34,9|11|151310,14|18|453D35,5|14|13110F,5|25|4D443B",0,0.9,intX,intY
-		If intX > -1 And intY > -1 Then
-			TracePrint "找色-连续战斗未勾选:",intX,intY
-			Touch intX, intY, 200
-			TracePrint "点击连续战斗按钮"
-			Delay 1000
-			setFightEndlessModeNext2
-			setFightEndelssModeNext 
-			Delay 200
-			setFightEndelssMode = True
-		Else 
-			setFightEndelssMode = False	
-		End If
+    Dim endlessX,endlessY
+    Delay 200
+    FindPic 847, 379, 1083, 495, "Attachment:fight_endless.png", "000000", 0, 0.8, endlessX, endlessY
+    TracePrint "连续战斗未勾选:",endlessX,endlessY
+    If endlessX > -1 And endlessY > -1 Then
+        Touch endlessX + 50, endlessY + 30, 200
+        TracePrint "点击连续战斗按钮"
+        Delay 1000
+        setFightEndlessModeNext2
+        setFightEndelssModeNext 
+        Delay 200
+        setFightEndelssMode = True
+    Else 
+        // 这里是JJC的连续战斗
+        Dim intX,intY
+        FindMultiColor 903,810,1044,859,"2D2822","-5|6|181512,-10|11|3C352E,5|6|352F28,1|12|151210,-6|17|443C34,9|11|151310,14|18|453D35,5|14|13110F,5|25|4D443B",0,0.9,intX,intY
+        If intX > -1 And intY > -1 Then
+            TracePrint "找色-连续战斗未勾选:",intX,intY
+            Touch intX, intY, 200
+            TracePrint "点击连续战斗按钮"
+            Delay 1000
+            setFightEndlessModeNext2
+            setFightEndelssModeNext 
+            Delay 200
+            setFightEndelssMode = True
+        Else 
+            setFightEndelssMode = False	
+        End If
 		
-	End If
+    End If
 End Function
 
 //第一次点击连续战斗设定时，弹出的设定提示框
 Function setFightEndlessModeNext2()
-	Dim intX = -1,intY = -1,tempCount=0	
-	While intX = -1 And intY = -1 And tempCount<10
-		Delay 500
-		FindPic 188,696,864,769,"Attachment:fight_endless_set2.png","000000",0,0.8,intX,intY
-		tempCount = tempCount + 1	
-	Wend
-	TracePrint "第一次点击连续战斗时提示：",intX,intY
-	If tempCount = 10 Then 
-		Exit Function
-	End If
-	Touch 538, 1251, 200
-	Delay 1000
+    Dim intX = -1,intY = -1,tempCount=0	
+    While intX = -1 And intY = -1 And tempCount<10
+        Delay 500
+        FindPic 188,696,864,769,"Attachment:fight_endless_set2.png","000000",0,0.8,intX,intY
+        tempCount = tempCount + 1	
+    Wend
+    TracePrint "第一次点击连续战斗时提示：",intX,intY
+    If tempCount = 10 Then 
+        Exit Function
+    End If
+    Touch 538, 1251, 200
+    Delay 1000
 End Function
 
 //点击连续战斗设定后，弹出的设定弹框
 Function setFightEndelssModeNext()
-	Dim endlessNextX,endlessNextY
-	Dim tempCount= 0
-	Delay 200
-	FindPic 108,188,874,274,"Attachment:fight_endless_set.png|Attachment:fight_endless_set_2.png","000000",0,0.8,endlessNextX,endlessNextY
-	While endlessNextX = -1 And endlessNextY = -1 And tempCount <10  
-		Delay 500
-		FindPic 108,188,874,274,"Attachment:fight_endless_set.png|Attachment:fight_endless_set_2.png","000000",0,0.8,endlessNextX,endlessNextY
-		tempCount = tempCount+1
-	Wend
-	TracePrint "连续战斗设定弹框标题：",endlessNextX,endlessNextY
-	//点持续战斗下一场
-	Touch 157, 493, 200
-	Delay 500
-	//点重复战斗按钮
-	Touch 165, 629, 200
-	Delay 500
-	//点最小
-	Touch 263, 887, 200
-	Delay 200
-	//点最大
-	Touch 814,891, 200
-	Delay 200
-	//点确认
-	Touch 521,1721,200
+    Dim endlessNextX,endlessNextY
+    Dim tempCount= 0
+    Delay 200
+    FindPic 108,188,874,274,"Attachment:fight_endless_set.png|Attachment:fight_endless_set_2.png","000000",0,0.8,endlessNextX,endlessNextY
+    While endlessNextX = -1 And endlessNextY = -1 And tempCount <10  
+        Delay 500
+        FindPic 108,188,874,274,"Attachment:fight_endless_set.png|Attachment:fight_endless_set_2.png","000000",0,0.8,endlessNextX,endlessNextY
+        tempCount = tempCount+1
+    Wend
+    TracePrint "连续战斗设定弹框标题：",endlessNextX,endlessNextY
+    //点持续战斗下一场
+    Touch 157, 493, 200
+    Delay 500
+    //点重复战斗按钮
+    Touch 165, 629, 200
+    Delay 500
+    //点最小
+    Touch 263, 887, 200
+    Delay 200
+    //点最大
+    Touch 814,891, 200
+    Delay 200
+    //点确认
+    Touch 521,1721,200
 
 End Function
 //战斗设定并点击战斗,包括设定连续战斗，返回值表示是否成功设定好连续战斗并点击战斗
 Function findAndClickFightBtn()
-	Dim targetX =-1
-	Dim targetY =-1
-	Delay 200
-	FindPic 815, 498, 1077, 773, "Attachment:fight.png", "000000", 0, 0.8, targetX, targetY
-	count = 0
-	While targetX = -1 And targetY = -1 And count < 10
-		Delay 1000
-		FindPic 815, 498, 1077, 773, "Attachment:fight.png", "000000", 0, 0.8, targetX, targetY		
-	Wend
-	TracePrint "找到战斗按钮:",targetX,targetY
-	If targetX > -1 And targetY > -1 Then 
-		If Not isFightEndlessSetEnable() Then 
-			findAndClickFightBtn = False
-			Exit Function
-		End If
-		//连续战斗设定
-	 	setFightEndelssMode
-		count = 0
-		TracePrint "准备点击战斗按钮:",targetX,targetY
-		While targetX > -1 And targetY > -1 And count < 10
-			Touch targetX + 50, targetY + 50, 200
-			Delay 500
-			FindPic 815, 498, 1077, 773, "Attachment:fight.png", "000000", 0, 0.8, targetX, targetY
-			Delay 500
-			count = count+1
-		Wend
-		If count = 10 Then 
-			TracePrint "点击战斗按钮失败"
-			findAndClickFightBtn = False
-		Else 
-			TracePrint "点击战斗按钮成功"
-			findAndClickFightBtn = True
-		End If
-	Else 
-		findAndClickFightBtn = False
-	End If
+    Dim targetX =-1
+    Dim targetY =-1
+    Delay 200
+    FindPic 815, 498, 1077, 773, "Attachment:fight.png", "000000", 0, 0.8, targetX, targetY
+    count = 0
+    While targetX = -1 And targetY = -1 And count < 10
+        Delay 1000
+        FindPic 815, 498, 1077, 773, "Attachment:fight.png", "000000", 0, 0.8, targetX, targetY		
+    Wend
+    TracePrint "找到战斗按钮:",targetX,targetY
+    If targetX > -1 And targetY > -1 Then 
+        If Not isFightEndlessSetEnable() Then 
+            findAndClickFightBtn = False
+            Exit Function
+        End If
+        //连续战斗设定
+        setFightEndelssMode
+        count = 0
+        TracePrint "准备点击战斗按钮:",targetX,targetY
+        While targetX > -1 And targetY > -1 And count < 10
+            Touch targetX + 50, targetY + 50, 200
+            Delay 500
+            FindPic 815, 498, 1077, 773, "Attachment:fight.png", "000000", 0, 0.8, targetX, targetY
+            Delay 500
+            count = count+1
+        Wend
+        If count = 10 Then 
+            TracePrint "点击战斗按钮失败"
+            findAndClickFightBtn = False
+        Else 
+            TracePrint "点击战斗按钮成功"
+            findAndClickFightBtn = True
+        End If
+    Else 
+        findAndClickFightBtn = False
+    End If
 End Function
 
 Function confirmStaySrChe()
-	Dim targetX = -1
-	Dim targetY = -1
-	Delay 200
-	FindPic 168,1773,1000,1919,"Attachment:sr_che_stay.png","000000",0,0.8,targetX,targetY
-	If targetX > -1 And targetY > -1 Then
-		confirmStaySrChe = True
-	Else 
-		confirmStaySrChe =False
-	End If
+    Dim targetX = -1
+    Dim targetY = -1
+    Delay 200
+    FindPic 168,1773,1000,1919,"Attachment:sr_che_stay.png","000000",0,0.8,targetX,targetY
+    If targetX > -1 And targetY > -1 Then
+        confirmStaySrChe = True
+    Else 
+        confirmStaySrChe =False
+    End If
 End Function
 
 Function findAndClickSrCheBtn()
-	Dim targetX = -1
-	Dim targetY = -1
-	Delay 200
-	FindPic 212,1783,1000,1868,"Attachment:sr_che.png","000000",0,0.8,targetX,targetY
-	If targetX > -1 And targetY > -1 Then
-		count = 0
-		While targetX > -1 And targetY > -1 And count < 10
-			Touch targetX + 50, targetY + 50, 200
-			Delay 500
-			FindPic 212, 1783, 1000, 1868, "Attachment:sr_che.png", "000000", 0, 0.8, targetX, targetY
-			Delay 500
-			count = count +1
-		Wend
-		If count = 10 Then 
-			findAndClickSrCheBtn = False
-		Else 
-			findAndClickSrCheBtn = True
-		End If
-	Else 
-		findAndClickSrCheBtn = False
-	End If
+    Dim targetX = -1
+    Dim targetY = -1
+    Delay 200
+    FindPic 212,1783,1000,1868,"Attachment:sr_che.png","000000",0,0.8,targetX,targetY
+    If targetX > -1 And targetY > -1 Then
+        count = 0
+        While targetX > -1 And targetY > -1 And count < 10
+            Touch targetX + 50, targetY + 50, 200
+            Delay 500
+            FindPic 212, 1783, 1000, 1868, "Attachment:sr_che.png", "000000", 0, 0.8, targetX, targetY
+            Delay 500
+            count = count +1
+        Wend
+        If count = 10 Then 
+            findAndClickSrCheBtn = False
+        Else 
+            findAndClickSrCheBtn = True
+        End If
+    Else 
+        findAndClickSrCheBtn = False
+    End If
 End Function
 
 Function backToHome()
-	Dim count=10
-	While count > 0 And Not isHome()
-		KeyPress "Back"
-		count =count -1
-		Delay 1000
-	Wend
+    Dim count=10
+    While count > 0 And Not isHome()
+        KeyPress "Back"
+        count =count -1
+        Delay 1000
+    Wend
 End Function
 
 //使用免费票,返回值表示免费票是否全部用完
 Function runFreeTicket()
-	If Not freeTicketEnable Then 
-		runFreeTicket = True
-		Exit Function
-	End If
-	result = findRaidStore()
-	TracePrint "找商店并点击：",result
+    If Not freeTicketEnable Then 
+        runFreeTicket = True
+        Exit Function
+    End If
+    result = findRaidStore()
+    TracePrint "找商店并点击：",result
 	
-	If Not result Then 
-		runFreeTicket = False
-		resetScript
-		Exit Function
-	End If
-	freeTicketEnable = isRaidFreeTicketEnable()
-	TracePrint "商店免费票没有用完",freeTicketEnable
-	If Not freeTicketEnable Then 
-		freeTicketRecordDate = Date()
-		findAndClickSrBossBtn()
-		runFreeTicket = True
-		Exit Function
-	End If
-	runFreeTicket = False
-	Touch 131, 1599, 200
+    If Not result Then 
+        runFreeTicket = False
+        resetScript
+        Exit Function
+    End If
+    freeTicketEnable = isRaidFreeTicketEnable()
+    TracePrint "商店免费票没有用完",freeTicketEnable
+    If Not freeTicketEnable Then 
+        freeTicketRecordDate = Date()
+        findAndClickSrBossBtn()
+        runFreeTicket = True
+        Exit Function
+    End If
+    runFreeTicket = False
+    
+    Delay 2000
+    
+    //点使用免费票
+    Touch 131, 1599, 200
 	
-	Delay 2000
-	Dim count = 0
-	//点击确定按钮
-	TracePrint "点击确定使用按钮"
-	Delay 5000
-	If Not findAndClickBtn_width_260_height_90_static(screenX \ 2, screenY \ 4, screenX, screenY * 3 \ 4) Then 
-		TracePrint "使用免费票失败"	
-		If findAndClickBtn_width_260_height_90(379, 1026, 691, 1151) Then 
-			TracePrint "已经存在自己发的车"
-			findAndClickSrBossBtn 
-			Exit Function
-		Else 
-			backToHome 
-			Exit Function
-		End If
+    Delay 2000
+    Dim count = 0
+    //点击确定按钮
+    TracePrint "点击确定使用按钮"
+    Delay 5000
+    If Not findAndClickBtn_width_260_height_90_static(screenX \ 2, screenY \ 4, screenX, screenY * 3 \ 4) Then 
+        TracePrint "使用免费票失败"	
+        If findAndClickBtn_width_260_height_90(379, 1026, 691, 1151) Then 
+            TracePrint "已经存在自己发的车"
+            findAndClickSrBossBtn 
+            Exit Function
+        Else 
+            backToHome 
+            Exit Function
+        End If
 		
-	End If
-//	While findAndClickBtn_width_260_height_90_static(screenX\2,screenY\4,screenX,screenY*3\4) And count < 2
-//		Delay 1000
-//		count = count +1
-//	Wend
-//	If count = 2 Then 
-//		resetScript
-//		Exit Function
-//	End If
-//	
-//	If findAndClickBtn_width_260_height_90(379, 1026, 691, 1151) Then 
-//		findAndClickSrBossBtn 
-//		Exit Function
-//	End If
-	Dim targetX = -1
-	Dim targetY = -1
-	count =0
-	While targetX = -1 And targetY = -1 And count < 5
-		Delay 1000
-		FindPic 332, 1434, 767, 1591, "Attachment:che_start.png", "000000", 0, 0.8, targetX, targetY
+    End If
+    //	While findAndClickBtn_width_260_height_90_static(screenX\2,screenY\4,screenX,screenY*3\4) And count < 2
+    //		Delay 1000
+    //		count = count +1
+    //	Wend
+    //	If count = 2 Then 
+    //		resetScript
+    //		Exit Function
+    //	End If
+    //	
+    //	If findAndClickBtn_width_260_height_90(379, 1026, 691, 1151) Then 
+    //		findAndClickSrBossBtn 
+    //		Exit Function
+    //	End If
+    Delay 2000
+    Dim targetX = -1
+    Dim targetY = -1
+    count = 0
+    While targetX = -1 And targetY = -1 And count < 5
+        Delay 1000
+        FindPic 332, 1434, 767, 1591, "Attachment:che_start.png", "000000", 0, 0.8, targetX, targetY
+		TracePrint "找到开始按钮",targetX,targetY
+        count = count+1
+    Wend
+    If count = 5 Then 
+        resetScript
+        Exit Function
+    End If
 	
-		count = count+1
-	Wend
-	If count = 5 Then 
-		resetScript
-		Exit Function
-	End If
+    count = 0
+    While targetX > -1 And targetY > -1 And count < 5
+        Touch targetX,targetY,200
+        count = count + 1
+        Delay 1000
+        FindPic 332, 1434, 767, 1591, "Attachment:che_start.png", "000000", 0, 0.8, targetX, targetY
+    Wend
+    If count = 5 Then 
+        resetScript
+        Exit Function
+    End If
 	
-	count = 0
-	While targetX > -1 And targetY > -1 And count < 5
-		Touch targetX,targetY,200
-		count = count + 1
-		Delay 1000
-		FindPic 332, 1434, 767, 1591, "Attachment:che_start.png", "000000", 0, 0.8, targetX, targetY
-	Wend
-	If count = 5 Then 
-		resetScript
-		Exit Function
-	End If
+    Delay 5000
+    If facheMode <> 1 Then 
+        KeyPress "Back"
+        Delay 5000
+        Exit Function
+    End If 
 	
-	Delay 5000
-	If facheMode <> 1 Then 
-		KeyPress "Back"
-		Delay 5000
-		Exit Function
-	End If 
-	
-	Dim daResult = daRaid()
+    Dim daResult = daRaid()
     loading 
     loading
     If daResult And True Then 
@@ -2414,50 +2448,50 @@ Function runFreeTicket()
 		
     Else 
         // 没打成,返回sr界面
-       findAndClickBtn_width_260_height_90 0, 1475, screenX, screenY
+        findAndClickBtn_width_260_height_90 0, 1475, screenX, screenY
 		
     End If	
 	
 End Function
 
 Function findAndClickSrBossBtn()
-	Dim targetX = -1
-	Dim targetY = -1
-	Dim count = 0
-	Delay 200
-	FindMultiColor 14, 1742, 170, 1909, "0BAFFF", "23|5|00ABFF,46|2|00AAFF,72|1|1AB8FF,3|35|00D1FF,25|33|00CDFF,46|32|00CAFF,67|35|00D1FF,25|55|00ACF7,55|53|45D8FF", 0, 0.9, targetX, targetY
-	TracePrint "findAndClickSrBossBtn:",targetX,targetY
-	If targetX > -1 And targetY > -1 Then 
-		Touch targetX + 50, targetY + 50, 200
-		Delay 1000
-		findAndClickSrBossBtn = True
-	Else 
-		findAndClickSrBossBtn = False
-	End If
+    Dim targetX = -1
+    Dim targetY = -1
+    Dim count = 0
+    Delay 200
+    FindMultiColor 14, 1742, 170, 1909, "0BAFFF", "23|5|00ABFF,46|2|00AAFF,72|1|1AB8FF,3|35|00D1FF,25|33|00CDFF,46|32|00CAFF,67|35|00D1FF,25|55|00ACF7,55|53|45D8FF", 0, 0.9, targetX, targetY
+    TracePrint "findAndClickSrBossBtn:",targetX,targetY
+    If targetX > -1 And targetY > -1 Then 
+        Touch targetX + 50, targetY + 50, 200
+        Delay 1000
+        findAndClickSrBossBtn = True
+    Else 
+        findAndClickSrBossBtn = False
+    End If
 	
 End Function
 
 // raid每日免费票 
 Function isRaidFreeTicketEnable()
-	Dim targetX = -1
-	Dim targetY = -1
-	Delay 200
+    Dim targetX = -1
+    Dim targetY = -1
+    Delay 200
     FindPic 8,1535,266,1674,"Attachment:sold_out.png","000000",0,0.9,targetX,targetY
     If targetX > -1 And targetY > -1 Then     
         TracePrint "免费票用完了"
         isRaidFreeTicketEnable = False
     Else 
-    	TracePrint "免费票没用完"
-    	isRaidFreeTicketEnable = True
+        TracePrint "免费票没用完"
+        isRaidFreeTicketEnable = True
     End If
 End Function
 
 // 找到sr商店按钮并点击
 Function findRaidStore()
-	Dim count = 0
-	Dim targetX = -1
-	Dim targetY = -1
-	Delay 200
+    Dim count = 0
+    Dim targetX = -1
+    Dim targetY = -1
+    Delay 200
     FindPic 352,1755,1000,1917,"Attachment:raid_store.png","000000",0,0.9,targetX,targetY
     If targetX > -1 And targetY > -1 Then 
         While targetX > -1 And targetY > -1 And count <10
@@ -2468,10 +2502,10 @@ Function findRaidStore()
             count = count+1
         Wend
         If count = 10 Then 
-        	resetScript
-        	findRaidStore = False
+            resetScript
+            findRaidStore = False
         Else 
-        	findRaidStore = True
+            findRaidStore = True
         End If
        
     Else 
@@ -2481,118 +2515,118 @@ Function findRaidStore()
 End Function
 
 Function resetScript()
-	reset = True
+    reset = True
 End Function
 
 //每日迷宫
 Function runMigong()
-	If Not isHome() Then 
-    	resetScript 
-    	runMigong = False
-    	Exit Function
+    If Not isHome() Then 
+        resetScript 
+        runMigong = False
+        Exit Function
     End If
-	//点击夜世界
-	Touch 962, 1513, 200
-	//等到找到地铁标记，判断进入了入口选择页面
-	If waitUiltMenuExist(10) Then 
-		Touch 742, 944, 200
-	Else 
-		runMigong = False
-		Exit Function
-	End If		
-	loading
-	If Not isMigong() Then 
-		runMigong = False
-		resetScript
-		Exit Function
-	End If
+    //点击夜世界
+    Touch 962, 1513, 200
+    //等到找到地铁标记，判断进入了入口选择页面
+    If waitUiltMenuExist(10) Then 
+        Touch 742, 944, 200
+    Else 
+        runMigong = False
+        Exit Function
+    End If		
+    loading
+    If Not isMigong() Then 
+        runMigong = False
+        resetScript
+        Exit Function
+    End If
 	
-	If migonglvset = 0 Then 
-	//lv1
-		Touch 934,715,200
-	ElseIf migonglvset = 1 Then
-	//LV2
-		Touch 945,918,200
-	ElseIf migonglvset = 2 Then
-	//LV3
-		Touch 960,1104,200
-	ElseIf migonglvset = 3 Then
-	//LV4
-		Touch 911,1296,200
-	ElseIf migonglvset = 4 Then
-	//lv5
-		Touch 933, 1503, 200
-	End If
-	loading
-	Dim count = 0
-	Dim targetX = -1
-	Dim targetY = -1
-	//寻找难度3的标记，判断是否进入界面
-	While targetX = -1 And targetY = -1 And count < 10
-		Delay 200
-		FindPic 711,947,908,1126,"Attachment:migong_3.png","000000",0,0.8,targetX,targetY	
-	Wend
-	If count = 10 Then 
-		runMigong = False
-		resetScript
-		Exit Function
-	End If
-	// 连续战斗是否已打完
-	If Not isFightEndlessSetEnable() Then 
-		runMigong = True
-	Else 
-		If migongNanduSet = 0 Then 
-			//难度基本
-			Touch 292, 1025, 200
-		ElseIf migongNanduSet = 1 Then
-			//难度1
-			Touch 464,1018, 200
-		ElseIf migongNanduSet = 2 Then
-			//难度2
-			Touch 624,1035,200
-		ElseIf migongNanduSet = 3 Then
-			//难度3
-			Touch 786,1030, 200
-		End If
+    If migonglvset = 0 Then 
+        //lv1
+        Touch 934,715,200
+    ElseIf migonglvset = 1 Then
+        //LV2
+        Touch 945,918,200
+    ElseIf migonglvset = 2 Then
+        //LV3
+        Touch 960,1104,200
+    ElseIf migonglvset = 3 Then
+        //LV4
+        Touch 911,1296,200
+    ElseIf migonglvset = 4 Then
+        //lv5
+        Touch 933, 1503, 200
+    End If
+    loading
+    Dim count = 0
+    Dim targetX = -1
+    Dim targetY = -1
+    //寻找难度3的标记，判断是否进入界面
+    While targetX = -1 And targetY = -1 And count < 10
+        Delay 200
+        FindPic 711,947,908,1126,"Attachment:migong_3.png","000000",0,0.8,targetX,targetY	
+    Wend
+    If count = 10 Then 
+        runMigong = False
+        resetScript
+        Exit Function
+    End If
+    // 连续战斗是否已打完
+    If Not isFightEndlessSetEnable() Then 
+        runMigong = True
+    Else 
+        If migongNanduSet = 0 Then 
+            //难度基本
+            Touch 292, 1025, 200
+        ElseIf migongNanduSet = 1 Then
+            //难度1
+            Touch 464,1018, 200
+        ElseIf migongNanduSet = 2 Then
+            //难度2
+            Touch 624,1035,200
+        ElseIf migongNanduSet = 3 Then
+            //难度3
+            Touch 786,1030, 200
+        End If
 		
 		
-		If Not findAndClickFightBtn() Then 
-			runMigong = False
-		Else 
-			While Not findAndClickBtn_width_260_height_90_static (0, 1475, screenX, screenY)
-				loading
-			Wend
-			runMigong = True
-		End If
-	End If
+        If Not findAndClickFightBtn() Then 
+            runMigong = False
+        Else 
+            While Not findAndClickBtn_width_260_height_90_static (0, 1475, screenX, screenY)
+                loading
+            Wend
+            runMigong = True
+        End If
+    End If
 	
-	backToHome
+    backToHome
 	
 	
 End Function
 // 在迷宫界面
 Function isMigong()
-	Dim targetX = -1
-	Dim targetY = -1
-	Dim count = 0
-	While targetX = -1 And targetY = -1 And count < 10
-		Delay 1000
-		FindPic 0, 1771, 231, 1918, "Attachment:fight_migong.png", "000000", 0, 0.8, targetX, targetY
+    Dim targetX = -1
+    Dim targetY = -1
+    Dim count = 0
+    While targetX = -1 And targetY = -1 And count < 10
+        Delay 1000
+        FindPic 0, 1771, 231, 1918, "Attachment:fight_migong.png", "000000", 0, 0.8, targetX, targetY
 		
-	Wend
-	If count = 10 Then 
-		isMigong = False
-	Else 
-		isMigong = True
-	End If
+    Wend
+    If count = 10 Then 
+        isMigong = False
+    Else 
+        isMigong = True
+    End If
 	
 End Function
 
 //杀死app
 Function exitApp()
-	resetCount = 0
-	reset = False
-	KillApp "com.stairs.destinychild"
+    resetCount = 0
+    reset = False
+    KillApp "com.stairs.destinychild"
 End Function
 
 Function findSr_help()
@@ -2602,7 +2636,7 @@ Function findSr_help()
     If intX > -1 And intY > -1 Then
         findSr_help = True
     Else 
-    	findSr_help = False
+        findSr_help = False
     End If
 End Function
 
@@ -2613,7 +2647,7 @@ Function myOcrText2ticketNum()
     Delay 200
     UseDict (2)
     Delay 200
-    ocrchar=Ocr(904,342,961,395,"FFFFFF",0.9)
+    ocrchar=Ocr(762,403,1068,494,"FFFFFF",0.9)
     Traceprint "票数",ocrchar
     myOcrText2ticketNum = ocrchar
 End Function
@@ -2629,8 +2663,8 @@ Function clickSR()
     TracePrint "找sr"
     While srX = -1 And srY = -1 And tempCount < 3
         Delay 1000
-//        findMultiColorResult 90, 110, 1064, 620, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED"
-        FindMultiColor 738,322,1074,451,"010105","-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED",0,0.9,srX,srY
+        //        findMultiColorResult 90, 110, 1064, 620, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED"
+        FindMultiColor srTagStartX,srTagStartY,srTagEndX,srTagEndY,"31302E","25|-2|2A1F71,19|8|419DF0,7|19|396DEE,28|27|3343ED,10|33|2D25EB,21|37|3C3B39,37|30|2D2C2A,38|42|2A05EB",0,0.9,srX,srY
         tempCount = tempCount + 1
          
     Wend
@@ -2644,8 +2678,8 @@ Function clickSR()
         Touch srX, srY, 200
         Delay 1000
         TracePrint "sr按钮是否还存在"
-        FindMultiColor 738,322,1074,451,"010105","-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED",0,0.9,srX,srY    
-    	tempCount = tempCount +1
+        FindMultiColor srTagStartX,srTagStartY,srTagEndX,srTagEndY,"31302E","25|-2|2A1F71,19|8|419DF0,7|19|396DEE,28|27|3343ED,10|33|2D25EB,21|37|3C3B39,37|30|2D2C2A,38|42|2A05EB",0,0.9,srX,srY    
+        tempCount = tempCount +1
     Wend
     TracePrint "sr按钮已消失"
 	
@@ -2658,16 +2692,16 @@ Function isSR()
     Dim tempCount = 0
     TracePrint "找sr"
 
-    While Not findMultiColorResult( 762,403,1068,494,"31302E","25|-2|2A1F71,19|8|419DF0,7|19|396DEE,28|27|3343ED,10|33|2D25EB,21|37|3C3B39,37|30|2D2C2A,38|42|2A05EB") And tempCount < 5
-    	Delay 1000
-    	tempCount =tempCount +1
+    While Not findMultiColorResult( srTagStartX,srTagStartY,srTagEndX,srTagEndY,"31302E","25|-2|2A1F71,19|8|419DF0,7|19|396DEE,28|27|3343ED,10|33|2D25EB,21|37|3C3B39,37|30|2D2C2A,38|42|2A05EB") And tempCount < 5
+        Delay 1000
+        tempCount =tempCount +1
     Wend
     If tempCount = 5 Then 
-    	TracePrint "没找到SR按钮"
-    	isSR = False
+        TracePrint "没找到SR按钮"
+        isSR = False
     Else 
-    	TracePrint "找到SR按钮"
-    	isSR = True
+        TracePrint "找到SR按钮"
+        isSR = True
     End If
 End Function
 
@@ -2695,11 +2729,11 @@ Function findShi(x1, y1, x2, y2)
     Dim isSelf=False
 
     findShiTimeCount = TickCount()
-	Delay 200
+    Delay 200
     FindPic x1, y1, x2, y2, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
     If targetY > srNormalBossBottomY Then 
-    	targetX = -1
-    	targetY = -1
+        targetX = -1
+        targetY = -1
     End If
     TracePrint "boss血条xy",targetX,targetY
     findShiTimeCount = TickCount()-findShiTimeCount
@@ -2711,59 +2745,59 @@ Function findShi(x1, y1, x2, y2)
     Dim shiPageFindStartY = 700,shiPageFindEndY = 1700
     //"光","暗","木","水","火"
     If shiColor = 0 Then 
-    	//光
-    	FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_guang.png", "000000", 0, 0.8, shiX, shiY
-    	TracePrint "shi_guang",shiX, shiY
+        //光
+        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_guang.png", "000000", 0, 0.8, shiX, shiY
+        TracePrint "shi_guang",shiX, shiY
     ElseIf shiColor = 1 Then
-    	//暗
-      	FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_an.png", "000000", 0, 0.8, shiX, shiY
-      	TracePrint "shi_an",shiX, shiY
+        //暗
+        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_an.png", "000000", 0, 0.8, shiX, shiY
+        TracePrint "shi_an",shiX, shiY
     ElseIf shiColor = 2 Then
-    	//木
-    	FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_mu.png", "000000", 0, 0.8, shiX, shiY
-    	TracePrint "shi_mu",shiX, shiY
+        //木
+        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_mu.png", "000000", 0, 0.8, shiX, shiY
+        TracePrint "shi_mu",shiX, shiY
     ElseIf shiColor = 3 Then
-    	//水
-    	FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_shui.png", "000000", 0, 0.8, shiX, shiY
-    	TracePrint "shi_shui",shiX, shiY
+        //水
+        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_shui.png", "000000", 0, 0.8, shiX, shiY
+        TracePrint "shi_shui",shiX, shiY
     ElseIf shiColor = 4 Then
-    	//火
-    	FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_huo.png", "000000", 0, 0.8, shiX, shiY
-    	TracePrint "shi_huo",shiX, shiY
+        //火
+        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_huo.png", "000000", 0, 0.8, shiX, shiY
+        TracePrint "shi_huo",shiX, shiY
     End If
     
   
-   	If shiX = -1 And shiY = -1 And raidTest Then 
-   		TracePrint "测试功能开启：",raidTest
-   		TracePrint "内部资源没有找到史莱姆，使用外部资源寻找"
-   		If IsNull(targetShiPicPath) = False And Dir.Exist(targetShiPicPath) <> 0 Then 
-    		Delay 200
-    		FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, targetShiPicPath, "000000", 0, 0.8, shiX, shiY
-    		TracePrint "外部路径找到的史莱姆坐标：",shiX,shiY
-    	Else 
-    		TracePrint "外部路径为空"
-    	End If
+    If shiX = -1 And shiY = -1 And raidTest Then 
+        TracePrint "测试功能开启：",raidTest
+        TracePrint "内部资源没有找到史莱姆，使用外部资源寻找"
+        If IsNull(targetShiPicPath) = False And Dir.Exist(targetShiPicPath) <> 0 Then 
+            Delay 200
+            FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, targetShiPicPath, "000000", 0, 0.8, shiX, shiY
+            TracePrint "外部路径找到的史莱姆坐标：",shiX,shiY
+        Else 
+            TracePrint "外部路径为空"
+        End If
     	
-    	If IsNull(targetBossPicPath) = False And Dir.Exist(targetBossPicPath) <> 0 Then 
-    		Delay 200
-    		FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, targetBossPicPath, "000000", 0, 0.8, tempShiX, tempShiY
-    		TracePrint "外部路径找到的boss坐标：",tempShiX,tempShiY
-    	Else 
-    		TracePrint "外部路径为空"
-    	End If   	
-    	If shiY>-1 And tempShiY>-1 And getNumberDiff(shiY, tempShiY) < itemHeight\2 Then 
-    		TracePrint "外部路径找到的boss坐标和史莱姆坐标相同，删除外部图片"
-    		shiX = -1
-    		shiY = -1
-    		Dir.Delete targetBossPicPath
-    		Dir.Delete targetShiPicPath
-    	End If
-   	End If
-	TracePrint "当前页面史莱姆坐标：",shiX,shiY
-	Dim selfBossLocResult
-	TracePrint "当前页面找自己车"
-	If shiY = -1 And shiX = -1 Then 
-		selfBossLocResult = findSelfBoss(shiPageFindStartY, shiPageFindEndY)
+        If IsNull(targetBossPicPath) = False And Dir.Exist(targetBossPicPath) <> 0 Then 
+            Delay 200
+            FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, targetBossPicPath, "000000", 0, 0.8, tempShiX, tempShiY
+            TracePrint "外部路径找到的boss坐标：",tempShiX,tempShiY
+        Else 
+            TracePrint "外部路径为空"
+        End If   	
+        If shiY>-1 And tempShiY>-1 And getNumberDiff(shiY, tempShiY) < itemHeight\2 Then 
+            TracePrint "外部路径找到的boss坐标和史莱姆坐标相同，删除外部图片"
+            shiX = -1
+            shiY = -1
+            Dir.Delete targetBossPicPath
+            Dir.Delete targetShiPicPath
+        End If
+    End If
+    TracePrint "当前页面史莱姆坐标：",shiX,shiY
+    Dim selfBossLocResult
+    TracePrint "当前页面找自己车"
+    If shiY = -1 And shiX = -1 Then 
+        selfBossLocResult = findSelfBoss(shiPageFindStartY, shiPageFindEndY)
         selfBossLocResult = Split (selfBossLocResult,",")
         selfBossLocResult(0) = CInt(selfBossLocResult(0))
         selfBossLocResult(1) = CInt(selfBossLocResult(1))
@@ -2772,27 +2806,42 @@ Function findShi(x1, y1, x2, y2)
         Else 
             TracePrint "当前页面没有自己的车"
         End If
-    End If	
+    End If
+    //找到史莱姆时，判断当前找到的boss坐标是不是史莱姆,不是就快速寻找下一个boss
+    If shiY > -1 And targetY > -1 And targetX > -1 Then 
+        If getNumberDiff(shiY, targetY - 100) > 50 Then 
+            targetY = -1
+            targetX = -1
+        End If
+    End If
+    
     // 要循环找3次，加上上面的一次，总共四次才能判断当前页面的3个血条是不是都是boss或者屎
     // 如果找到满足条件的，不再寻找，退出循环
     //如果没找到满足调整的，但是有找到血条，那么向下偏移，继续寻找
     //一个页面总共3个血条，如果都不满足条件，再找一次，总共4次，坐标置为-1
    
     While targetX = -1 And targetY = -1 And tempCount < 3
-        	tempCount = tempCount + 1
-        	Delay 500
-        	If  y1 + tempCount*itemHeight < srNormalBossBottomY Then 
-            	//识别度设置为0.8，防止干扰
-            	Delay 200
-            	FindPic x1, y1 + tempCount*itemHeight, x2, y2+tempCount*itemHeight, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
-            	If targetY > srNormalBossBottomY Then 
-                	targetX = -1
-                	targetY = -1
-            	End If
-            	TracePrint "boss血条xy",targetX,targetY	
-            Else 
-            	Exit While
+        tempCount = tempCount + 1
+        Delay 500
+        If  y1 + tempCount*itemHeight < srNormalBossBottomY Then 
+            //识别度设置为0.8，防止干扰
+            Delay 200
+            FindPic x1, y1 + tempCount*itemHeight, x2, y2+tempCount*itemHeight, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
+            If targetY > srNormalBossBottomY Then 
+                targetX = -1
+                targetY = -1
             End If
+            //找到史莱姆时，判断当前找到的boss坐标是不是史莱姆,不是就快速寻找下一个boss
+            If shiY > -1 And targetY > -1 And targetX > -1 Then 
+                If getNumberDiff(shiY, targetY - 100) > 50 Then 
+                    targetY = -1
+                    targetX = -1
+                End If
+            End If
+            TracePrint "boss血条xy",targetX,targetY	
+        Else 
+            Exit While
+        End If
     Wend
   
    
@@ -2801,12 +2850,12 @@ Function findShi(x1, y1, x2, y2)
         lastY = targetY
         findShiTimeCount = TickCount()
     	
-    	//找到boss时判断是否打过
-//            tag = isAssitTagInNormalMode(targetX, targetY)
-		tag= False
+        //找到boss时判断是否打过
+        //            tag = isAssitTagInNormalMode(targetX, targetY)
+        tag= False
         TracePrint "判断是否有援助标记",tag
-    	If Not tag Then 
-    		//识别屎的等级
+        If Not tag Then 
+            //识别屎的等级
             Delay 200
             UseDict(1)
             ocrchar =  Ocr(25, targetY - 109, 154, targetY, "FFFFFF", 0.9)
@@ -2815,76 +2864,78 @@ Function findShi(x1, y1, x2, y2)
 
             If IsNull(ocrchar) = False And ocrchar <> "" Then 
                 bosslv = CInt(ocrchar)
+            Else 
+            	bosslv = 0
             End If
             
             
             If bosslv = 30 Then 
-            	If shiY > -1 Then 
-            		If getNumberDiff(shiY, targetY - 100) < 50 Then 
-            			isShi = True
-            		Else 
-            			isShi = False
-            		End If
-            		If isShi Then 
-    					TracePrint "史莱姆快速找到到：",isShi,targetX,targetY
-    					Exit While
-    				Else 
-    					targetX = -1
-    					targetY = -1
-    				End If
-    			Else 
-    				If Not srMode Then 
-                		tempResult = True
-                		TracePrint "临时允许寻找40级boss"
-            		End If
-            		If raidTest Then 
-            			saveBossOrShiPic targetY, bosslv
-            		End If
+                If shiY > -1 Then 
+                    If getNumberDiff(shiY, targetY - 100) < 50 Then 
+                        isShi = True
+                    Else 
+                        isShi = False
+                    End If
+                    If isShi Then 
+                        TracePrint "史莱姆快速找到到：",isShi,targetX,targetY
+                        Exit While
+                    Else 
+                        targetX = -1
+                        targetY = -1
+                    End If
+                Else 
+                    If Not srMode Then 
+                        tempResult = True
+                        TracePrint "临时允许寻找40级boss"
+                    End If
+                    If raidTest Then 
+                        saveBossOrShiPic targetY, bosslv
+                    End If
           			
-            		TracePrint "isShi:",isShi    
-            		If selfBossLocResult(0) > -1 And selfBossLocResult(1) > -1 And targetY > selfBossLocResult(1) And getNumberDiff(selfBossLocResult(1), targetY) < itemHeight Then 
-            			SnapShot selfBossNamePath, 34,  y1 + tempCount*itemHeight, 315,  y1 + tempCount*itemHeight+20
-            			isSelf = True
-            		Else 
-            			isSelf = False
-            		End If
-            		TracePrint "自己车：",isSelf
-            	End If
-//            	Delay 200
-//            	FindPic 317 - 10, targetY - 100 - 10, 460 + 10, targetY - 10 + 10, "Attachment:shi_an.png", "000000", 0, 0.8, intX, intY
-//    			If intX > -1 And intY > -1 Then 
-//    				isShi = True
-//    			Else 
-//    				isShi = False
-//    			End If	
+                    TracePrint "isShi:",isShi    
+                    If selfBossLocResult(0) > -1 And selfBossLocResult(1) > -1 And targetY > selfBossLocResult(1) And getNumberDiff(selfBossLocResult(1), targetY) < itemHeight Then 
+                        SnapShot selfBossNamePath, 34,  y1 + tempCount*itemHeight, 315,  y1 + tempCount*itemHeight+20
+                        isSelf = True
+                    Else 
+                        isSelf = False
+                    End If
+                    TracePrint "自己车：",isSelf
+                End If
+                //            	Delay 200
+                //            	FindPic 317 - 10, targetY - 100 - 10, 460 + 10, targetY - 10 + 10, "Attachment:shi_an.png", "000000", 0, 0.8, intX, intY
+                //    			If intX > -1 And intY > -1 Then 
+                //    				isShi = True
+                //    			Else 
+                //    				isShi = False
+                //    			End If	
     			
-//    			If IsNull(targetShiPicPath) = False And Dir.Exist(targetShiPicPath) <> 0 Then 
-//    				Delay 200
-//    				FindPic 317 - 10, targetY - 100 - 10, 460 + 10, targetY - 10 + 10, targetShiPicPath, "000000", 0, 0.8, intX, intY
-//    				If intX > -1 And intY > -1 Then 
-//    					isShi = True
-//    				Else
-//    					isShi = False
-//    				End If
-//    				TracePrint "史莱姆快速查找结果22：",isShi
-//    				If isShi  Then 
-//    					Exit While
-//    				End If
-//    			End If
+                //    			If IsNull(targetShiPicPath) = False And Dir.Exist(targetShiPicPath) <> 0 Then 
+                //    				Delay 200
+                //    				FindPic 317 - 10, targetY - 100 - 10, 460 + 10, targetY - 10 + 10, targetShiPicPath, "000000", 0, 0.8, intX, intY
+                //    				If intX > -1 And intY > -1 Then 
+                //    					isShi = True
+                //    				Else
+                //    					isShi = False
+                //    				End If
+                //    				TracePrint "史莱姆快速查找结果22：",isShi
+                //    				If isShi  Then 
+                //    					Exit While
+                //    				End If
+                //    			End If
             End If
         Else 
             targetX = -1
             targetY = -1
-    	End If
+        End If
       
         
        
          
         findShiTimeCount = TickCount()-findShiTimeCount
-    	TracePrint "识别屎时间：",findShiTimeCount
+        TracePrint "识别屎时间：",findShiTimeCount
         
 			
-		tempCount = tempCount + 1
+        tempCount = tempCount + 1
         If bosslv = 30 And targetX > -1 And targetY > -1 And (tempResult Or isShi) And Not isSelf Then 
             TracePrint "普通模式找到boss或者屎XY：", targetX,targetY
             Exit While
@@ -2893,25 +2944,25 @@ Function findShi(x1, y1, x2, y2)
             targetY = -1
             While targetX = -1 And targetY = -1 And tempCount < 3
                 If y1 + tempCount * itemHeight < srNormalBossBottomY Then 
-                	Delay 200
-                	//识别度设置为0.8，防止干扰
-                	FindPic x1, y1 + tempCount*itemHeight, x2, y2+tempCount*itemHeight, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
-                	If targetY > srNormalBossBottomY Then 
-                		targetX = -1
-                		targetY = -1
-                	End If
-                	If targetX = -1 And targetY = -1 Then 
-                		tempCount = tempCount +1
-                	End If
-                	TracePrint "boss血条xy",targetX,targetY	
+                    Delay 200
+                    //识别度设置为0.8，防止干扰
+                    FindPic x1, y1 + tempCount*itemHeight, x2, y2+tempCount*itemHeight, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
+                    If targetY > srNormalBossBottomY Then 
+                        targetX = -1
+                        targetY = -1
+                    End If
+                    If targetX = -1 And targetY = -1 Then 
+                        tempCount = tempCount +1
+                    End If
+                    TracePrint "boss血条xy",targetX,targetY	
                 Else 
-                	Exit While
+                    Exit While
                 End If
                 
             Wend
            
         End If
-	Wend
+    Wend
     
     If isShi And recordShi Then 
         Delay 500
@@ -2930,82 +2981,83 @@ End Function
 // 返回0表示boss，返回1表示史莱姆,返回-1表示未找到
 //只找第一页的目标，滑动之后不在识别（防止滑动误差产生的误导）
 Function saveBossOrShiPic(y, bosslv)
-	If bosslv <> 30 Then 
-    	Exit Function  
-   	End If
-   	If IsNull(targetBossPicPath) = False And IsNull(targetShiPicPath) = False And Dir.Exist(targetBossPicPath) <>0 And Dir.Exist(targetShiPicPath) <> 0  Then 
+    If bosslv <> 30 Then 
+        Exit Function  
+    End If
+    If IsNull(targetBossPicPath) = False And IsNull(targetShiPicPath) = False And Dir.Exist(targetBossPicPath) <>0 And Dir.Exist(targetShiPicPath) <> 0  Then 
         Exit Function  	
     End If 
-	Dim picX = -1,picY = -1
-	Dim catchStartX=317,catchStartY = y - 100,catchEndX = 460,catchEndY =  y-10
+    Dim picX = -1,picY = -1
+    Dim catchStartX=317,catchStartY = y - 100,catchEndX = 460,catchEndY =  y-10
     If Dir.Exist(bossPicPath) = 0 Then 	
         SnapShot bossPicPath, catchStartX, catchStartY, catchEndX,catchEndY
         TracePrint "boss图片不存在，采集boss图片"
         bossPicCount = bossPicCount + 1
     Else 
-    	Delay 200
-        FindPic catchStartX-50,catchStartY-50,catchEndX+50,catchEndY+50, bossPicPath, "000000", 0, 0.8, picX, picY
+        Delay 200
+        FindPic catchStartX - 50, catchStartY - 50, catchEndX + 50, catchEndY + 50, bossPicPath, "000000", 0, 0.8, picX, picY
+        Delay 200
         TracePrint "boss图片存在，寻找boss坐标XY,",picX,picY
         If picX > -1 And picY > -1 Then 	
             bossPicCount = bossPicCount + 1
             TracePrint "boss图片存在,找到boss，数量加1"
-//            		saveBossOrShiPic = 0
+            //            		saveBossOrShiPic = 0
         ElseIf Dir.Exist(shiPicPath) = 0 Then 
             SnapShot shiPicPath, catchStartX,catchStartY, catchEndX, catchEndY
             shiPicCount = shiPicCount + 1
             TracePrint "boss图片存在，没找到boss，史莱姆图片不存在，采集史莱姆图片"
             
-//            			saveBossOrShiPic = -1
+            //            			saveBossOrShiPic = -1
         Else 
-        	Delay 200
-        	FindPic catchStartX-50,catchStartY-50, catchEndX+50, catchEndY+50, shiPicPath, "000000", 0, 0.8, picX, picY
+            Delay 200
+            FindPic catchStartX-50,catchStartY-50, catchEndX+50, catchEndY+50, shiPicPath, "000000", 0, 0.8, picX, picY
             If picX > -1 And picY > -1 Then 
-            	shiPicCount = shiPicCount + 1	
-            	TracePrint "boss图片存在，没找到boss,史莱姆图片存在，寻找史莱姆坐标,",picX,picY
-//            				saveBossOrShiPic = 1
+                shiPicCount = shiPicCount + 1	
+                TracePrint "boss图片存在，没找到boss,史莱姆图片存在，寻找史莱姆坐标,",picX,picY
+                //            				saveBossOrShiPic = 1
             Else 
-            	TracePrint "boss图片存在，没找到boss，史莱姆图片也存在，没找到史莱姆，史莱姆图片出错,重置两张图片"
-            	Dir.Delete(bossPicPath) And Dir.Delete(shiPicPath)
-//            				saveBossOrShiPic = -1
+                TracePrint "boss图片存在，没找到boss，史莱姆图片也存在，没找到史莱姆，史莱姆图片出错,重置两张图片"
+                Dir.Delete(bossPicPath) And Dir.Delete(shiPicPath)
+                //            				saveBossOrShiPic = -1
             End If
         End If
     End If
 End Function
 
 Function findSelfBoss(startY,endY)
-	Dim startX = 34,endX = 315,picFind=False,findResult
-	Dim intX,intY
-	If Dir.Exist(selfBossNamePath) = 1 Then 
-		Delay 200
-		FindPic startX, startY, endX, endY, selfBossNamePath, "000000", 0, 0.8, intX, intY
-		If intX > -1 And intY > -1 Then 
-			picFind = True
-		Else 
-			picFind = False
-		End If
-	End If
-	If Not picFind Then 
-		FindMultiColor 8,startY,1069,endY,"1F22F2","-1|181|060BBB,5|194|1518BB,152|-45|040BDB,665|-46|0208C9,993|-46|0308C9,1039|-38|1618BB,1044|74|080ED7,1045|183|04099C",0,0.9,intX,intY
-		If intX = -1 And intY = -1 Then 
-			FindMultiColor 8,startY,1069,endY,"2C1E6A","-9|29|24247C,-9|138|23257B,-6|232|211A64,1026|237|261D67,1036|210|050855,1037|60|0E1154,1024|-2|17175B,540|-5|04085B",0,0.9,intX,intY	
-		End If
-		If intX > -1 And intY > -1 Then 
+    Dim startX = 34,endX = 315,picFind=False,findResult
+    Dim intX,intY
+    If Dir.Exist(selfBossNamePath) = 1 Then 
+        Delay 200
+        FindPic startX, startY, endX, endY, selfBossNamePath, "000000", 0, 0.8, intX, intY
+        If intX > -1 And intY > -1 Then 
+            picFind = True
+        Else 
+            picFind = False
+        End If
+    End If
+    If Not picFind Then 
+        FindMultiColor 8,startY,1069,endY,"1F22F2","-1|181|060BBB,5|194|1518BB,152|-45|040BDB,665|-46|0208C9,993|-46|0308C9,1039|-38|1618BB,1044|74|080ED7,1045|183|04099C",0,0.9,intX,intY
+        If intX = -1 And intY = -1 Then 
+            FindMultiColor 8,startY,1069,endY,"2C1E6A","-9|29|24247C,-9|138|23257B,-6|232|211A64,1026|237|261D67,1036|210|050855,1037|60|0E1154,1024|-2|17175B,540|-5|04085B",0,0.9,intX,intY	
+        End If
+        If intX > -1 And intY > -1 Then 
 			
-			findResult = intX
-			findResult = findResult & ","
-			findResult = findResult & intY
-			TracePrint "识色自己boss:",findResult
-		Else 
-			findResult = "-1,-1"
-			TracePrint "不是自己boss:",findResult
-		End If
-	Else 	
-		findResult = intX
-		findResult = findResult & ","
-		findResult = findResult & intY
-		TracePrint "识图自己boss:",findResult
-	End If
-	findSelfBoss = findResult
+            findResult = intX
+            findResult = findResult & ","
+            findResult = findResult & intY
+            TracePrint "识色自己boss:",findResult
+        Else 
+            findResult = "-1,-1"
+            TracePrint "不是自己boss:",findResult
+        End If
+    Else 	
+        findResult = intX
+        findResult = findResult & ","
+        findResult = findResult & intY
+        TracePrint "识图自己boss:",findResult
+    End If
+    findSelfBoss = findResult
 	
 End Function
 
@@ -3018,13 +3070,13 @@ Function daRaid()
     Dim enoughTicket = True,result = True
     While daX = -1 And daY = -1 And count <5
         //判断血量
-//        result = canDa()
+        //        result = canDa()
         //判断 剩余票数是否还够
-//        enoughTicket = isRaidTicketEnough()		
+        //        enoughTicket = isRaidTicketEnough()		
         //找打按钮
         Delay 200
-		FindMultiColor 764,532,1051,783,"00D2FC","1|5|005FE0,10|3|000019,4|16|00001A,18|13|00C7FF,22|22|0066E0,28|29|000016,29|36|00B7FF,35|31|005AE0,47|31|00001A",0,0.9,daX,daY
-//        FindPic 0, 0, 0, 0, "Attachment:test555.png", "000000", 0, 0.5, daX, daY
+        FindMultiColor 764,532,1051,783,"00D2FC","1|5|005FE0,10|3|000019,4|16|00001A,18|13|00C7FF,22|22|0066E0,28|29|000016,29|36|00B7FF,35|31|005AE0,47|31|00001A",0,0.9,daX,daY
+        //        FindPic 0, 0, 0, 0, "Attachment:test555.png", "000000", 0, 0.5, daX, daY
         Delay 200
         FindPic 811, 396, 1066, 521, "Attachment:doubleda.png", "000000", 0, 0.8, doubledaX, doubledaY
         Delay 200
@@ -3046,10 +3098,10 @@ Function daRaid()
         TracePrint "循环点打按钮直到界面没有打按钮为止"
         //循环点打按钮直到界面没有打按钮为止
         While daX > -1 And daY > -1
-        	//战斗开始界面 打的坐标是固定的，写死就可以，只需要判断打按钮存不存在
+            //战斗开始界面 打的坐标是固定的，写死就可以，只需要判断打按钮存不存在
             Touch 938,690, 100
             Delay 1000
-           	FindMultiColor 764,532,1051,783,"00D2FC","1|5|005FE0,10|3|000019,4|16|00001A,18|13|00C7FF,22|22|0066E0,28|29|000016,29|36|00B7FF,35|31|005AE0,47|31|00001A",0,0.9,daX,daY
+            FindMultiColor 764,532,1051,783,"00D2FC","1|5|005FE0,10|3|000019,4|16|00001A,18|13|00C7FF,22|22|0066E0,28|29|000016,29|36|00B7FF,35|31|005AE0,47|31|00001A",0,0.9,daX,daY
         Wend        
         daRaid = True
     Else 
@@ -3080,6 +3132,8 @@ End Function
 
 Function dawan()
     Dim tempX =-1,tempY =-1,count=0,pauseCount=0
+    Dim tempResult =False
+    Dim startTime = TickCount()
     
     While tempX = -1 And tempY = -1 And count< 200
         TracePrint "判断是否打完中"
@@ -3093,38 +3147,45 @@ Function dawan()
         //进入战斗后提示打完
         Delay 500
         FindPic 345, 999, 736, 1143, "Attachment:test888.png", "000000", 0, 0.8, tempX, tempY
-       	TracePrint "test888", tempX, tempY
+        TracePrint "test888", tempX, tempY
 		
         If tempX > -1 And tempY > -1 Then
             tempX =tempX +50
             tempY = tempY + 50            
         ElseIf tempX = -1 And tempY = -1 Then
-        	Delay 500
-        	UseDict(0)
+            Delay 500
+            UseDict(0)
             FindStr 460, 1483, 644, 1566, "rank", "FFFFFF|DADDE1", 0.9, tempX, tempY
-           TracePrint "rank",tempX, tempY
+            TracePrint "rank",tempX, tempY
         End If
         
         If tempX = -1 And tempY = -1 Then 
-        	Delay 500
-           	FindMultiColor 874, 1256, 1079, 1454, "009DFF", "-39|-3|00A1FF,10|78|008FFF,-91|12|181515,-103|36|00D8FF,-70|38|494241,-77|85|4F4645,-79|105|00C0FF,-78|129|191716", 0, 0.9, tempX, tempY
-           	TracePrint "test666",tempX,tempY
+            Delay 500          
+            FindMultiColor 874, 1256, 1079, 1454, "009DFF", "-39|-3|00A1FF,10|78|008FFF,-91|12|181515,-103|36|00D8FF,-70|38|494241,-77|85|4F4645,-79|105|00C0FF,-78|129|191716", 0, 0.9, tempX, tempY
+  			If tempX > -1 And tempY > -1 Then 
+  				tempResult = findMultiColorResult_static(874, 1256, 1079, 1454, "009DFF", "-39|-3|00A1FF,10|78|008FFF,-91|12|181515,-103|36|00D8FF,-70|38|494241,-77|85|4F4645,-79|105|00C0FF,-78|129|191716")
+  				If Not tempResult Then 
+  					tempX = -1
+  					tempY = -1
+  				End If
+  			End If
+            TracePrint "test666",tempX,tempY
             If tempX > -1 And tempY > -1 Then 
-            	tempX = 900
-            	tempY = 1300
-            	If isShi Then 
-            		totalShiCount = totalShiCount-1	
-            	End If
+                tempX = 900
+                tempY = 1300
+                If isShi Then 
+                    totalShiCount = totalShiCount-1	
+                End If
             
             End If
         End If
         
         //打屎暂停一分钟
         If tempX = -1 And tempY = -1 And pauseCount = 0 And isShi Then 
-        	Delay 500
-        	FindMultiColor 525, 1407, 922, 1839, "00E0FE", "-18|5|00DCFE,-24|39|00B0F5,-15|78|007DEB,89|82|007AEA,219|5|00DCFE,221|75|0080EB,203|13|0082EC,-3|64|00D5FC,91|14|0083EC", 0, 0.9, tempX, tempY
+            Delay 500
+            FindMultiColor 525, 1407, 922, 1839, "00E0FE", "-18|5|00DCFE,-24|39|00B0F5,-15|78|007DEB,89|82|007AEA,219|5|00DCFE,221|75|0080EB,203|13|0082EC,-3|64|00D5FC,91|14|0083EC", 0, 0.9, tempX, tempY
         	
-//            FindPic 546,1656,853,1773,"Attachment:pausebattle.png","000000",0,0.8,tempX,tempY
+            //            FindPic 546,1656,853,1773,"Attachment:pausebattle.png","000000",0,0.8,tempX,tempY
             If tempX = -1 And tempY = -1 Then 
                 KeyPress "Back"
                 TracePrint "按暂停"
@@ -3145,38 +3206,38 @@ Function dawan()
         Delay 1000
     Wend
     
-    TracePrint "战斗花费时间：",count*2,"秒"
+    TracePrint "战斗花费时间：",TickCount()-startTime,"秒"
     
     loading 
     
     bossKilled = False
     
     If count = 200 Then 
-    	FindPic 345, 999, 736, 1143, "Attachment:test888.png", "000000", 0, 0.8, tempX, tempY
+        FindPic 345, 999, 736, 1143, "Attachment:test888.png", "000000", 0, 0.8, tempX, tempY
        
 		
         If tempX > -1 And tempY > -1 Then
             tempX =tempX +50
             tempY = tempY + 50            
         ElseIf tempX = -1 And tempY = -1 Then
-        	Delay 500
-        	UseDict(0)
+            Delay 500
+            UseDict(0)
             FindStr 460, 1483, 644, 1566, "rank", "FFFFFF|DADDE1", 0.9, tempX, tempY
             If tempX > -1 And tempY > -1 Then 
-            	bossKilled = True
+                bossKilled = True
             End If
         End If
         
         If tempX = -1 And tempY = -1 Then 
-        	Delay 500
-           	FindMultiColor 874,1256,1079,1454,"009DFF","-39|-3|00A1FF,10|78|008FFF,-91|12|181515,-103|36|00D8FF,-70|38|494241,-77|85|4F4645,-79|105|00C0FF,-78|129|191716",0,0.9,tempX,tempY
-           	TracePrint "test666",tempX,tempY
+            Delay 500
+            FindMultiColor 874,1256,1079,1454,"009DFF","-39|-3|00A1FF,10|78|008FFF,-91|12|181515,-103|36|00D8FF,-70|38|494241,-77|85|4F4645,-79|105|00C0FF,-78|129|191716",0,0.9,tempX,tempY
+            TracePrint "test666",tempX,tempY
             If tempX > -1 And tempY > -1 Then 
-            	tempX = 900
-            	tempY = 1300
-            	If isShi Then 
-            		totalShiCount = totalShiCount-1	
-            	End If
+                tempX = 900
+                tempY = 1300
+                If isShi Then 
+                    totalShiCount = totalShiCount-1	
+                End If
             
             End If
            
@@ -3191,7 +3252,8 @@ Function dawan()
  
     
     If tempX = -1 And tempY = -1 And appIsSuspend() Then 
-    	backToHome
+        backToHome 
+        Exit Function
     End If
     
     While tempX > -1 And tempY > -1 And count<10
@@ -3205,28 +3267,28 @@ Function dawan()
             tempX =tempX +50
             tempY = tempY + 50
         ElseIf tempX = -1 And tempY = -1 Then
-        	Delay 200
-        	UseDict(0)
+            Delay 200
+            UseDict(0)
             FindStr 460, 1483, 644, 1566, "rank", "FFFFFF|DADDE1", 0.9, tempX, tempY
             If tempX > -1 And tempY > -1 Then 
-            	bossKilled = True
+                bossKilled = True
             End If
         End If
         	
         If tempX = -1 And tempY = -1 Then 
-        	Delay 200
+            Delay 200
             FindMultiColor 874, 1256, 1079, 1454, "009DFF", "-39|-3|00A1FF,10|78|008FFF,-91|12|181515,-103|36|00D8FF,-70|38|494241,-77|85|4F4645,-79|105|00C0FF,-78|129|191716", 0, 0.9, tempX, tempY
             TracePrint "test666",tempX,tempY
             If tempX > -1 And tempY > -1 Then 
-            	tempX = 900
-            	tempY = 1300
+                tempX = 900
+                tempY = 1300
             End If
         End If
         count = count +1
         Delay 1000
     Wend
     If count >= 10 Then 
-    	reset = True
+        reset = True
     End If
     TracePrint "返回成功"
     //    If tempX > -1 And tempY > -1 Then
@@ -3301,100 +3363,100 @@ End Function
 //否按钮
 Function noBtn()
     TracePrint "找弹框否按钮"
-   noBtn = findAndClickBtn_width_260_height_90(0,screenY\4,screenX,screenY*3\4)
+    noBtn = findAndClickBtn_width_260_height_90(0,screenY\4,screenX,screenY*3\4)
 	
 End Function
 
 Function findAndClickBtn_width_260_height_90_static(x1, y1, x2, y2)
-	Dim intX = -1,intY=-1,count = 0
-	While intX = -1 And intY = -1 And count < 10
-		Delay 500
-		count = count + 1
+    Dim intX = -1,intY=-1,count = 0
+    While intX = -1 And intY = -1 And count < 10
+        Delay 500
+        count = count + 1
 		
-		FindMultiColor x1,y1,x2,y2,"00E1FF","11|11|0080EB,-10|29|00BEF8,-11|46|0099F0,15|26|0094EF,13|45|00C4F9,48|74|007AEA,228|30|00BCF7,226|65|0082EC,187|25|0091EF",0,0.9,intX,intY
-		TracePrint "黄色按钮坐标：",intX,intY
-	Wend
-	If count = 10 Then 
-		findAndClickBtn_width_260_height_90_static = False
-		Exit Function
-	End If
-	count = 0
-	While intX > -1 And intY > -1 And count < 5
-		Delay 500
-		count = count + 1
-		FindMultiColor x1, y1, x2, y2, "00E1FF", "11|11|0080EB,-10|29|00BEF8,-11|46|0099F0,15|26|0094EF,13|45|00C4F9,48|74|007AEA,228|30|00BCF7,226|65|0082EC,187|25|0091EF", 0, 0.9, intX, intY
-		TracePrint "黄色按钮坐标：",intX,intY
-	Wend
-	//持续寻找5次，判断当前状态是否是静态，而不是动态误判
-	If count < 5 Then 
-		TracePrint "黄色按钮没有连续5次识别成功"
-		findAndClickBtn_width_260_height_90_static = False
-		Exit Function
-	End If
-	count = 0
-	//点击按钮直到消失
-	While intX > -1 And intY > -1 And count < 5
-		Touch intX + 50, intY + 30, 200
-		Delay 500
-		count = count + 1
-		FindMultiColor x1,y1,x2,y2,"00E1FF","11|11|0080EB,-10|29|00BEF8,-11|46|0099F0,15|26|0094EF,13|45|00C4F9,48|74|007AEA,228|30|00BCF7,226|65|0082EC,187|25|0091EF",0,0.9,intX,intY
-	Wend
-	If count = 5 Then 
-		findAndClickBtn_width_260_height_90_static = False
-	Else 
-		findAndClickBtn_width_260_height_90_static = True
-	End If
+        FindMultiColor x1,y1,x2,y2,"00E1FF","11|11|0080EB,-10|29|00BEF8,-11|46|0099F0,15|26|0094EF,13|45|00C4F9,48|74|007AEA,228|30|00BCF7,226|65|0082EC,187|25|0091EF",0,0.9,intX,intY
+        TracePrint "黄色按钮坐标：",intX,intY
+    Wend
+    If count = 10 Then 
+        findAndClickBtn_width_260_height_90_static = False
+        Exit Function
+    End If
+    count = 0
+    While intX > -1 And intY > -1 And count < 5
+        Delay 500
+        count = count + 1
+        FindMultiColor x1, y1, x2, y2, "00E1FF", "11|11|0080EB,-10|29|00BEF8,-11|46|0099F0,15|26|0094EF,13|45|00C4F9,48|74|007AEA,228|30|00BCF7,226|65|0082EC,187|25|0091EF", 0, 0.9, intX, intY
+        TracePrint "黄色按钮坐标：",intX,intY
+    Wend
+    //持续寻找5次，判断当前状态是否是静态，而不是动态误判
+    If count < 5 Then 
+        TracePrint "黄色按钮没有连续5次识别成功"
+        findAndClickBtn_width_260_height_90_static = False
+        Exit Function
+    End If
+    count = 0
+    //点击按钮直到消失
+    While intX > -1 And intY > -1 And count < 5
+        Touch intX + 50, intY + 30, 200
+        Delay 500
+        count = count + 1
+        FindMultiColor x1,y1,x2,y2,"00E1FF","11|11|0080EB,-10|29|00BEF8,-11|46|0099F0,15|26|0094EF,13|45|00C4F9,48|74|007AEA,228|30|00BCF7,226|65|0082EC,187|25|0091EF",0,0.9,intX,intY
+    Wend
+    If count = 5 Then 
+        findAndClickBtn_width_260_height_90_static = False
+    Else 
+        findAndClickBtn_width_260_height_90_static = True
+    End If
 End Function
 
 //识别并点击宽为260像素的黄色渐变按钮-白色确认
 Function findAndClickBtn_width_260_height_90(x1,y1,x2,y2)
-	Dim intX = -1,intY=-1,count = 0
-	While intX = -1 And intY = -1 And count < 10
-		Delay 500
-		count = count + 1
+    Dim intX = -1,intY=-1,count = 0
+    While intX = -1 And intY = -1 And count < 10
+        Delay 500
+        count = count + 1
 		
-		FindMultiColor x1,y1,x2,y2,"00E1FF","11|11|0080EB,-10|29|00BEF8,-11|46|0099F0,15|26|0094EF,13|45|00C4F9,48|74|007AEA,228|30|00BCF7,226|65|0082EC,187|25|0091EF",0,0.9,intX,intY
-		TracePrint "黄色按钮坐标：",intX,intY
-	Wend
-	If count = 10 Then 
-		findAndClickBtn_width_260_height_90 = False
-		Exit Function
-	End If
-	count = 0
-	While intX > -1 And intY > -1 And count < 5
-		Touch intX + 50, intY + 30, 200
-		Delay 500
-		count = count + 1
-		FindMultiColor x1,y1,x2,y2,"00E1FF","11|11|0080EB,-10|29|00BEF8,-11|46|0099F0,15|26|0094EF,13|45|00C4F9,48|74|007AEA,228|30|00BCF7,226|65|0082EC,187|25|0091EF",0,0.9,intX,intY
-	Wend
-	If count = 5 Then 
-		findAndClickBtn_width_260_height_90 = False
-	Else 
-		findAndClickBtn_width_260_height_90 = True
-	End If
+        FindMultiColor x1,y1,x2,y2,"00E1FF","11|11|0080EB,-10|29|00BEF8,-11|46|0099F0,15|26|0094EF,13|45|00C4F9,48|74|007AEA,228|30|00BCF7,226|65|0082EC,187|25|0091EF",0,0.9,intX,intY
+        TracePrint "黄色按钮坐标：",intX,intY
+    Wend
+    If count = 10 Then 
+        findAndClickBtn_width_260_height_90 = False
+        Exit Function
+    End If
+    count = 0
+    While intX > -1 And intY > -1 And count < 5
+        Touch intX + 50, intY + 30, 200
+        Delay 500
+        count = count + 1
+        FindMultiColor x1,y1,x2,y2,"00E1FF","11|11|0080EB,-10|29|00BEF8,-11|46|0099F0,15|26|0094EF,13|45|00C4F9,48|74|007AEA,228|30|00BCF7,226|65|0082EC,187|25|0091EF",0,0.9,intX,intY
+    Wend
+    If count = 5 Then 
+        findAndClickBtn_width_260_height_90 = False
+    Else 
+        findAndClickBtn_width_260_height_90 = True
+    End If
 	
 End Function
 
 Function findAndClickBtn_width_260_height_80(x1, y1, x2, y2)
-	findAndClickBtn_width_260_height_80 = findAndClickBtn_width_260_height_90(x1, y1, x2, y2)
+    findAndClickBtn_width_260_height_80 = findAndClickBtn_width_260_height_90(x1, y1, x2, y2)
 End Function
 //
 //是按钮
 Function yesBtn()
-	yesBtn = findAndClickBtn_width_260_height_90(screenX\2,screenY\4,screenX,screenY*3\4)
+    yesBtn = findAndClickBtn_width_260_height_90(screenX\2,screenY\4,screenX,screenY*3\4)
 
-//	yesBtn = findAndClickBtn_width_260_height_90(0,0,0,0)
-//    TracePrint "找弹框是按钮"
-//    Dim tempX =-1,tempY =-1
-//    Delay 200
-//    FindPic 33,616,1045,1255,"Attachment:yes.png","000000",0,0.5,tempX,tempY
-//    If tempX > -1 And tempY > -1 Then 
-//        TracePrint "点击是按钮"
-//        Touch tempX + 50, tempY + 50, 100
-//        yesBtn = True
-//    Else 
-//     	yesBtn = False
-//    End If
+    //	yesBtn = findAndClickBtn_width_260_height_90(0,0,0,0)
+    //    TracePrint "找弹框是按钮"
+    //    Dim tempX =-1,tempY =-1
+    //    Delay 200
+    //    FindPic 33,616,1045,1255,"Attachment:yes.png","000000",0,0.5,tempX,tempY
+    //    If tempX > -1 And tempY > -1 Then 
+    //        TracePrint "点击是按钮"
+    //        Touch tempX + 50, tempY + 50, 100
+    //        yesBtn = True
+    //    Else 
+    //     	yesBtn = False
+    //    End If
 End Function
 
 Function closeBtn()
@@ -3448,7 +3510,7 @@ Function clickWhiteQueRen()
     Dim tempX =-1,tempY =-1
     Dim count = 0
     While tempX = -1 And tempY = -1 And count < 3
-    	Delay 200
+        Delay 200
         FindPic 0, 1475, screenX, screenY, "Attachment:whitequeren.png|Attachment:whitequeren_2.png|Attachment:whitequeren_3.png", "000000", 0, 0.6, tempX, tempY
         count =count+1
         Delay 1000
@@ -3458,7 +3520,7 @@ Function clickWhiteQueRen()
     Wend
     TracePrint "找到确认按钮"
     If tempX = -1 And tempY = -1 Then 
-    	clickWhiteQueRen = False
+        clickWhiteQueRen = False
     End If
     While tempX > -1 And tempY > -1 
         tempX =tempX +50
@@ -3467,7 +3529,7 @@ Function clickWhiteQueRen()
         Touch tempX, tempY, 100
         Delay 1000
         FindPic  0, 1475, screenX, screenY, "Attachment:whitequeren.png|Attachment:whitequeren_2.png|Attachment:whitequeren_3.png", "000000", 0, 0.9, tempX, tempY
-    	clickWhiteQueRen = True
+        clickWhiteQueRen = True
     Wend
 End Function
 
@@ -3478,12 +3540,12 @@ Function testFindShi()
     lastY = 0
     count = 0
     ticketNum = -1
-//    srMode = False
-//    clickNormalRefresh
+    //    srMode = False
+    //    clickNormalRefresh
     findshiInNormalMode 
     Delay 1000
-     clickNormalRefresh 
-     findshiInNormalMode
+    clickNormalRefresh 
+    findshiInNormalMode
    	
     
 End Function
@@ -3494,6 +3556,10 @@ Function findshiInNormalMode()
     count = 0
     result = True
     startY = normalBossStartY
+    
+    targetX = -1
+    targetY = -1
+    
 
     isShi = False
     bossPicCount = 0
@@ -3502,15 +3568,33 @@ Function findshiInNormalMode()
     Dim tempShiPicCount = shiPicCount
     Dim slideCount =3
     Dim tempTimeCount = TickCount()
+    
+    // 极速模式开启时，如果没有史莱姆，直接寻找boss
+    If raidTest Then 
+        If fastmode And IsNull(targetBossPicPath) = False And Dir.Exist(targetBossPicPath) <> 0 Then 
+            srMode = False
+        End If
+    Else 
+        If fastmode Then 
+            srMode = False
+        End If
+    End If
+    TracePrint "极速模式开启结果-srmode",srMode
+    
+   
+    
     //在当前界面寻找boss
-    While targetX = -1 And targetY = -1 And count < 10 And result = True
+    While targetX = -1 And targetY = -1 And count < 3 And result = True
         TracePrint "在当前界面找boss","寻找起点Y",startY
-		KeepCapture 
-		If count = 0 Then 
-			autoGetAward
-		End If
-		findShi normalBossStartX, startY, screenX, normalBossStartENDY
+        KeepCapture 
+        If count = 0 Then 
+            autoGetAward
+        End If
+        findShi normalBossStartX, startY, screenX, normalBossStartENDY
         TracePrint "找boss结果XY",targetX,targetY
+        If targetX = -1 And targetY = -1 Then 
+        	
+        End If
         result = findBOSS2()
         TracePrint "没到底:",result	
        
@@ -3539,30 +3623,30 @@ Function findshiInNormalMode()
     Wend
    
     If IsNull(targetBossPicPath) = True And IsNull(targetShiPicPath) = True Then 
-    	tempBossPicCount = bossPicCount - tempBossPicCount
-    	tempShiPicCount = shiPicCount - tempShiPicCount
-    	TracePrint "tempBossPicCount:",tempBossPicCount
-    	TracePrint "tempShiPicCount:",tempShiPicCount
-    	If tempBossPicCount > tempShiPicCount +2 Then 
-    		targetBossPicPath = bossPicPath
-    		targetShiPicPath = shiPicPath
-    	ElseIf tempShiPicCount > tempBossPicCount + 2 Then
-    		targetBossPicPath = shiPicPath
-    		targetShiPicPath = bossPicPath
-    	Else 
-    		targetBossPicPath = Null
-    		targetShiPicPath = Null
-    	End If
+        tempBossPicCount = bossPicCount - tempBossPicCount
+        tempShiPicCount = shiPicCount - tempShiPicCount
+        TracePrint "tempBossPicCount:",tempBossPicCount
+        TracePrint "tempShiPicCount:",tempShiPicCount
+        If tempBossPicCount > tempShiPicCount +2 Then 
+            targetBossPicPath = bossPicPath
+            targetShiPicPath = shiPicPath
+        ElseIf tempShiPicCount > tempBossPicCount + 2 Then
+            targetBossPicPath = shiPicPath
+            targetShiPicPath = bossPicPath
+        Else 
+            targetBossPicPath = Null
+            targetShiPicPath = Null
+        End If
     	
     End If
     TracePrint "targetBossPicPath",targetBossPicPath
     TracePrint "targetShiPicPath",targetShiPicPath
 
-//    If Dir.Exist(targetBossPicPath) = 0 Or Dir.Exist(targetShiPicPath) = 0 Then 
-//    	targetBossPicPath = ""
-//    	targetShiPicPath = ""
-//    	TracePrint "boss或者史莱姆的采集图片不存在，重置targetBossPicPath和targetShiPicPath"
-//    End If
+    //    If Dir.Exist(targetBossPicPath) = 0 Or Dir.Exist(targetShiPicPath) = 0 Then 
+    //    	targetBossPicPath = ""
+    //    	targetShiPicPath = ""
+    //    	TracePrint "boss或者史莱姆的采集图片不存在，重置targetBossPicPath和targetShiPicPath"
+    //    End If
    
     TracePrint "循环结束后boss结果XY",targetX,targetY
 
@@ -3578,98 +3662,98 @@ Function baiguihong()
 End Function
 
 Function isBaiGuiMain()
-	Dim color1,color2
-	color1 = CmpColor(97, 481, "26FFFF-040000", 1)//左边灯笼
-	color2 = CmpColor(986,485, "26FFFF-040000", 1)//右边灯笼
-	If color1 = 0 And color2 =0 Then 
-		isBaiGuiMain = True
-	Else 
-		isBaiGuiMain = False
-	End If
+    Dim color1,color2
+    color1 = CmpColor(97, 481, "26FFFF-040000", 1)//左边灯笼
+    color2 = CmpColor(986,485, "26FFFF-040000", 1)//右边灯笼
+    If color1 = 0 And color2 =0 Then 
+        isBaiGuiMain = True
+    Else 
+        isBaiGuiMain = False
+    End If
 End Function
 
 
 //抓取颜色
 Function captureColor()
-	Dim color,count=0
-	While count < 20
-		color = GetPixelColor( 97,481)
-		TracePrint "颜色 ",color
-		count = count+1
-	Wend
+    Dim color,count=0
+    While count < 20
+        color = GetPixelColor( 97,481)
+        TracePrint "颜色 ",color
+        count = count+1
+    Wend
 	
 	
 End Function
 
 Function matchColor()
-	Dim color,count=0
-	While count < 20
-		color = CmpColor(986,485, "26FFFF-040000", 1)
-		Delay 200
-		TracePrint "颜色 ",color
-		count = count+1
-	Wend
+    Dim color,count=0
+    While count < 20
+        color = CmpColor(986,485, "26FFFF-040000", 1)
+        Delay 200
+        TracePrint "颜色 ",color
+        count = count+1
+    Wend
 End Function
 
 Function autoGetAward()
-	Dim startTime = TickCount()
-		Dim intX,intY
+    Dim startTime = TickCount()
+    Dim intX,intY
 	
-	Dim result = findMultiColorResult_static(400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
-//	FindMultiColor 400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266",0,0.9,intX,intY
-//	If intX > -1 And intY > -1 Then
-//		TracePrint intX
-//		TracePrint intY
-//	End If
-	//识别是否能领奖
-	//点击领奖
-	//领奖结束
+    Dim result = findMultiColorResult_static(400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
+    //	FindMultiColor 400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266",0,0.9,intX,intY
+    //	If intX > -1 And intY > -1 Then
+    //		TracePrint intX
+    //		TracePrint intY
+    //	End If
+    //识别是否能领奖
+    //点击领奖
+    //领奖结束
 	
-	autoGetAward = result
-	While result
-		bossKilled = False
-		//领奖状态下，如果识别到sr，或者超时,就算领奖完成
-		FindMultiColorAndClick2Dismiss( 400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
+    autoGetAward = result
+    While result
+        bossKilled = False
+        //领奖状态下，如果识别到sr，或者超时,就算领奖完成
+        FindMultiColorAndClick2Dismiss( 400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
 		
-		Delay 200		
-		If isSR() Then 
-			Exit While
-		ElseIf TickCount() - startTime > 5 * 60 * 1000 Then
-		//领奖状态下，超时5分钟，结束领奖
-			Exit While
-		End If
+        Delay 200		
+        If isSR() Then 
+            Exit While
+        ElseIf TickCount() - startTime > 5 * 60 * 1000 Then
+            //领奖状态下，超时5分钟，结束领奖
+            Exit While
+        End If
 		
-		zm.Tap 530, 1170 //点击金币go按钮
+        zm.Tap 530, 1170 //点击金币go按钮
 		
-		Delay 200		
-		If findMultiColorResult(738, 322, 1074, 451, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED") Then 
-			Exit While
-		ElseIf TickCount() - startTime > 5 * 60 * 1000 Then
-		//领奖状态下，超时5分钟，结束领奖
-			Exit While
-		End If
+        Delay 200		
+        If findMultiColorResult(738, 322, 1074, 451, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED") Then 
+            Exit While
+        ElseIf TickCount() - startTime > 5 * 60 * 1000 Then
+            //领奖状态下，超时5分钟，结束领奖
+            Exit While
+        End If
 		
-		zm.Tap 540, 1337 //点击抽奖确认
+        zm.Tap 540, 1337 //点击抽奖确认
 		
-		Delay 200		
-		If findMultiColorResult(738, 322, 1074, 451, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED") Then 
-			Exit While
-		ElseIf TickCount() - startTime > 5 * 60 * 1000 Then
-		//领奖状态下，超时5分钟，结束领奖
-			Exit While
-		End If
+        Delay 200		
+        If findMultiColorResult(738, 322, 1074, 451, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED") Then 
+            Exit While
+        ElseIf TickCount() - startTime > 5 * 60 * 1000 Then
+            //领奖状态下，超时5分钟，结束领奖
+            Exit While
+        End If
 		
-		zm.Tap 530, 1640 //点击结果确认
+        zm.Tap 530, 1640 //点击结果确认
 		
-		Delay 200		
-		If findMultiColorResult(738, 322, 1074, 451, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED") Then 
-			Exit While
-		ElseIf TickCount() - startTime > 5 * 60 * 1000 Then
-		//领奖状态下，超时5分钟，结束领奖
-			Exit While
-		End If
+        Delay 200		
+        If findMultiColorResult(738, 322, 1074, 451, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED") Then 
+            Exit While
+        ElseIf TickCount() - startTime > 5 * 60 * 1000 Then
+            //领奖状态下，超时5分钟，结束领奖
+            Exit While
+        End If
 		
-	Wend
+    Wend
 	
 	
 
@@ -3681,25 +3765,25 @@ End Function
 
 
 Function OnScriptExit()
-	Dim temp,tempHour,tempMin,tempSecond
-	temp = TickCount()
-	tempHour = temp \ (3600 * 1000)
-	tempMin = (temp - tempHour * (3600 * 1000)) \ (60 * 1000)
-	tempSecond = (temp - tempHour * (3600 * 1000) - tempMin * (60 * 1000)) \ 1000
+    Dim temp,tempHour,tempMin,tempSecond
+    temp = TickCount()
+    tempHour = temp \ (3600 * 1000)
+    tempMin = (temp - tempHour * (3600 * 1000)) \ (60 * 1000)
+    tempSecond = (temp - tempHour * (3600 * 1000) - tempMin * (60 * 1000)) \ 1000
 	
-	UI.NewLayout ("结果统计")
-	UI.AddTextView "结果统计", "", "本次脚本运行时长："
-	UI.AddTextView "结果统计", "", CStr(tempHour)& "小时"& CStr(tempMin) & "分"&  CStr(tempSecond)& "秒"
-	UI.NewRow("结果统计","")
-	UI.AddTextView "结果统计", "", "本次脚本收货史莱姆统计："
-	UI.AddTextView "结果统计", "totalShiCount", CStr(totalShiCount)
-	UI.NewRow("结果统计","")
-	UI.AddTextView "结果统计", "", "本次剩余可买票数："
-	UI.AddTextView "结果统计", "", CStr(ticketBuyCount)
-	Dim width=GetScreenX()
+    UI.NewLayout ("结果统计")
+    UI.AddTextView "结果统计", "", "本次脚本运行时长："
+    UI.AddTextView "结果统计", "", CStr(tempHour)& "小时"& CStr(tempMin) & "分"&  CStr(tempSecond)& "秒"
+    UI.NewRow("结果统计","")
+    UI.AddTextView "结果统计", "", "本次脚本收货史莱姆统计："
+    UI.AddTextView "结果统计", "totalShiCount", CStr(totalShiCount)
+    UI.NewRow("结果统计","")
+    UI.AddTextView "结果统计", "", "本次剩余可买票数："
+    UI.AddTextView "结果统计", "", CStr(ticketBuyCount)
+    Dim width=GetScreenX()
 
-	UI.NewRow "结果统计", ""
-	UI.AddTextView "结果统计","","本设备屏幕分辨率为：宽"&CStr(width)&"高"&CStr(height)&"DPI"&CStr(dpi)&"colorDp"&CStr(colorDp)
-	UI.Show("结果统计")
+    UI.NewRow "结果统计", ""
+    UI.AddTextView "结果统计","","本设备屏幕分辨率为：宽"&CStr(width)&"高"&CStr(height)&"DPI"&CStr(dpi)&"colorDp"&CStr(colorDp)
+    UI.Show("结果统计")
 
 End Function  

@@ -1,0 +1,1144 @@
+Import "zm.luae"
+
+zm.Init
+
+
+
+
+
+Dim screenX,screenY,itemHeight
+//变量screenX需要预先定义。如果您还没有定义该变量，请取消下面一行的注释
+//Dim screenX
+screenX = GetScreenX()
+//变量screenY需要预先定义。如果您还没有定义该变量，请取消下面一行的注释
+//Dim screenY
+screenY = GetScreenY()
+itemHeight = 324
+
+//设定sr弹框的第一个boss起始寻找点-
+Dim srDialogBossStartX = 310,srDialogBossStartY = 584
+Dim normalBossStartX = 315,normalBossStartY = 900
+
+// boss坐标下边界
+Dim srDialogBossBottomY = 1324
+Dim srNormalBossBottomY = 1780
+
+//通用战斗界面 一倍速调整坐标
+
+Dim battleSpeedControlStartX= 14
+Dim battleSpeedControlStartY= 97
+Dim battleSpeedControlEndX = 145
+Dim battleSpeedControlEndY =180
+//通用战斗界面-auto设置坐标
+
+Dim battleAutoControlStartX=935
+Dim battleAutoControlStartY=99
+Dim battleAutoControlEndX=1063
+Dim battleAutoControlEndY=172
+
+
+
+
+SetRowsNumber(0)
+//注意：每次制作完字库后，需要自行把制作的字库文件添加到脚本“附件”中
+TracePrint SetDictEx(0, "Attachment:rank.txt")
+TracePrint UseDict(0)
+//以上两句脚本只需要调用一次
+
+// 待执行的功能id，从0到N开始
+Dim funtionId = 0
+//功能开关
+//低于几票只打屎
+Dim shiCount = 9
+// 功能执行中标记，防止功能交叉干扰
+Dim  funtionRunningTag
+Dim loadTag =False
+Dim isAppRunning
+Dim reset=False
+Dim timeRecord
+Dim clickDouble =True
+Dim srMode = True
+Dim srNomal =False
+Dim battleSpeed = 3
+Dim battlpauseinshi = 60
+
+
+shiCount = ReadUIConfig("ticketSave", "5")
+shiCount = CInt(shiCount)
+srNomal = ReadUIConfig("assitBoss", "0")
+srNomal = srNomal <> 0
+battleSpeed = ReadUIConfig("battleSpeed", 3)
+battlpauseinshi=ReadUIConfig("battlpauseinshi",60)
+TracePrint "shiCount:",shiCount
+
+
+
+
+//isSR()
+//dawan
+//
+//Dim ss= myOcrText2ticketNum() 
+//
+//TracePrint ss = ""
+//EndScript
+//FindPic normalBossStartX, normalBossStartY, screenX, screenY, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
+//FindPic 0, 0, 0, 0, "Attachment:srtag.png", "000000", 0, 0.8, targetX, targetY
+//TracePrint targetX,targetY
+//isSR
+//EndScript
+//testBattle 
+
+
+Log.Open 
+
+///////////////
+
+//While True
+//		
+//Wend
+
+Dim targetX,targetY
+Dim startY,lastY
+Dim count =0
+Dim result
+Dim arr()
+Dim ticketNum = -1
+Dim isShi = False
+
+//////////////////
+////检查分辨率//////////
+Dim width=GetScreenX()
+Dim height =GetScreenY()
+Dim colorDp = GetScreenColorDep()
+Dim dpi = Device.GetDPI()
+TracePrint "width:",width
+TracePrint "height:",height
+TracePrint "dpi:",dpi
+TracePrint "colorDp:",colorDp
+
+If width <> 1080 Or height <> 1920  Then 
+    Dialog.MsgBox("设备分辨率不是1080X1920,360DP",0)
+    EndScript
+End If
+
+
+
+//////////////
+Rem main
+
+
+targetX = -1
+targetY = -1
+startY = 0
+lastY = 0
+count = 0
+isAppRunning = -1
+isShi = False
+
+Delay 1000
+
+
+testFindShi
+//arr=GetRunningApp() //获取所有应用程序包名并将它们合并到arr数组中保存
+//For Each n In arr
+//    If 0 = StrComp(n, "com.stairs.destinychild", 1) Then 
+//        RunApp "com.stairs.destinychild"
+//        isAppRunning = 0
+//        // app自动重启
+//        If reset And True Then 
+//            result = isStartUp()
+//            If result And True Then 
+//                startup()
+//            End If
+//            clickDaily
+//            clickNotice 
+//            loading 
+//	
+//            While count < 10
+//                KeyPress "Back"
+//                count = count + 1
+//                Delay 1000
+//            Wend
+//            noBtn
+//            count = 0
+//            loading 
+//           
+//            reset =False
+//        End If
+//        
+//        runRaid
+//        TracePrint "app 已开启,执行raid"
+//    End If
+//Next
+//
+//If isAppRunning <> 0 Then 
+//    TracePrint "app未开启,开启app"
+//    startupAPP 	
+//End If
+//
+
+  
+
+Delay 1000
+Goto main
+
+
+//app是否在运行
+Function appRun()
+    isAppRunning = -1
+    arr=GetRunningApp() //获取所有应用程序包名并将它们合并到arr数组中保存
+    For Each n In arr
+        If 0 = StrComp(n, "com.stairs.destinychild", 1) Then 
+            RunApp "com.stairs.destinychild"
+            isAppRunning = 0
+            runRaid
+            TracePrint "app 已开启,执行raid"
+        End If
+    Next
+	
+End Function
+
+Function startupAPP()
+    RunApp "com.stairs.destinychild"
+
+    loading 
+	
+    startup()
+    clickDaily
+    clickNotice 
+	
+    loading 
+	
+    While count < 10
+        KeyPress "Back"
+        count = count + 1
+        Delay 1000
+    Wend
+    noBtn
+    count = 0
+    loading 
+	
+	
+End Function
+
+Function clickNotice()
+    Dim intX,intY,tempCount=0
+    FindPic 340, 2, 1073, 85, "Attachment:notice.png", "000000", 0, 0.9, intX, intY
+    TracePrint "找通知消息"
+    While intX = -1 And intY = -1 And tempCount < 20
+        FindPic 340, 2, 1073, 85, "Attachment:notice.png", "000000", 0, 0.9, intX, intY
+        tempCount = tempCount +1
+        Delay 1000
+    Wend
+
+    TracePrint "通知消息坐标XY",intX,intY
+    While intX > -1 And intY > -1 
+        TracePrint "关闭通知消息XY",intX,intY
+        Touch 1014,43,100
+        FindPic 340, 2, 1073, 85, "Attachment:notice.png", "000000", 0, 0.9, intX, intY
+        Delay 1000
+    Wend
+	
+	
+End Function
+
+Function clickDaily()
+    Dim intX,intY
+    FindPic 399,228,677,286,"Attachment:daily.png","000000",0,0.9,intX,intY
+    While intX > -1 And intY > -1 
+        TracePrint "clickDailyXY",intX,intY
+        Touch intX, intY,100
+        Delay 200
+        FindPic 399, 228, 677, 286, "Attachment:daily.png", "000000", 0, 0.9, intX, intY
+        Delay 1000
+    Wend
+End Function
+
+Function runRaid()
+    timeRecord = TickCount()
+    targetX = -1
+    targetY = -1
+    startY = 0
+    lastY = 0
+    count = 0
+    ticketNum = -1
+    srMode = True
+    //是否在首页
+    result = isHome()
+    TracePrint "ishome:",result
+    If result And True Then 
+        TracePrint "点击屏幕raid位置或者wb位置"
+        Touch 955, 969, 100
+    Else 
+        //不在raid界面
+        result = isSR()
+        TracePrint "isRaid:",result
+        If result = False Then 
+            reset =True
+            Exit Function
+        End If
+    End If
+		
+    Dim ticketstr = myOcrText2ticketNum()
+    If IsNull(ticketstr) = False And ticketstr <> "" Then 
+        ticketNum = CInt(ticketstr)
+    End If
+		
+    //没票时退出
+    If ticketNum = 0 Then 
+        Delay 1000
+        Exit Function
+    End If
+		
+    clickNormalRefresh 
+		
+    findshiInNormalMode 
+		
+    If targetY > srNormalBossBottomY Then 
+        lastY =0
+        targetY = -1
+        targetX = -1
+       	
+    End If
+    TracePrint "normal模式下找到屎:",isShi	
+    If targetY = -1 And targetX = -1 Then 
+        TracePrint "normal模式下没有找到目标"
+        //低于5票时只打屎
+        If ticketNum <> -1 And ticketNum <= shiCount Then 
+            //5秒刷新一次，找屎
+            Delay 1000
+            Exit Function
+        Else 
+            //大于5票才打ssr
+            If ticketNum > shiCount Then 
+                result= findSr_help()
+                findBossInSrMode 
+                If srMode Then 
+                    If targetY = -1 And targetX = -1 Then 
+                        TracePrint "sr模式下没有找到boss"
+                        clickWhiteQueRen 
+                    End If
+                Else 
+                    targetX = -1
+                    targetY = -1
+                End If	
+            	
+                If targetY > srDialogBossBottomY Then 
+                    lastY =0
+                    targetY = -1
+                    targetX = -1
+				
+                End If
+            End If
+        End If 
+    End If
+		
+    If targetY <> -1 Then 
+        //进入准备页面
+        TracePrint "进入准备页面"
+        Touch 100, targetY, 100
+		
+        loading
+        Dim daResult = daRaid()
+        loading
+        If daResult And True Then 
+            //等待打完
+            dawan() 
+			
+        Else 
+            // 没打成,返回sr界面
+            clickWhiteQueRen 
+			
+        End If
+    End If
+	
+   
+End Function
+
+
+
+
+
+
+Function startup()
+    Dim intX,intY
+    FindPic 30, 1851, 1078, 1919, "Attachment:startapp.png", "000000", 0, 0.7, intX, intY
+    TracePrint "startup坐标xy",intX,intY
+
+    While intX =  -1 And intY = -1 
+		
+        Delay 1000
+        FindPic 30, 1851, 1078, 1919, "Attachment:startapp.png", "000000", 0, 0.7, intX, intY
+		
+    Wend
+	
+    While intX > -1 And intY > -1
+        TracePrint "startup坐标xy",intX,intY
+        Touch intX+400,intY -200,100
+        Delay 1000
+        FindPic 30, 1851, 1078, 1919, "Attachment:startapp.png", "000000", 0, 0.7, intX, intY
+		
+    Wend
+    
+	
+End Function
+
+Function isStartUp()
+    Dim intX,intY
+    FindPic 30, 1851, 1078, 1919, "Attachment:startapp.png", "000000", 0, 0.7, intX, intY
+    If intX = -1 And intY = -1 Then 
+        isStartUp = False
+    Else 
+        isStartUp = True
+    End If
+End Function
+
+Function isHome()
+    Dim intX,intY
+    FindPic 10,1752,157,1910,"Attachment:home.png","000000",0,0.7,intX,intY
+    If intX > -1 And intY > -1 Then 
+        TracePrint "当前是首页XY",intX,intY
+        isHome = True
+    Else 
+        TracePrint "当前不是首页"
+        isHome = False
+    End If
+    Delay 200
+End Function
+
+
+
+// 点击刷新按钮
+Function clickNormalRefresh()
+    TracePrint "clickNormalRefresh"
+    Dim intX,intY
+    FindPic 18,477,359,720,"Attachment:refresh.png","000000",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        TracePrint "点击刷新"
+        Touch intX, intY, 100
+        loading
+    End If
+End Function
+
+//正在加载中
+Function loading()
+    Rem ld
+    Dim intX =-1 ,intY =-1
+    Dim tempX = -1,tempY = -1
+    Dim num = 0
+    //捕获请求开始
+    //请求时间短，最低延时5秒
+    TracePrint "等待loading"
+    While intX = -1 And intY = -1 And num <5
+        FindPic 430, 1743, 672, 1865, "Attachment:loading.png", "000000", 0, 0.9, intX, intY
+        num = num + 1
+        //		TracePrint "检测刷新条xy",intX,intY
+        Delay 1000
+    Wend
+    //捕获请求结束
+    //请求超时 
+    TracePrint "等待loading超时"
+    While intX > -1 And intY > -1
+        TracePrint "检测是否超时,转圈中"
+        FindPic 430, 1743, 672, 1865, "Attachment:loading.png", "000000", 0, 0.9, intX, intY
+        Delay 1000
+        If intX = -1 And intY = -1 Then 
+            TracePrint "停止转圈,判断超时弹框"
+            FindPic 0, 0, 0, 0, "Attachment:yes.png", "000000", 0, 0.9, tempX, tempY
+            TracePrint tempX
+            TracePrint tempY
+            If tempX > -1 And tempY > -1 Then 
+                TracePrint "超时-点击是按钮"
+                Touch tempX + 50, tempY + 50, 100
+                Delay 1000
+                Goto ld
+            End If
+        End If
+    Wend
+	
+End Function
+
+// 找中间boss
+Function findBOSS2()
+//    Dim intX,intY
+//    FindPic 0,1062,screenX,screenY,"Attachment:boss.png","000000",0,0.7,intX,intY
+//    If intX > -1 And intY > -1 Then
+//        findBOSS2 = True
+//    Else 
+//        findBOSS2 = False
+//    End If
+    Dim ret
+    ret = zm.FindPic(0,1062,screenX,screenY,"boss.png",0.5)
+    If ret Then 
+    	findBOSS2 = True
+    Else 
+    	findBOSS2 = False
+    End If
+    
+End Function
+
+
+// sr模式 寻找boss 如果滑动三次还没找到就停止寻找
+Function findBossInSrMode()
+
+    startY = srDialogBossStartY
+
+    lastY = 0
+    count = 0
+
+    //打开sr弹框
+
+    clickSR 
+    loading 
+    //判断sr模式未开启
+    FindPic 0, 0, 0, 0, "Attachment:test888.png", "000000", 0, 0.9, targetX, targetY
+    
+    TracePrint "sr模式未开启XY:",targetX,targetY
+    
+    If targetX > -1 And targetY > -1 Then 
+        Touch targetX + 50, targetY + 50, 200
+        targetX = -1
+        targetY = -1
+        srMode = False
+    Else 
+        targetX = -1
+        targetY = -1
+        srMode = True
+    End If
+    
+    //在当前界面寻找boss
+    While srMode And targetX = -1 And targetY = -1 And count < 3
+        TracePrint "在当前界面找boss,次数:",count,"寻找起点Y",startY
+
+        findBOSS srDialogBossStartX, startY, screenX, screenY
+
+        TracePrint targetY
+        //当前列表没有可用的boss，滑动寻找
+        If targetY = -1 Then
+            TracePrint count
+            //     	Swipe 100, lastY + itemHeight, 100, lastY
+            //        	TouchDown 100,startY+itemHeight,1
+            //        	TouchMove 100, startY, 1,1000
+            //        	TouchUp 1
+            //滑动之后从初始位置找
+            startY = srDialogBossStartY
+            zm.Swipe 100, startY + itemHeight, 100, startY, 200
+            zm.Swipe 100, startY + itemHeight, 100, startY, 200
+            zm.Swipe 100, startY + itemHeight , 100, startY, 200
+            count = count + 1
+            TracePrint "上滑",count,"次"
+            Delay 200
+        End If
+    	
+        TracePrint "找boss结果"
+        TracePrint targetX
+        TracePrint targetY
+        //找到boss时判断是否打过
+        If targetX > -1 And targetY > -1 Then 
+    		
+
+            result = isAssitTagInSrMode(targetX, targetY)
+            TracePrint "判断是否有援助标记",result
+			
+            If result And True Then 
+                //当前页面找到的boss有标记，加上偏移找下一个
+                startY = startY+itemHeight
+                targetX = -1
+                targetY = -1
+            End If
+        End If
+		
+    Wend
+    TracePrint "循环结束后boss结果XY",targetX,targetY
+
+   
+End Function
+
+//该boss是否被援助过 或者自己打过
+Function isAssitTagInNormalMode(xuetiaoX,xuetiaoY)
+    Dim intX,intY
+    // 从血条位置推算援助图标的起始位置
+    FindPic xuetiaoX - 180, xuetiaoY - 171, xuetiaoX , xuetiaoY , "Attachment:assit.png", "000000", 0, 0.9, intX, intY
+    Delay 200
+    If intX > -1 And intY > -1 Then
+        TracePrint "有援助"
+        isAssitTagInNormalMode = True
+    Else 
+        FindPic xuetiaoX - 180, xuetiaoY - 171, xuetiaoX , xuetiaoY , "Attachment:slaver.png", "000000", 0, 0.9, intX, intY
+        If intX > -1 And intY > -1 Then 
+            TracePrint "有slaver"
+            Delay 200
+            isAssitTagInNormalMode = True
+        Else 
+            isAssitTagInNormalMode = False
+        End If
+		
+    End If
+	
+End Function
+	
+//该boss是否被援助过 或者自己打过
+Function isAssitTagInSrMode(xuetiaoX,xuetiaoY)
+    Dim intX,intY
+    // 从血条位置推算援助图标的起始位置
+    FindPic xuetiaoX - 166, xuetiaoY - 171, xuetiaoX , xuetiaoY , "Attachment:assit.png", "000000", 0, 0.9, intX, intY
+    Delay 200
+    If intX > -1 And intY > -1 Then
+        TracePrint "有援助"
+        isAssitTagInSrMode = True
+    Else 
+        FindPic xuetiaoX - 166, xuetiaoY - 171, xuetiaoX , xuetiaoY , "Attachment:slaver.png", "000000", 0, 0.9, intX, intY
+        If intX > -1 And intY > -1 Then 
+            TracePrint "有slaver"
+            Delay 200
+            isAssitTagInSrMode = True
+        Else 
+            isAssitTagInSrMode = False
+        End If
+		
+    End If
+	
+End Function
+	
+
+//该boss 是否是自己发起并打过一次	
+Function noKillTag(xuetiaoX, xuetiaoY)
+	
+End Function
+
+// 免费票 
+Function raidTicket()
+    Dim intX,intY
+    FindPic 8,1535,266,1674,"Attachment:sold_out.png","000000",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        TracePrint intX
+        TracePrint intY
+    End If
+End Function
+
+// 找到sr援助按钮并点击
+Function findRaidStore()
+    Dim intX,intY
+    FindPic 352,1755,530,1917,"Attachment:raid_store.png","000000",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then 
+        findRaidStore = True
+        While intX > -1 And intY > -1
+            Touch intX + 50, intY + 50, 100
+            Delay 500
+            FindPic 352, 1755, 530, 1917, "Attachment:raid_store.png", "000000", 0, 0.9, intX, intY
+            Delay 500
+        Wend
+    Else 
+        findRaidStore = False
+    End If
+End Function
+
+Function findSr_help()
+    Dim intX,intY
+    FindPic 544,591,769,699,"Attachment:sr_help.png","000000",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        TracePrint intX
+        TracePrint intY
+    End If
+End Function
+
+// 字库文字识别
+Function myOcrText2ticketNum()
+    SetRowsNumber(0)
+
+    Dim ocrchar
+    ocrchar=Ocr(868,552,928,597,"FFFFFF",0.9)
+    Traceprint ocrchar
+    myOcrText2ticketNum = ocrchar
+End Function
+
+
+//杀手池
+
+//点击sr直到sr消失
+Function clickSR()
+    Dim srX = -1
+    Dim srY = -1
+    Dim tempCount = 0
+    TracePrint "找sr"
+    While srX = -1 And srY = -1 And tempCount < 3
+        Delay 1000
+        FindPic 0, 0, 0, 0, "Attachment:srtag.png", "000000", 0, 0.8, srX, srY
+        tempCount = tempCount + 1
+         
+    Wend
+    TracePrint "找到SR按钮"
+    TracePrint srX
+    //一直点按钮直到按钮消失
+    While srX > -1 And srY > -1
+        srX = srX+50
+        srY = srY + 50
+        TracePrint "点击sr"
+        Touch srX, srY, 200
+        Delay 1000
+        TracePrint "sr按钮是否还存在"
+        FindPic 0, 0, 0, 0, "Attachment:srtag.png", "000000", 0, 0.8, srX, srY     
+    Wend
+    TracePrint "sr按钮已消失"
+	
+End Function
+
+// 当前是否在raid界面
+Function isSR()
+    Dim srX = -1
+    Dim srY = -1
+    Dim tempCount = 0
+    TracePrint "找sr"
+    While srX = -1 And srY = -1 And tempCount < 3
+        Delay 1000
+        FindPic 0, 0, 0, 0, "Attachment:srtag.png", "000000", 0, 0.8, srX, srY
+        tempCount = tempCount + 1
+         
+    Wend
+    TracePrint "找到SR按钮XY:",srX,srY
+    If srX = -1 And srY = -1 Then 
+        isSR = False
+    Else 
+        isSR = True
+    End If
+    Delay 200
+End Function
+
+Function findBOSS(x1,y1,x2,y2)
+    FindPic x1, y1, x2, y2, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
+    Delay 200
+    If targetX > -1 And targetY > -1 Then     
+        lastY = targetY
+        TracePrint lastY
+    End If
+End Function
+
+Function findShi(x1, y1, x2, y2)
+    //原方法使用40级屎的血量判断，血量会发生变化
+    //    FindPic x1, y1, x2, y2, "Attachment:shinaimu.png", "000000", 0, 0.5, targetX, targetY
+    //识别度设置为0.8，防止干扰
+    Dim tempCount = 0
+    Dim ocrchar,shiName
+    FindPic x1, y1, x2, y2, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
+    TracePrint "普通模式血条xy",targetX,targetY
+    If targetX > -1 And targetY > -1 Then 
+        // 要循环找3次，加上上面的一次，总共四次才能判断当前页面的3个血条是不是都是boss或者屎
+        // 如果找到满足条件的，不再寻找，次数跑完出循环
+        //如果没找到满足调整的，但是有找到血条，那么向下偏移，继续寻找
+        //一个页面总共3个血条，如果都不满足条件，再找一次，总共4次，坐标置为-1
+        While targetX > -1 And targetY > -1 And tempCount <3
+            lastY = targetY
+            //识别屎的名字
+            shiName = Ocr(652, targetY-171, 719, targetY, "FFFFFF-5F5F5F", 0.9)
+            TracePrint "屎的名字",shiName
+    		
+            //识别屎的等级
+            ocrchar=Ocr(25,targetY-171,154,targetY,"FFFFFF",0.9)
+            Traceprint "屎boss等级",ocrchar
+            Dim bosslv = 0
+    		
+            If IsNull(ocrchar) = False And ocrchar <> "" Then 
+                bosslv = CInt(ocrchar)
+            End If
+            Dim isShiName = False
+            Dim tempResult = False
+            If StrComp("巨大", shiName) = 0 Then 
+                isShiName = True
+            End If
+            If Not srMode Then 
+                tempResult = True
+            End If
+            If bosslv = 40 And targetX > -1 And targetY > -1 And isShiName Then 
+                isShi = True
+            Else 
+                isShi = False
+            End If
+			
+            If bosslv = 40 And targetX > -1 And targetY > -1 And (tempResult Or isShiName) Then 
+                TracePrint "普通模式找到boss或者屎XY：", targetX,targetY
+            Else 
+                targetX = -1
+                targetY = -1
+                FindPic x1, lastY+200, x2, y2, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
+                TracePrint "boss血条xy",targetX,targetY
+            End If
+            tempCount = tempCount + 1
+			
+        Wend
+        TracePrint "普通模式当前页面寻找次数：",tempCount+1
+    Else 
+        targetX = -1
+        targetY = -1
+		
+    End If
+    
+    Delay 200
+  
+End Function
+
+//找到打按钮并开始打
+Function daRaid()
+    TracePrint "准备页面开始找打"
+    count = 0
+    Dim daX =-1,daY =-1
+    Dim doubledaX =-1,doubledaY =-1
+    Dim enoughTicket
+    While daX = -1 And daY = -1 And count <5
+        //判断血量
+        result = canDa()
+        //判断 剩余票数是否还够
+        enoughTicket = isRaidTicketEnough()		
+        //找打按钮
+        FindPic 0, 0, 0, 0, "Attachment:test555.png", "000000", 0, 0.5, daX, daY
+        Delay 200
+        FindPic 811, 396, 1066, 521, "Attachment:doubleda.png", "000000", 0, 0.9, doubledaX, doubledaY
+        Delay 200
+        count = count +1
+    Wend
+    //血量和票数符合要求时开始打
+    If result And enoughTicket And True Then 
+        TracePrint "循环点双倍直到勾选为止"
+        //勾选双倍
+        If clickDouble And True And isShi Then 
+            While doubledaX > -1 And doubledaY > -1
+                Touch doubledaX, doubledaY, 100
+                Delay 500
+                FindPic 811,396,1066,521,"Attachment:doubleda.png","000000",0,0.9,doubledaX,doubledaY
+            Wend	
+        End If
+       
+    
+        TracePrint "循环点打按钮直到界面没有打按钮为止"
+        //循环点打按钮直到界面没有打按钮为止
+        While daX > -1 And daY > -1
+            Touch daX, daY, 100
+            Delay 1000
+            FindPic 0, 0, 0, 0, "Attachment:test555.png", "000000", 0, 0.5, daX, daY	
+        Wend        
+        daRaid = True
+    Else 
+        //不符合要求，点X返回
+        closeBtn 
+        daRaid = False
+        loading
+    End If
+
+	
+End Function
+
+//准备页面检查血量是否为0
+Function canDa()
+    TracePrint "判断血量是否为0"
+    Dim tempX =-1,tempY =-1
+    FindPic 359, 459, 814, 560, "Attachment:test33.png", "000000", 0, 0.5, tempX, tempY
+    Delay 200
+    If tempX > -1 And tempY > -1 Then
+        canDa = False
+        TracePrint "血量为0"
+    Else 
+        canDa = True
+        TracePrint "血量不为0"
+    End If
+End Function
+
+Function dawan()
+    Dim tempX =-1,tempY =-1,count=0,pauseCount=0
+    
+    While tempX = -1 And tempY = -1 And count< 210
+        TracePrint "判断是否打完中"
+        //  设置战斗模式和战斗速度
+       
+//        If Not tempControl Then 
+//            tempControl = setBattleControl()
+//        End If
+       
+       
+        //进入战斗后提示打完
+        FindPic 345, 999, 736, 1143, "Attachment:test888.png", "000000", 0, 0.9, tempX, tempY
+		
+        If tempX > -1 And tempY > -1 Then
+            tempX =tempX +50
+            tempY = tempY + 50            
+        ElseIf tempX = -1 And tempY = -1 Then
+            FindStr 460, 1483, 644, 1566, "rank", "FFFFFF|DADDE1", 0.9, tempX, tempY        		
+        End If
+        
+        If tempX = -1 And tempY =-1  Then 
+            FindPic 837,1174,1079,1564,"Attachment:test666.png","000000",0,0.9,tempX,tempY
+        End If
+        
+        //打屎暂停一分钟
+        If tempX = -1 And tempY = -1 And pauseCount = 0 And isShi Then 
+        	FindPic 546,1656,853,1773,"Attachment:pausebattle.png","000000",0,0.9,tempX,tempY
+        	If tempX = -1 And tempY = -1 Then 
+        		KeyPress "Back"
+        	Else  
+        		count = count + 30
+        		Delay 60000
+        		Touch tempX + 50, tempY + 50, 200
+        		pauseCount = 1
+        		tempX = -1
+        		tempY = -1
+        	End If
+        	
+        End If
+        
+        
+        count = count+1
+        Delay 2000
+    Wend
+    
+    If count = 210 Then 
+        reset =True
+    End If
+    
+    TracePrint "战斗花费时间：",count*2,"秒"
+    
+    While tempX > -1 And tempY > -1
+        TracePrint "点击返回"
+        Touch tempX, tempY, 100
+        //进入战斗后提示打完
+        FindPic 345, 999, 736, 1143, "Attachment:test888.png", "000000", 0, 0.9, tempX, tempY
+		
+        If tempX > -1 And tempY > -1 Then
+            tempX =tempX +50
+            tempY = tempY + 50
+        ElseIf tempX = -1 And tempY = -1 Then
+            FindStr 460, 1483, 644, 1566, "rank", "FFFFFF|DADDE1", 0.9, tempX, tempY
+        End If
+        	
+        If tempX = -1 And tempY =-1  Then 
+            FindPic 837,1174,1079,1564,"Attachment:test666.png","000000",0,0.9,tempX,tempY
+        End If        
+        Delay 1000
+    Wend
+    TracePrint "返回成功"
+    //    If tempX > -1 And tempY > -1 Then
+    //        TracePrint tempX
+    //        TracePrint tempY
+    //        Touch tempX, tempY, 100
+    //    End If
+	
+End Function
+
+
+Function pauseBattle()
+	Dim intX,intY,battleCount=0
+	FindPic 546,1656,853,1773,"Attachment:pausebattle.png","000000",0,0.9,intX,intY
+	If intX > -1 And intY > -1 Then
+		TracePrint intX
+		TracePrint intY
+	End If
+	
+End Function
+
+//Function testBattle()
+//    Dim tempControl = False
+//    While True
+//        If tempControl = False Then 
+//            tempControl = setBattleControl()
+//        Else 
+//        	EndScript
+//    	End If
+//	Wend
+//	
+//End Function
+//
+//Function setBattleControl()
+//   	result = Ocr(battleAutoControlStartX, battleAutoControlStartY, battleAutoControlEndX, battleAutoControlEndY, "FFFFFF", 0.8)	
+//    TracePrint result
+//    //	If IsNull(result) = False And result <> "" Then 
+//    //    	result = CInt(result)
+//    //	End If
+//		
+//    If StrComp("autoskill", result) = 0 Then 
+//        //2,autoskill
+//        result = 2
+//    Else 
+//        If StrComp("fullauto", result) = 0 Then 
+//            //3,fullauto
+//            result = 3
+//        Else 
+//            result = 0
+//        End If
+//    End If
+//    
+//	 If result <> battleaulto Then 
+//            Touch battleAutoControlStartX + 50, battleAutoControlStartY + 50, 200
+//            setBattleControl = False
+//      Else 
+//            setBattleControl = True
+//        End If
+//	
+//  
+//	
+//	
+//	
+//End Function
+//
+
+
+
+
+
+//否按钮
+Function noBtn()
+    TracePrint "找弹框否按钮"
+    Dim tempX =-1,tempY =-1
+    FindPic 33,616,1045,1255,"Attachment:no.png","000000",0,0.5,tempX,tempY
+    If tempX > -1 And tempY > -1 Then 
+        TracePrint "点击否按钮"
+        Touch tempX+50,tempY+50,100
+    End If
+	
+End Function
+
+//是按钮
+Function yesBtn()
+    TracePrint "找弹框是按钮"
+    Dim tempX =-1,tempY =-1
+    FindPic 33,616,1045,1255,"Attachment:yes.png","000000",0,0.5,tempX,tempY
+    If tempX > -1 And tempY > -1 Then 
+        TracePrint "点击是按钮"
+        Touch tempX+50,tempY+50,100
+    End If
+End Function
+
+Function closeBtn()
+    Dim tempX=-1,tempY=-1
+    TracePrint "找关闭按钮"
+    FindPic 923,10,1068,108,"Attachment:close.png","000000",0,0.9,tempX,tempY
+    If tempX > -1 And tempY > -1 Then 
+        TracePrint "点击关闭按钮"
+        While tempX > -1 And tempY > -1
+            Touch tempX + 50, tempY + 50, 100
+            FindPic 923, 10, 1068, 108, "Attachment:close.png", "000000", 0, 0.9, tempX, tempY
+            Delay 1000
+        Wend
+		
+    End If
+End Function
+
+
+
+//检查raid票数
+Function isRaidTicketEnough()
+    TracePrint "判断票数是否为0"
+    Dim intX =-1,intY =-1
+    FindPic 790, 535, 1054, 869, "Attachment:ticketzero.png", "000000", 0, 0.9, intX, intY
+    Delay 200
+    If intX > -1 And intY > -1 Then
+        TracePrint "票数为0"
+        FindPic 790, 535, 1054, 869, "Attachment:manpiao.png", "000000", 0, 0.9, intX, intY
+        Delay 200
+        TracePrint "票数是否满"
+        If intX > -1 And intY > -1 Then 
+            TracePrint "满票"
+            isRaidTicketEnough = True
+        Else 
+            TracePrint "不满票"
+            isRaidTicketEnough = False
+        End If
+    Else 
+        TracePrint "票数不为0"
+        isRaidTicketEnough = True
+			
+    End If
+End Function
+
+Function clickWhiteQueRen()
+    TracePrint "找sr弹框的确认按钮"
+    Dim tempX =-1,tempY =-1
+    count = 0
+    While tempX = -1 And tempY = -1 And count <3
+        FindPic 0, 0, 0, 0, "Attachment:whitequeren.png", "000000", 0, 0.9, tempX, tempY
+        count =count+1
+        Delay 1000
+        TracePrint tempX
+        TracePrint tempY
+		
+    Wend
+    TracePrint "找到确认按钮"
+    While tempX > -1 And tempY > -1 
+        tempX =tempX +50
+        tempY = tempY + 50
+        TracePrint "点击确认按钮"
+        Touch tempX, tempY, 100
+        Delay 1000
+        FindPic 0, 0, 0, 0, "Attachment:whitequeren.png", "000000", 0, 0.9, tempX, tempY
+    Wend
+End Function
+
+Function testFindShi()
+    targetX = -1
+    targetY = -1
+    startY = 0
+    lastY = 0
+    count = 0
+    ticketNum = -1
+    srMode = True
+    clickNormalRefresh
+    findshiInNormalMode()
+    
+End Function
+
+Function findshiInNormalMode()
+    //开始找屎
+    lastY = 0
+    count = 0
+    result = True
+    startY = normalBossStartY
+
+//    loading 
+    isShi = False
+    
+    //在当前界面寻找boss
+    While targetX = -1 And targetY = -1 And count < 10 And result = True
+        TracePrint "在当前界面找boss","寻找起点Y",startY
+
+        findShi normalBossStartX, startY, screenX, screenY
+        Delay 200
+        result = findBOSS2()
+        TracePrint "没到底:",result
+        TracePrint targetY
+        //当前列表没有可用的boss，滑动寻找
+        //当前列表没有滑动到底时继续滑动
+        
+        If targetY = -1 And result = True Then
+
+            //     	Swipe 100, lastY + itemHeight, 100, lastY
+            //        	TouchDown 100,startY+itemHeight,1
+            //        	TouchMove 100, startY, 1,1000
+            //        	TouchUp 1
+            startY = normalBossStartY
+            zm.Swipe 100, startY + itemHeight, 100, startY, 200
+            zm.Swipe 100, startY + itemHeight, 100, startY, 200
+            zm.Swipe 100, startY + itemHeight , 100, startY, 200
+        	  
+            count = count +1
+            TracePrint "上滑",count,"次"
+            Delay 200
+        End If
+    	
+        TracePrint "找boss结果XY",targetX,targetY
+    	
+        //找到boss时判断是否打过
+        If targetX > -1 And targetY > -1 Then 
+    		
+            result = isAssitTagInNormalMode(targetX, targetY)
+            TracePrint "判断是否有援助标记",result
+    		
+            If result And True Then 
+                TracePrint "有援助标记"
+                startY = startY + itemHeight
+                targetX = -1
+                targetY = -1
+            End If
+        End If
+		
+    Wend
+    TracePrint "循环结束后boss结果XY",targetX,targetY
+
+	
+	
+End Function
