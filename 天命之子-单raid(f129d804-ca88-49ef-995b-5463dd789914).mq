@@ -17,8 +17,8 @@ itemHeight = 324
 
 //设定sr弹框的第一个boss起始寻找点-
 Dim srDialogBossStartX = 310,srDialogBossStartY = 584
-Dim normalBossStartX = 315,normalBossStartY = 761
-Dim normalBossStartENDY = 1076
+Dim normalBossStartX = 315,normalBossStartY = 980
+Dim normalBossStartENDY = 1022
 // boss坐标下边界
 Dim srDialogBossBottomY = 1324
 Dim srNormalBossBottomY = 1780
@@ -374,7 +374,12 @@ Dim totalShiCount = 0
 //FindPic 332, 1434, 767, 1591, "Attachment:che_start.png", "000000", 0, 0.8, targetX, targetY
 //TracePrint targetX,targetY
 //result = isRaidFreeTicketEnable()
-//TracePrint result
+//TracePrint confirmStaySrChe()
+//Dim shiPageFindStartY = 760,shiPageFindEndY = 1700
+//FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_huo.png", "000000", 0, 0.8, targetX, targetY
+//
+//FindPic normalBossStartX, normalBossStartY, screenX, normalBossStartENDY, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
+//TracePrint targetX,targetY
 //EndScript
 //
 //////////////
@@ -2742,7 +2747,7 @@ Function findShi(x1, y1, x2, y2)
     TracePrint "当前页面寻找史莱姆"
     Delay 200
     Dim shiX = -1,shiY = -1
-    Dim shiPageFindStartY = 700,shiPageFindEndY = 1700
+    Dim shiPageFindStartY = 760,shiPageFindEndY = 1700
     //"光","暗","木","水","火"
     If shiColor = 0 Then 
         //光
@@ -2860,7 +2865,7 @@ Function findShi(x1, y1, x2, y2)
             UseDict(1)
             ocrchar =  Ocr(25, targetY - 109, 154, targetY, "FFFFFF", 0.9)
             
-            Traceprint "屎boss等级",ocrchar 
+            Traceprint "boss等级",ocrchar 
 
             If IsNull(ocrchar) = False And ocrchar <> "" Then 
                 bosslv = CInt(ocrchar)
@@ -2871,11 +2876,12 @@ Function findShi(x1, y1, x2, y2)
             
             If bosslv = 30 Then 
                 If shiY > -1 Then 
-                    If getNumberDiff(shiY, targetY - 100) < 50 Then 
-                        isShi = True
-                    Else 
-                        isShi = False
-                    End If
+//                    If getNumberDiff(shiY, targetY - 100) < 50 Then 
+//                        isShi = True
+//                    Else 
+//                        isShi = False
+//                    End If
+					isShi = True
                     If isShi Then 
                         TracePrint "史莱姆快速找到到：",isShi,targetX,targetY
                         Exit While
