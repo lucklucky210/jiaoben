@@ -380,6 +380,7 @@ Dim totalShiCount = 0
 //
 //FindPic normalBossStartX, normalBossStartY, screenX, normalBossStartENDY, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
 //TracePrint targetX,targetY
+//TracePrint findPicResultWithCount(307,670,533,756, "Attachment:friend_help.png", 2)
 //EndScript
 //
 //////////////
@@ -1416,6 +1417,8 @@ Function runRaid()
     
     TracePrint "normal模式下找到屎:",isShi	
     Dim srExit= False
+    Dim srHelpStartY = 670
+    Dim srHelpEndY = 756
     If targetX = -1 And targetY = -1 Then
     
         TracePrint "normal模式下没有找到目标"
@@ -1435,8 +1438,9 @@ Function runRaid()
             TracePrint "srNomal,",srNomal
             //发车
             //当前是否有车
-            TracePrint "识别援助按钮"
-            srExit = findPicResultWithCount(307,670,533,756, "Attachment:friend_help.png", 2)
+           
+            srExit = findPicResultWithCount(307, srHelpStartY, 533, srHelpEndY, "Attachment:friend_help.png", 2)
+            TracePrint "识别援助按钮",srExit
             If srExit And callSrHelp And facheMode <>2 Then 
                 TracePrint "识别到援助标记"
                 If findSr_help() Then 
@@ -1489,8 +1493,9 @@ Function runRaid()
 			
         Else 
             //当前是否有车
-            TracePrint "识别援助按钮"
-            srExit = findPicResultWithCount(306, 605, 542, 698, "Attachment:friend_help.png",2)
+           
+            srExit = findPicResultWithCount(306, srHelpStartY, 542, srHelpEndY, "Attachment:friend_help.png", 2)
+            TracePrint "识别援助按钮",srExit
             If srExit And callSrHelp And facheMode <>2 Then 
                 TracePrint "识别到援助标记"
                 If findSr_help() Then 
@@ -2858,7 +2863,7 @@ Function findShi(x1, y1, x2, y2)
         //找到boss时判断是否打过
         //            tag = isAssitTagInNormalMode(targetX, targetY)
         tag= False
-        TracePrint "判断是否有援助标记",tag
+
         If Not tag Then 
             //识别屎的等级
             Delay 200
