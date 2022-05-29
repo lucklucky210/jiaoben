@@ -43,6 +43,12 @@ Dim srTagEndX = 1049
 Dim srTagEndY = 547
 
 
+Dim srHelpStartY = 670
+Dim srHelpEndY = 756
+
+Dim srHelpPositionX = 658
+Dim srHelpPositionY = 718
+
 
 
 SetRowsNumber(0)
@@ -1421,8 +1427,7 @@ Function runRaid()
     
     TracePrint "normal模式下找到屎:",isShi	
     Dim srExit= False
-    Dim srHelpStartY = 670
-    Dim srHelpEndY = 756
+    
     If targetX = -1 And targetY = -1 Then
     
         TracePrint "normal模式下没有找到目标"
@@ -1450,7 +1455,7 @@ Function runRaid()
                 If findSr_help() Then 
                     TracePrint "点击援助按钮"
                     //点击援助
-                    Touch 647, 713, 200
+                    Touch srHelpPositionX, srHelpPositionY, 200
                     //点击确认按钮
                     Delay 1000
                     TracePrint "点击确认按钮"
@@ -1505,7 +1510,7 @@ Function runRaid()
                 If findSr_help() Then 
                     TracePrint "点击援助按钮"
                     //点击援助
-                    Touch 647, 713, 200
+                    Touch srHelpPositionX, srHelpPositionY, 200
                     //点击确认按钮
                     Delay 1000
                     TracePrint "点击确认按钮"
@@ -2651,7 +2656,7 @@ End Function
 Function findSr_help()
     Dim intX,intY
     Delay 200
-    FindPic 544,591,769,699,"Attachment:sr_help.png","000000",0,0.9,intX,intY
+    FindPic 544,srHelpStartY,769,srHelpEndY,"Attachment:sr_help.png","000000",0,0.9,intX,intY
     If intX > -1 And intY > -1 Then
         findSr_help = True
     Else 
