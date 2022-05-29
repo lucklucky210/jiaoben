@@ -253,7 +253,7 @@ Delay 4000
 //myOcrText2ticketNum
 // FindPic 811, 396, 1066, 521, "Attachment:doubleda.png", "000000", 0, 0.8, targetX, targetY
 // TracePrint targetX,targetY
-
+//
 //EndScript
 //
 //If raidTest Then 
@@ -388,6 +388,7 @@ Dim totalShiCount = 0
 //TracePrint targetX,targetY
 //TracePrint findPicResultWithCount(307,670,533,756, "Attachment:friend_help.png", 2)
 //TracePrint appIsSuspend()
+//findRaidStore
 //EndScript
 
 //////////////
@@ -2515,13 +2516,19 @@ Function findRaidStore()
     Dim count = 0
     Dim targetX = -1
     Dim targetY = -1
+    Dim raidStoreStartX = 352
+    Dim raidStoreStartY = 1755
+    Dim raidStoreEndX = 1000
+    Dim raidStoreEndY = 1917
     Delay 200
-    FindPic 352,1755,1000,1917,"Attachment:raid_store.png","000000",0,0.9,targetX,targetY
+   
+    FindMultiColor raidStoreStartX,raidStoreStartY,raidStoreEndX,raidStoreEndY,"13DFFA","2|13|02D1F6,-8|22|04CEFB,4|36|2E93B7,6|69|030405,25|55|00B6FF,45|67|000000,54|58|05B6FF,26|74|00ABFF,27|82|000000",0,0.9,targetX,targetY
+//    FindPic raidStoreStartX,raidStoreStartY,raidStoreEndX,raidStoreEndY,"Attachment:raid_store.png","000000",0,0.9,targetX,targetY
     If targetX > -1 And targetY > -1 Then 
         While targetX > -1 And targetY > -1 And count <10
             Touch targetX + 50, targetY + 50, 100
             Delay 500
-            FindPic 352, 1755, 1000, 1917, "Attachment:raid_store.png", "000000", 0, 0.9, targetX, targetY
+            FindPic  raidStoreStartX,raidStoreStartY,raidStoreEndX,raidStoreEndY, "Attachment:raid_store.png", "000000", 0, 0.9, targetX, targetY
             Delay 500
             count = count+1
         Wend
