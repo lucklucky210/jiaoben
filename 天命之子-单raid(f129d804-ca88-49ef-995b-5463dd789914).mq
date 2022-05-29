@@ -381,8 +381,9 @@ Dim totalShiCount = 0
 //FindPic normalBossStartX, normalBossStartY, screenX, normalBossStartENDY, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
 //TracePrint targetX,targetY
 //TracePrint findPicResultWithCount(307,670,533,756, "Attachment:friend_help.png", 2)
-//EndScript
-//
+TracePrint appIsSuspend()
+EndScript
+
 //////////////
 setConfig 
 
@@ -512,12 +513,15 @@ Wend
 
 //app是否卡死
 Function appIsSuspend()
-    Dim color = GetPixelColor (223,1404,0)
+	//连续战斗结束会出现卡在胜利界面的情况，截取胜利文字上的颜色判断是否卡死
+	Dim fightConditionX = 695
+	Dim fightConditionY = 721
+    Dim color = GetPixelColor (fightConditionX,fightConditionY,0)
     Dim temColor
     Dim count = 0
     While count < 10
         Delay 1000
-        temColor = GetPixelColor (223,1404,0)
+        temColor = GetPixelColor (fightConditionX,fightConditionY,0)
         count = count + 1
         If color <> temColor Then 
             Exit While
@@ -2128,13 +2132,18 @@ Function facheche()
     While intX = -1 And intY = -1 And count <450
         //		KeepCapture 
         Delay 200
+        
         FindPic 306, 1467, 803, 1627, "Attachment:fache_queren.png", "000000", 0, 0.8, intX, intY
         If intX > -1 And intY > -1 Then 
             isChe = True	
         End If
         //		// todo 体力耗尽时的确认
         //		ReleaseCapture 
-        count = count+1
+        count = count + 1
+        If count > 100 And appIsSuspend() Then 
+        	count = 450
+        	Exit While
+        End If
         Delay 2000
     Wend
     If isChe Then 
