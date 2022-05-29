@@ -1450,7 +1450,7 @@ Function runRaid()
                 If findSr_help() Then 
                     TracePrint "点击援助按钮"
                     //点击援助
-                    Touch 647, 645, 200
+                    Touch 647, 713, 200
                     //点击确认按钮
                     Delay 1000
                     TracePrint "点击确认按钮"
@@ -1505,7 +1505,7 @@ Function runRaid()
                 If findSr_help() Then 
                     TracePrint "点击援助按钮"
                     //点击援助
-                    Touch 647, 645, 200
+                    Touch 647, 713, 200
                     //点击确认按钮
                     Delay 1000
                     TracePrint "点击确认按钮"
