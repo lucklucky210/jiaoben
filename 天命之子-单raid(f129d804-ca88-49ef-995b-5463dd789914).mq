@@ -381,8 +381,8 @@ Dim totalShiCount = 0
 //FindPic normalBossStartX, normalBossStartY, screenX, normalBossStartENDY, "Attachment:xuetiao.png", "000000", 0, 0.8, targetX, targetY
 //TracePrint targetX,targetY
 //TracePrint findPicResultWithCount(307,670,533,756, "Attachment:friend_help.png", 2)
-TracePrint appIsSuspend()
-EndScript
+//TracePrint appIsSuspend()
+//EndScript
 
 //////////////
 setConfig 
