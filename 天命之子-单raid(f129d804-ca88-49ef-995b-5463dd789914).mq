@@ -2209,7 +2209,7 @@ End Function
 Function setFightEndelssMode()
     Dim endlessX,endlessY
     Delay 200
-    FindPic 847, 379, 1083, 495, "Attachment:fight_endless.png", "000000", 0, 0.8, endlessX, endlessY
+    FindPic 858,393,1078,477, "Attachment:fight_endless.png", "000000", 0, 0.8, endlessX, endlessY
     TracePrint "连续战斗未勾选:",endlessX,endlessY
     If endlessX > -1 And endlessY > -1 Then
         Touch endlessX + 50, endlessY + 30, 200
