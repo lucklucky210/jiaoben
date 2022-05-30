@@ -2925,7 +2925,7 @@ Function findShi(x1, y1, x2, y2)
                     End If
           			
                     TracePrint "isShi:",isShi    
-                    If selfBossLocResult(0) > -1 And selfBossLocResult(1) > -1 And targetY > selfBossLocResult(1) And getNumberDiff(selfBossLocResult(1), targetY) < itemHeight Then 
+                    If selfBossLocResult(0) > -1 And selfBossLocResult(1) > -1 And getNumberDiff(selfBossLocResult(1), targetY) < itemHeight\2 Then 
                         SnapShot selfBossNamePath, 34,  y1 + tempCount*itemHeight, 315,  y1 + tempCount*itemHeight+20
                         isSelf = True
                     Else 
@@ -3619,7 +3619,7 @@ Function findshiInNormalMode()
     While targetX = -1 And targetY = -1 And count < 3 And result = True
         TracePrint "在当前界面找boss","寻找起点Y",startY
         KeepCapture 
-        If count = 0 Then 
+        If count = 0 And getaward Then 
             autoGetAward
         End If
         findShi normalBossStartX, startY, screenX, normalBossStartENDY
