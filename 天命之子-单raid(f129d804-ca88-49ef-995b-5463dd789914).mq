@@ -2205,6 +2205,16 @@ Function isFightEndlessSetEnable()
     End If
 End Function
 
+Function clickFightEndless()
+	Delay 200
+	Touch 979, 437, 200
+	TracePrint "点击连续战斗按钮"
+	Delay 1000
+	setFightEndlessModeNext2
+    setFightEndelssModeNext 
+    Delay 200
+End Function
+
 //连续战斗设定，是战斗设定的一部分
 Function setFightEndelssMode()
     Dim endlessX,endlessY
@@ -2296,12 +2306,12 @@ Function findAndClickFightBtn()
     Wend
     TracePrint "找到战斗按钮:",targetX,targetY
     If targetX > -1 And targetY > -1 Then 
-        If Not isFightEndlessSetEnable() Then 
-            findAndClickFightBtn = False
-            Exit Function
-        End If
+//        If Not isFightEndlessSetEnable() Then 
+//            findAndClickFightBtn = False
+//            Exit Function
+//        End If
         //连续战斗设定
-        setFightEndelssMode
+        clickFightEndless
         count = 0
         TracePrint "准备点击战斗按钮:",targetX,targetY
         While targetX > -1 And targetY > -1 And count < 10
@@ -2925,7 +2935,7 @@ Function findShi(x1, y1, x2, y2)
                     End If
           			
                     TracePrint "isShi:",isShi    
-                    If selfBossLocResult(0) > -1 And selfBossLocResult(1) > -1 And getNumberDiff(selfBossLocResult(1), targetY) < itemHeight\2 Then 
+                    If selfBossLocResult(0) > -1 And selfBossLocResult(1) > -1 And targetY>selfBossLocResult(1) And getNumberDiff(selfBossLocResult(1), targetY) < itemHeight Then 
                         SnapShot selfBossNamePath, 34,  y1 + tempCount*itemHeight, 315,  y1 + tempCount*itemHeight+20
                         isSelf = True
                     Else 
