@@ -907,7 +907,7 @@ Function findPicResultWithCount(picX1, picY1, picX2, picY2, pic, tempCount)
     Dim intX = -1,intY = -1,count = 0
     While intX = -1 And intY = -1 And count < tempCount
         Delay 500
-        FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
+        FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.7, intX, intY
         TracePrint pic,intX,intY
         count = count+1
     Wend
