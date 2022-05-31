@@ -322,7 +322,7 @@ TracePrint "height:",height
 TracePrint "dpi:",dpi
 TracePrint "colorDp:",colorDp
 
-If width <> 1080 Or height <> 1920  Then 
+If width <> 1080 Or height <> 1920 Then 
     Dialog.MsgBox("设备分辨率不是1080X1920,320DP",0)
     EndScript
 End If
@@ -2787,23 +2787,23 @@ Function findShi(x1, y1, x2, y2)
     //"光","暗","木","水","火"
     If shiColor = 0 Then 
         //光
-        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_guang.png", "000000", 0, 0.8, shiX, shiY
+        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_guang.png", "000000", 0, 0.6, shiX, shiY
         TracePrint "shi_guang",shiX, shiY
     ElseIf shiColor = 1 Then
         //暗
-        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_an.png", "000000", 0, 0.8, shiX, shiY
+        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_an.png", "000000", 0, 0.6, shiX, shiY
         TracePrint "shi_an",shiX, shiY
     ElseIf shiColor = 2 Then
         //木
-        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_mu.png", "000000", 0, 0.8, shiX, shiY
+        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_mu.png", "000000", 0, 0.6, shiX, shiY
         TracePrint "shi_mu",shiX, shiY
     ElseIf shiColor = 3 Then
         //水
-        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_shui.png", "000000", 0, 0.8, shiX, shiY
+        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_shui.png", "000000", 0, 0.6, shiX, shiY
         TracePrint "shi_shui",shiX, shiY
     ElseIf shiColor = 4 Then
         //火
-        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_huo.png", "000000", 0, 0.8, shiX, shiY
+        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_huo.png", "000000", 0, 0.6, shiX, shiY
         TracePrint "shi_huo",shiX, shiY
     End If
     
@@ -2912,11 +2912,11 @@ Function findShi(x1, y1, x2, y2)
             
             If bosslv = 30 Then 
                 If shiY > -1 Then 
-//                    If getNumberDiff(shiY, targetY - 100) < 50 Then 
-//                        isShi = True
-//                    Else 
-//                        isShi = False
-//                    End If
+                    If getNumberDiff(shiY, targetY - 100) < 50 Then 
+                        isShi = True
+                    Else 
+                        isShi = False
+                    End If
 					isShi = True
                     If isShi Then 
                         TracePrint "史莱姆快速找到到：",isShi,targetX,targetY
@@ -2935,7 +2935,7 @@ Function findShi(x1, y1, x2, y2)
                     End If
           			
                     TracePrint "isShi:",isShi    
-                    If selfBossLocResult(0) > -1 And selfBossLocResult(1) > -1 And targetY>selfBossLocResult(1) And getNumberDiff(selfBossLocResult(1), targetY) < itemHeight Then 
+                    If selfBossLocResult(0) > -1 And selfBossLocResult(1) > -1 And getNumberDiff(selfBossLocResult(1), targetY) < itemHeight\2 Then 
                         SnapShot selfBossNamePath, 34,  y1 + tempCount*itemHeight, 315,  y1 + tempCount*itemHeight+20
                         isSelf = True
                     Else 
@@ -3084,7 +3084,7 @@ Function findSelfBoss(startY,endY)
             FindMultiColor 8,startY,1069,endY,"2C1E6A","-9|29|24247C,-9|138|23257B,-6|232|211A64,1026|237|261D67,1036|210|050855,1037|60|0E1154,1024|-2|17175B,540|-5|04085B",0,0.9,intX,intY	
         End If
         If intX > -1 And intY > -1 Then 
-			
+			intY = intY+itemHeight\2
             findResult = intX
             findResult = findResult & ","
             findResult = findResult & intY
