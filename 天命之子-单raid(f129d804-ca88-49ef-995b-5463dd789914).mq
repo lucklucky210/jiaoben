@@ -37,10 +37,10 @@ Dim battleAutoControlStartY=99
 Dim battleAutoControlEndX=1063
 Dim battleAutoControlEndY=172
 
-Dim srTagStartX = 780
-Dim srTagStartY = 476
-Dim srTagEndX = 1049
-Dim srTagEndY = 547
+Dim srTagStartX = 776
+Dim srTagStartY = 469
+Dim srTagEndX = 1051
+Dim srTagEndY = 551
 
 
 Dim srHelpStartY = 670
@@ -82,6 +82,10 @@ Dim faChe
 Dim facheMode = 0
 //发车 次数
 Dim facheCount = 0
+
+//刷新页数
+Dim refreshPageCount = 3
+
 //每日迷宫
 Dim migongMode = False
 Dim dailyDate =""
@@ -122,6 +126,10 @@ Dim resetTimeSet = 3
 Dim raidTest = False
 raidTest = ReadUIConfig("raidTest", False)
 TracePrint "测试功能开关",raidTest
+
+Dim raidCheckStart = False
+raidCheckStart = ReadUIConfig("raidCheckStart", False)
+TracePrint "raid界面检查：",raidCheckStart
 
 resetTimeSet = ReadUIConfig("resetTimeSet", 0)
 If resetTimeSet Then 
@@ -181,21 +189,29 @@ Else
 End If
 TracePrint "发车次数设置：",facheCount
 
+refreshPageCount = ReadUIConfig("refreshPageCount", 3)
+If refreshPageCount Then 
+	refreshPageCount = CInt(refreshPageCount)
+Else 
+	refreshPageCount = 3
+End If
+TracePrint "刷新页数:",refreshPageCount
+
 callSrHelp = ReadUIConfig("callSrHelp",False)
 TracePrint "呼叫SR：",callSrHelp
 
 recordShi = ReadUIConfig("recordShi", False)
 TracePrint "史莱姆截图：",recordShi
 
-battlpauseinshi = ReadUIConfig("battlpauseinshi", 60)
+battlpauseinshi = ReadUIConfig("battlpauseinshi", 90)
 If battlpauseinshi Then 
     battlpauseinshi = CInt(battlpauseinshi)
 Else 
-    battlpauseinshi = 60
+    battlpauseinshi = 90
 End If
 
-If battlpauseinshi < 10 Then 
-    battlpauseinshi = 60
+If battlpauseinshi < 90 Then 
+    battlpauseinshi = 90
 End If
 
 
@@ -435,6 +451,7 @@ Function setConfig()
 	
     skillup = ReadUIConfig("skillup", False)
     TracePrint "skillup,",skillup
+    
     dailyDate = Date()
     TracePrint "日常设置时间：",dailyDate
 End Function
@@ -503,6 +520,10 @@ While True
             //        		Exit For
             //        	End If
             //        	runDaily
+            If raidCheckStart Then 
+            	raidCheck 
+            	ExitScript
+            End If
             runRaid 
         	
             TracePrint "app 已开启,执行raid"
@@ -917,11 +938,12 @@ Function findPicResultWithCount(picX1, picY1, picX2, picY2, pic, tempCount)
     End If
     findPicResultWithCount = True
 End Function
+
 Function findPicResult(picX1,picY1,picX2,picY2,pic)
     Dim intX = -1,intY = -1,count = 0
     While intX = -1 And intY = -1 And count < 10
         Delay 500
-        FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.8, intX, intY
+        FindPic picX1, picY1, picX2, picY2, pic, "000000", 0, 0.6, intX, intY
         TracePrint pic,intX,intY
         count = count+1
     Wend
@@ -1361,10 +1383,13 @@ Function runRaid()
     
     //开始领奖，领完再进行raid
     If startGetAward Then 
-        clickNormalRefresh
-        While autoGetAward()
-            Delay 2000
-        Wend
+        clickNormalRefresh 
+       	While startGetAward
+       		autoGetAward 
+       		If TickCount() - timeRecord > 30 * 60 * 1000 Then 
+       			Exit While
+       		End If
+       	Wend
         startGetAward = False
     End If
 	
@@ -1387,6 +1412,7 @@ Function runRaid()
     Else 
         ticketNum = 0
     End If
+    
     
     If isTicketBuyDone And ticketNum>0  Then 
         ticketBuyCount = ticketBuyCount - 1
@@ -1435,7 +1461,7 @@ Function runRaid()
         
         
        
-        //低于设定票数时只打屎
+        //小于等于设定票数时只打屎
         If ticketNum <> -1 And ticketNum <= shiCount Then 
             
             srMode = True
@@ -1525,7 +1551,7 @@ Function runRaid()
             TracePrint "facheCount,",facheCount
             TracePrint "facheMode,",facheMode
             TracePrint "srNomal,",srNomal
-            //大于5票才打ssr
+            //大于设定票数才打ssr
             If ticketNum > shiCount Then 
                 //发车时 先使用免费票
                 If raidfree Then 
@@ -1623,12 +1649,21 @@ Function runRaid()
     End If
 		
     If targetY <> -1 Then 
+    	If ticketNum = 0 Then 
+        	If ticketBuyCount > 0 Then 
+            	TracePrint "点击加号买票"
+            	Touch 1026,436, 200
+            	Delay 1000
+            	yesBtn
+            	isTicketBuyDone = True
+            Else 
+            	Exit Function
+        	End If
+    	End If
         //进入准备页面
         TracePrint "进入准备页面,本次寻找目标费时:",(TickCount()-timeRecord)\1000,"秒"
         timeRecord = TickCount()
-        //点击三次
-        Touch 248, targetY, 200
-        Delay 200
+        //点击两次次
         Touch 248, targetY, 200
         Delay 200
         Touch 248, targetY, 200
@@ -2118,11 +2153,12 @@ Function facheche()
 		
     Wend
     count = 0
-    zm.Swipe 459, 759, 459, 500, 200
-    zm.Swipe 459, 759, 459, 500, 200
-    zm.Swipe 459, 759, 459, 500, 200
-    TracePrint "滑动到底部"
-    Touch 607, 1332, 200
+//    zm.Swipe 459, 759, 459, 500, 200
+//    zm.Swipe 459, 759, 459, 500, 200
+//    zm.Swipe 459, 759, 459, 500, 200
+//    TracePrint "滑动到底部"
+	TracePrint "点击第一个"
+    Touch 218,370, 200
     TracePrint "点击1-8"
     Delay 2000
     //战斗设定并点击战斗
@@ -2337,7 +2373,7 @@ Function confirmStaySrChe()
     Dim targetX = -1
     Dim targetY = -1
     Delay 200
-    FindPic 168,1773,1000,1919,"Attachment:sr_che_stay.png","000000",0,0.8,targetX,targetY
+    FindPic 168,1773,1000,1919,"Attachment:sr_che_stay.png","000000",0,0.7,targetX,targetY
     If targetX > -1 And targetY > -1 Then
         confirmStaySrChe = True
     Else 
@@ -2349,13 +2385,13 @@ Function findAndClickSrCheBtn()
     Dim targetX = -1
     Dim targetY = -1
     Delay 200
-    FindPic 212,1783,1000,1868,"Attachment:sr_che.png","000000",0,0.8,targetX,targetY
+    FindPic 212,1783,1000,1868,"Attachment:sr_che.png","000000",0,0.7,targetX,targetY
     If targetX > -1 And targetY > -1 Then
         count = 0
         While targetX > -1 And targetY > -1 And count < 10
             Touch targetX + 50, targetY + 50, 200
             Delay 500
-            FindPic 212, 1783, 1000, 1868, "Attachment:sr_che.png", "000000", 0, 0.8, targetX, targetY
+            FindPic 212, 1783, 1000, 1868, "Attachment:sr_che.png", "000000", 0, 0.7, targetX, targetY
             Delay 500
             count = count +1
         Wend
@@ -2443,7 +2479,7 @@ Function runFreeTicket()
     count = 0
     While targetX = -1 And targetY = -1 And count < 5
         Delay 1000
-        FindPic 332, 1434, 767, 1591, "Attachment:che_start.png", "000000", 0, 0.8, targetX, targetY
+        FindPic 332, 1434, 767, 1591, "Attachment:che_start.png", "000000", 0, 0.6, targetX, targetY
 		TracePrint "找到开始按钮",targetX,targetY
         count = count+1
     Wend
@@ -2457,7 +2493,7 @@ Function runFreeTicket()
         Touch targetX,targetY,200
         count = count + 1
         Delay 1000
-        FindPic 332, 1434, 767, 1591, "Attachment:che_start.png", "000000", 0, 0.8, targetX, targetY
+        FindPic 332, 1434, 767, 1591, "Attachment:che_start.png", "000000", 0, 0.6, targetX, targetY
     Wend
     If count = 5 Then 
         resetScript
@@ -2511,7 +2547,7 @@ Function isRaidFreeTicketEnable()
     Dim targetX = -1
     Dim targetY = -1
     Delay 200
-    FindPic 8,1535,266,1674,"Attachment:sold_out.png","000000",0,0.9,targetX,targetY
+    FindPic 8,1535,266,1674,"Attachment:sold_out.png","000000",0,0.7,targetX,targetY
     If targetX > -1 And targetY > -1 Then     
         TracePrint "免费票用完了"
         isRaidFreeTicketEnable = False
@@ -2705,7 +2741,9 @@ Function clickSR()
     While srX = -1 And srY = -1 And tempCount < 3
         Delay 1000
         //        findMultiColorResult 90, 110, 1064, 620, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED"
-        FindMultiColor srTagStartX,srTagStartY,srTagEndX,srTagEndY,"31302E","25|-2|2A1F71,19|8|419DF0,7|19|396DEE,28|27|3343ED,10|33|2D25EB,21|37|3C3B39,37|30|2D2C2A,38|42|2A05EB",0,0.9,srX,srY
+//        FindMultiColor srTagStartX,srTagStartY,srTagEndX,srTagEndY,"31302E","25|-2|2A1F71,19|8|419DF0,7|19|396DEE,28|27|3343ED,10|33|2D25EB,21|37|3C3B39,37|30|2D2C2A,38|42|2A05EB",0,0.9,srX,srY
+       	FindPic srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png","000000",0,0.6,srX,srY
+        
         tempCount = tempCount + 1
          
     Wend
@@ -2719,7 +2757,7 @@ Function clickSR()
         Touch srX, srY, 200
         Delay 1000
         TracePrint "sr按钮是否还存在"
-        FindMultiColor srTagStartX,srTagStartY,srTagEndX,srTagEndY,"31302E","25|-2|2A1F71,19|8|419DF0,7|19|396DEE,28|27|3343ED,10|33|2D25EB,21|37|3C3B39,37|30|2D2C2A,38|42|2A05EB",0,0.9,srX,srY    
+        FindPic srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png","000000",0,0.6,srX,srY    
         tempCount = tempCount +1
     Wend
     TracePrint "sr按钮已消失"
@@ -2733,7 +2771,7 @@ Function isSR()
     Dim tempCount = 0
     TracePrint "找sr"
 
-    While Not findMultiColorResult( srTagStartX,srTagStartY,srTagEndX,srTagEndY,"31302E","25|-2|2A1F71,19|8|419DF0,7|19|396DEE,28|27|3343ED,10|33|2D25EB,21|37|3C3B39,37|30|2D2C2A,38|42|2A05EB") And tempCount < 5
+    While Not findPicResult( srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png") And tempCount < 5
         Delay 1000
         tempCount =tempCount +1
     Wend
@@ -3608,7 +3646,6 @@ Function findshiInNormalMode()
     shiPicCount =0
     Dim tempBossPicCount = bossPicCount
     Dim tempShiPicCount = shiPicCount
-    Dim slideCount =3
     Dim tempTimeCount = TickCount()
     
     // 极速模式开启时，如果没有史莱姆，直接寻找boss
@@ -3626,7 +3663,7 @@ Function findshiInNormalMode()
    
     
     //在当前界面寻找boss
-    While targetX = -1 And targetY = -1 And count < 3 And result = True
+    While targetX = -1 And targetY = -1 And count <= refreshPageCount And result = True
         TracePrint "在当前界面找boss","寻找起点Y",startY
         KeepCapture 
         If count = 0 And getaward Then 
@@ -3737,11 +3774,12 @@ Function matchColor()
     Wend
 End Function
 
+//单次领奖
 Function autoGetAward()
     Dim startTime = TickCount()
     Dim intX,intY
-	
-    Dim result = findMultiColorResult_static(400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
+	//点击给定位置胜利图标
+    Dim result = FindMultiColorAndClick2Dismiss(400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
     //	FindMultiColor 400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266",0,0.9,intX,intY
     //	If intX > -1 And intY > -1 Then
     //		TracePrint intX
@@ -3750,58 +3788,119 @@ Function autoGetAward()
     //识别是否能领奖
     //点击领奖
     //领奖结束
+	Dim successGetAward = False
+	Dim timeOut = 1 * 60 * 1000
+	Dim count= 0
+    
+   If Not result Then 
+   	autoGetAward = False
+   	Exit Function
+   End If
+    
+
 	
-    autoGetAward = result
-    While result
+    While Not findMultiColorResult_static(400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
         bossKilled = False
-        //领奖状态下，如果识别到sr，或者超时,就算领奖完成
-        FindMultiColorAndClick2Dismiss( 400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
-		
-        Delay 200		
-        If isSR() Then 
-            Exit While
-        ElseIf TickCount() - startTime > 5 * 60 * 1000 Then
-            //领奖状态下，超时5分钟，结束领奖
-            Exit While
+        
+        If TickCount() - startTime > timeOut Then
+            //领奖状态下，超时，结束领奖
+            autoGetAward =False
+            Exit Function
         End If
 		
-        zm.Tap 530, 1170 //点击金币go按钮
+        Delay 200
+        
+		If count Mod 3 = 0 Then 
+			zm.Tap 530, 1170 //点击金币go按钮
+		ElseIf count Mod 3 = 1 Then
+			zm.Tap 540, 1337 //点击抽奖确认
+		ElseIf count Mod 3 = 2 Then
+			zm.Tap 530, 1640 //点击结果确认
+		End If
 		
-        Delay 200		
-        If findMultiColorResult(738, 322, 1074, 451, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED") Then 
-            Exit While
-        ElseIf TickCount() - startTime > 5 * 60 * 1000 Then
-            //领奖状态下，超时5分钟，结束领奖
-            Exit While
-        End If
-		
-        zm.Tap 540, 1337 //点击抽奖确认
-		
-        Delay 200		
-        If findMultiColorResult(738, 322, 1074, 451, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED") Then 
-            Exit While
-        ElseIf TickCount() - startTime > 5 * 60 * 1000 Then
-            //领奖状态下，超时5分钟，结束领奖
-            Exit While
-        End If
-		
-        zm.Tap 530, 1640 //点击结果确认
-		
-        Delay 200		
-        If findMultiColorResult(738, 322, 1074, 451, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED") Then 
-            Exit While
-        ElseIf TickCount() - startTime > 5 * 60 * 1000 Then
-            //领奖状态下，超时5分钟，结束领奖
-            Exit While
-        End If
-		
+        Delay 200
+        	
+        count = count +1
+        
+//        result = findMultiColorResult_static(400, 800, 675, 920, "25E572", "13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
+//        //重新找到胜利图标，表示单次领奖完成	结束循环
+//		result = Not result
     Wend
 	
-	
+	autoGetAward = True
 
 	
 End Function
 
+
+Function raidCheck()
+	Dim intX=-1,intY=-1
+	Dim srResult =  isSR()
+	Delay 200
+	Dim refreshResult = False
+	FindPic 40, 683, 222, 748, "Attachment:refresh.png", "000000", 0, 0.7, intX, intY
+	If intX > -1 And intY > -1 Then 
+		refreshResult = True
+	Else 
+		refreshResult = False
+	End If
+	Dim bossOne = False
+	FindPic normalBossStartX, startY, screenX, normalBossStartENDY, "Attachment:xuetiao.png", "000000", 0, 0.8,intX, intY
+	If intX > -1 And intY > -1 Then 
+		bossOne = True
+	Else 
+		bossOne = False
+	End If
+	Delay 200
+	Dim bossTwo = False
+	FindPic normalBossStartX, startY+itemHeight, screenX, normalBossStartENDY+itemHeight, "Attachment:xuetiao.png", "000000", 0, 0.8,intX, intY
+	If intX > -1 And intY > -1 Then 
+		bossTwo = True
+	Else 
+		bossTwo = False
+	End If
+	Delay 200
+	Dim bossThree = False
+	FindPic normalBossStartX, startY+2*itemHeight, screenX, normalBossStartENDY+2*itemHeight, "Attachment:xuetiao.png", "000000", 0, 0.8,intX, intY
+	If intX > -1 And intY > -1 Then 
+		bossThree = True
+	Else 
+		bossThree = False
+	End If
+	Delay 200
+	Dim storeResult = False
+	storeResult = findRaidStore()
+	Dim tickeFreetEnalbe = False
+	tickeFreetEnalbe = isRaidFreeTicketEnable()
+	Dim srBossBtnResult = False
+	srBossBtnResult = findAndClickSrBossBtn()
+
+	UI.NewLayout ("检测结果")
+	UI.AddTextView "检测结果", "", "sr标记："
+	UI.AddTextView "检测结果", "", CStr(srResult)
+	UI.NewRow "检测结果", ""
+	UI.AddTextView "检测结果", "", "刷新标记："
+	UI.AddTextView "检测结果", "", CStr(refreshResult)
+	UI.NewRow "检测结果", ""
+	UI.AddTextView "检测结果", "", "第一个boss："
+	UI.AddTextView "检测结果", "", CStr(bossOne)
+	UI.NewRow "检测结果", ""
+	UI.AddTextView "检测结果", "", "第二个boss："
+	UI.AddTextView "检测结果", "", CStr(bossTwo)
+	UI.NewRow "检测结果", ""
+	UI.AddTextView "检测结果", "", "第三个boss："
+	UI.AddTextView "检测结果", "", CStr(bossThree)
+	UI.NewRow "检测结果", ""
+	UI.AddTextView "检测结果", "", "进入raid商店："
+	UI.AddTextView "检测结果", "", CStr(storeResult)
+	UI.NewRow "检测结果", ""
+	UI.AddTextView "检测结果", "", "raid商店免费票可用："
+	UI.AddTextView "检测结果", "", CStr(tickeFreetEnalbe)
+	UI.NewRow "检测结果", ""
+	UI.AddTextView "检测结果", "", "切换到raidboss："
+	UI.AddTextView "检测结果", "", CStr(srBossBtnResult)
+	UI.Show("检测结果")
+End Function
 
 
 
@@ -3822,6 +3921,11 @@ Function OnScriptExit()
     UI.NewRow("结果统计","")
     UI.AddTextView "结果统计", "", "本次剩余可买票数："
     UI.AddTextView "结果统计", "", CStr(ticketBuyCount)
+    
+    UI.NewRow("结果统计","")
+    UI.AddTextView "结果统计", "", "本次剩余发车数："
+    UI.AddTextView "结果统计", "", CStr(facheCount)
+    
     Dim width=GetScreenX()
 
     UI.NewRow "结果统计", ""
