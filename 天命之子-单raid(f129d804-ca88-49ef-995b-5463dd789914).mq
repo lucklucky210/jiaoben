@@ -2248,7 +2248,7 @@ End Function
 
 Function clickFightEndless()
 	Dim intX=-1,intY=-1
-	Touch 979, 437, 200
+	Touch 972,392, 200
 	TracePrint "点击连续战斗按钮"
 	Delay 1000
 	FindPic 815, 498, 1077, 773, "Attachment:fight.png", "000000", 0, 0.8, intX, intY
@@ -2268,7 +2268,9 @@ Function clickFightEndless()
     //点最大
     Touch 814,891, 200
     Delay 500
-	FindPic 98,568,745,699,"Attachment:repeatmode.png","000000",0,0.8,intX,intY
+
+	//FindPic 98,568,745,699,"Attachment:repeatmode.png","000000",0,0.8,intX,intY
+	FindColor 120,588,206,675,"009EF1",0,0.9,intX,intY
 	If intX > -1 And intY > -1 Then
 		TracePrint "已勾选重复战斗"
 		clickFightEndless = True
@@ -2428,13 +2430,16 @@ Function findAndClickSrCheBtn()
     Dim targetX = -1
     Dim targetY = -1
     Delay 200
-    FindPic 331,1813,554,1918,"Attachment:sr_che.png","000000",0,0.7,targetX,targetY
+
+   // FindPic 331,1813,554,1918,"Attachment:sr_che.png","000000",0,0.7,targetX,targetY
+    FindMultiColor 318,1738,571,1912,"01D0FF","0|13|03BCFF,12|20|03BBFF,28|18|03BBFF,-21|23|03B4FF,3|43|01AAFF,37|40|01AAFF,-20|52|01AAFF,-5|60|01AAFF",0,0.9,targetX,targetY
     If targetX > -1 And targetY > -1 Then
         count = 0
         While targetX > -1 And targetY > -1 And count < 5
             Touch targetX + 50, targetY + 50, 200
             loading
-            FindPic 331, 1813, 554, 1918, "Attachment:sr_che.png", "000000", 0, 0.7, targetX, targetY
+            //FindPic 331, 1813, 554, 1918, "Attachment:sr_che.png", "000000", 0, 0.7, targetX, targetY
+            FindMultiColor 318,1738,571,1912,"01D0FF","0|13|03BCFF,12|20|03BBFF,28|18|03BBFF,-21|23|03B4FF,3|43|01AAFF,37|40|01AAFF,-20|52|01AAFF,-5|60|01AAFF",0,0.9,targetX,targetY
             Delay 500
             If confirmStaySrChe() Then 
             	targetX = -1
