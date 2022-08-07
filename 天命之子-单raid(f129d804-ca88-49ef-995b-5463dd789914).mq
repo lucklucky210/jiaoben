@@ -406,7 +406,7 @@ Dim totalShiCount = 0
 //TracePrint appIsSuspend()
 //findRaidStore
 //findAndClickBtn_width_260_height_90(539, 1039, 901, 1208)
-//EndScript
+//gEndScript
 
 //////////////
 setConfig 
