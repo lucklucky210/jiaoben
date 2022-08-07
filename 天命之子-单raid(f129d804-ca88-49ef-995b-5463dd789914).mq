@@ -405,6 +405,7 @@ Dim totalShiCount = 0
 //TracePrint findPicResultWithCount(307,670,533,756, "Attachment:friend_help.png", 2)
 //TracePrint appIsSuspend()
 //findRaidStore
+//findAndClickBtn_width_260_height_90(539, 1039, 901, 1208)
 //EndScript
 
 //////////////
@@ -2172,6 +2173,10 @@ Function facheche()
         resetScript
         Exit Function
     End If
+    //点击忽略包裹和天子超载
+    If findAndClickBtn_width_260_height_90(539, 1039, 901, 1208) Then 
+        TracePrint "点击忽略满包裹和满天子的情况"
+    End If
 
     Dim intX = -1
     Dim intY = -1
@@ -2401,7 +2406,8 @@ Function findAndClickFightBtn()
             FindPic 815, 498, 1077, 773, "Attachment:fight.png", "000000", 0, 0.8, targetX, targetY
             Delay 500
             count = count+1
-        Wend
+        Wend        
+           
         If count = 10 Then 
             TracePrint "点击战斗按钮失败"
             findAndClickFightBtn = False
