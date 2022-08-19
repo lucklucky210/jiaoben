@@ -1429,6 +1429,8 @@ Function runRaid()
             TracePrint "µã»÷¼ÓºÅÂòÆ±"
             Touch 1026,436, 200
             Delay 1000
+            Touch 261,1088,200
+            Delay 1000
             yesBtn
             isTicketBuyDone = True
         End If
