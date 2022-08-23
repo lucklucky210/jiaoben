@@ -18,3 +18,4 @@ Function recordSelfBoss()
 	SnapShot "/sdcard/self.png", 31, 944, 316, 977
 	ShowMessage("²Ù×÷³É¹¦")
 End Function
+

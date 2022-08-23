@@ -191,9 +191,9 @@ TracePrint "发车次数设置：",facheCount
 
 refreshPageCount = ReadUIConfig("refreshPageCount", 3)
 If refreshPageCount Then 
-	refreshPageCount = CInt(refreshPageCount)
+    refreshPageCount = CInt(refreshPageCount)
 Else 
-	refreshPageCount = 3
+    refreshPageCount = 3
 End If
 TracePrint "刷新页数:",refreshPageCount
 
@@ -522,8 +522,8 @@ While True
             //        	End If
             //        	runDaily
             If raidCheckStart Then 
-            	raidCheck 
-            	ExitScript
+                raidCheck 
+                ExitScript
             End If
             runRaid 
         	
@@ -542,9 +542,9 @@ Wend
 
 //app是否卡死
 Function appIsSuspend()
-	//连续战斗结束会出现卡在胜利界面的情况，截取胜利文字上的颜色判断是否卡死
-	Dim fightConditionX = 695
-	Dim fightConditionY = 721
+    //连续战斗结束会出现卡在胜利界面的情况，截取胜利文字上的颜色判断是否卡死
+    Dim fightConditionX = 695
+    Dim fightConditionY = 721
     Dim color = GetPixelColor (fightConditionX,fightConditionY,0)
     Dim temColor
     Dim count = 0
@@ -1244,7 +1244,7 @@ Function selectCondition()
         Touch 939,709, 200
         TracePrint "点击设定按钮"
         Delay 500
-    	count = 0
+        count = 0
         While condition_querenX = -1 And condition_querenY = -1 And count <20
             FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
             count = count + 1
@@ -1390,12 +1390,12 @@ Function runRaid()
     //开始领奖，领完再进行raid
     If startGetAward Then 
         clickNormalRefresh 
-       	While startGetAward
-       		autoGetAward 
-       		If TickCount() - timeRecord > 30 * 60 * 1000 Then 
-       			Exit While
-       		End If
-       	Wend
+        While startGetAward
+            autoGetAward 
+            If TickCount() - timeRecord > 30 * 60 * 1000 Then 
+                Exit While
+            End If
+        Wend
         startGetAward = False
     End If
 	
@@ -1431,24 +1431,32 @@ Function runRaid()
             Delay 1000
             Touch 261,1088,200
             Delay 1000
-            yesBtn
+            yesBtn 
+            Delay 1000
+            Touch 514, 1364, 200
             isTicketBuyDone = True
         End If
         
         Delay 1000
+        //不在raid界面
+        result = isSR()
+        TracePrint "买票后isRaid:",result
+        If result = False Then 
+            backToHome
+        End If
         
-       	ticketstr = myOcrText2ticketNum()
+        ticketstr = myOcrText2ticketNum()
        	
-       	If ticketstr Then 
-        	ticketNum = CInt(ticketstr)
-    	Else 
-        	ticketNum = 0
-    	End If
+        If ticketstr Then 
+            ticketNum = CInt(ticketstr)
+        Else 
+            ticketNum = 0
+        End If
     	
-    	If isTicketBuyDone And ticketNum>0  Then 
-        	ticketBuyCount = ticketBuyCount - 1
-        	isTicketBuyDone = False
-    	End If
+        If isTicketBuyDone And ticketNum>0  Then 
+            ticketBuyCount = ticketBuyCount - 1
+            isTicketBuyDone = False
+        End If
     End If
 		
     //设定展示顺序
@@ -1923,7 +1931,7 @@ End Function
 
 //正在加载中
 Function loading()
-	Dim count= 0
+    Dim count= 0
     While True And count<30
         Dim intX =-1 ,intY =-1
         Dim tempX = -1,tempY = -1
@@ -2154,18 +2162,18 @@ Function facheche()
         Exit Function
     End If
     Dim count = 0
-//    While Not confirmStaySrChe() And count <60
-//        findAndClickSrCheBtn
-//        count = count+1
-//        Delay 1000
-//		
-//    Wend
+    //    While Not confirmStaySrChe() And count <60
+    //        findAndClickSrCheBtn
+    //        count = count+1
+    //        Delay 1000
+    //		
+    //    Wend
     count = 0
-//    zm.Swipe 459, 759, 459, 500, 200
-//    zm.Swipe 459, 759, 459, 500, 200
-//    zm.Swipe 459, 759, 459, 500, 200
-//    TracePrint "滑动到底部"
-	TracePrint "点击第一个"
+    //    zm.Swipe 459, 759, 459, 500, 200
+    //    zm.Swipe 459, 759, 459, 500, 200
+    //    zm.Swipe 459, 759, 459, 500, 200
+    //    TracePrint "滑动到底部"
+    TracePrint "点击第一个"
     Touch 218,370, 200
     TracePrint "点击1-8"
     Delay 2000
@@ -2195,8 +2203,8 @@ Function facheche()
         //		ReleaseCapture 
         count = count + 1
         If count > 100 And appIsSuspend() Then 
-        	count = 450
-        	Exit While
+            count = 450
+            Exit While
         End If
         Delay 2000
     Wend
@@ -2254,39 +2262,39 @@ Function isFightEndlessSetEnable()
 End Function
 
 Function clickFightEndless()
-	Dim intX=-1,intY=-1
-	Touch 972,392, 200
-	TracePrint "点击连续战斗按钮"
-	Delay 1000
-	FindPic 815, 498, 1077, 773, "Attachment:fight.png", "000000", 0, 0.8, intX, intY
-	If intX > -1 And intY > -1 Then 
-		clickFightEndless = False
-		Exit Function
-	End If
-     //点持续战斗下一场
-//    Touch 157, 493, 200
-//    Delay 500
+    Dim intX=-1,intY=-1
+    Touch 972,392, 200
+    TracePrint "点击连续战斗按钮"
+    Delay 1000
+    FindPic 815, 498, 1077, 773, "Attachment:fight.png", "000000", 0, 0.8, intX, intY
+    If intX > -1 And intY > -1 Then 
+        clickFightEndless = False
+        Exit Function
+    End If
+    //点持续战斗下一场
+    //    Touch 157, 493, 200
+    //    Delay 500
     //点重复战斗按钮
     Touch 165, 629, 200
     Delay 500
     //点最小
-//    Touch 263, 887, 200
-//    Delay 200
+    //    Touch 263, 887, 200
+    //    Delay 200
     //点最大
     Touch 814,891, 200
     Delay 500
 
-	//FindPic 98,568,745,699,"Attachment:repeatmode.png","000000",0,0.8,intX,intY
-	FindColor 120,588,206,675,"009EF1",0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then
-		TracePrint "已勾选重复战斗"
-		clickFightEndless = True
-		//点确认
-    	Touch 521,1721,200
-    	Delay 200
+    //FindPic 98,568,745,699,"Attachment:repeatmode.png","000000",0,0.8,intX,intY
+    FindColor 120,588,206,675,"009EF1",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        TracePrint "已勾选重复战斗"
+        clickFightEndless = True
+        //点确认
+        Touch 521,1721,200
+        Delay 200
     Else 
-    	TracePrint "未勾选重复战斗"
-	End If
+        TracePrint "未勾选重复战斗"
+    End If
     
 End Function
 
@@ -2381,25 +2389,25 @@ Function findAndClickFightBtn()
     Wend
     TracePrint "找到战斗按钮:",targetX,targetY
     count = 0
-//    While targetX > -1 And targetY > -1 And count < 10
-//     	If clickFightEndless() Then 
-//     		Exit While
-//     	End If
-//    	Delay 1000
-//        FindPic 815, 498, 1077, 773, "Attachment:fight.png", "000000", 0, 0.8, targetX, targetY	
-//    Wend
+    //    While targetX > -1 And targetY > -1 And count < 10
+    //     	If clickFightEndless() Then 
+    //     		Exit While
+    //     	End If
+    //    	Delay 1000
+    //        FindPic 815, 498, 1077, 773, "Attachment:fight.png", "000000", 0, 0.8, targetX, targetY	
+    //    Wend
     If targetX > -1 And targetY > -1 Then 
-//        If Not isFightEndlessSetEnable() Then 
-//            findAndClickFightBtn = False
-//            Exit Function
-//        End If
+        //        If Not isFightEndlessSetEnable() Then 
+        //            findAndClickFightBtn = False
+        //            Exit Function
+        //        End If
         //连续战斗设定
-       	While Not clickFightEndless() And count < 5
-       		count = count+1
-       	Wend
-       	If count = 5 Then 
-       		findAndClickFightBtn = False
-       	End If
+        While Not clickFightEndless() And count < 5
+            count = count+1
+        Wend
+        If count = 5 Then 
+            findAndClickFightBtn = False
+        End If
         count = 0
         TracePrint "准备点击战斗按钮:",targetX,targetY
         While targetX > -1 And targetY > -1 And count < 10
@@ -2439,7 +2447,7 @@ Function findAndClickSrCheBtn()
     Dim targetY = -1
     Delay 200
 
-   // FindPic 331,1813,554,1918,"Attachment:sr_che.png","000000",0,0.7,targetX,targetY
+    // FindPic 331,1813,554,1918,"Attachment:sr_che.png","000000",0,0.7,targetX,targetY
     FindMultiColor 318,1738,571,1912,"01D0FF","0|13|03BCFF,12|20|03BBFF,28|18|03BBFF,-21|23|03B4FF,3|43|01AAFF,37|40|01AAFF,-20|52|01AAFF,-5|60|01AAFF",0,0.9,targetX,targetY
     If targetX > -1 And targetY > -1 Then
         count = 0
@@ -2450,8 +2458,8 @@ Function findAndClickSrCheBtn()
             FindMultiColor 318,1738,571,1912,"01D0FF","0|13|03BCFF,12|20|03BBFF,28|18|03BBFF,-21|23|03B4FF,3|43|01AAFF,37|40|01AAFF,-20|52|01AAFF,-5|60|01AAFF",0,0.9,targetX,targetY
             Delay 500
             If confirmStaySrChe() Then 
-            	targetX = -1
-            	targetY = -1
+                targetX = -1
+                targetY = -1
             End If
             count = count +1
         Wend
@@ -2540,7 +2548,7 @@ Function runFreeTicket()
     While targetX = -1 And targetY = -1 And count < 5
         Delay 1000
         FindPic 332, 1434, 767, 1591, "Attachment:che_start.png", "000000", 0, 0.6, targetX, targetY
-		TracePrint "找到开始按钮",targetX,targetY
+        TracePrint "找到开始按钮",targetX,targetY
         count = count+1
     Wend
     If count = 5 Then 
@@ -2629,7 +2637,7 @@ Function findRaidStore()
     Delay 200
    
     FindMultiColor raidStoreStartX,raidStoreStartY,raidStoreEndX,raidStoreEndY,"13DFFA","2|13|02D1F6,-8|22|04CEFB,4|36|2E93B7,6|69|030405,25|55|00B6FF,45|67|000000,54|58|05B6FF,26|74|00ABFF,27|82|000000",0,0.9,targetX,targetY
-//    FindPic raidStoreStartX,raidStoreStartY,raidStoreEndX,raidStoreEndY,"Attachment:raid_store.png","000000",0,0.9,targetX,targetY
+    //    FindPic raidStoreStartX,raidStoreStartY,raidStoreEndX,raidStoreEndY,"Attachment:raid_store.png","000000",0,0.9,targetX,targetY
     If targetX > -1 And targetY > -1 Then 
         While targetX > -1 And targetY > -1 And count <10
             Touch targetX + 50, targetY + 50, 100
@@ -2801,8 +2809,8 @@ Function clickSR()
     While srX = -1 And srY = -1 And tempCount < 3
         Delay 1000
         //        findMultiColorResult 90, 110, 1064, 620, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED"
-//        FindMultiColor srTagStartX,srTagStartY,srTagEndX,srTagEndY,"31302E","25|-2|2A1F71,19|8|419DF0,7|19|396DEE,28|27|3343ED,10|33|2D25EB,21|37|3C3B39,37|30|2D2C2A,38|42|2A05EB",0,0.9,srX,srY
-       	FindPic srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png","000000",0,0.6,srX,srY
+        //        FindMultiColor srTagStartX,srTagStartY,srTagEndX,srTagEndY,"31302E","25|-2|2A1F71,19|8|419DF0,7|19|396DEE,28|27|3343ED,10|33|2D25EB,21|37|3C3B39,37|30|2D2C2A,38|42|2A05EB",0,0.9,srX,srY
+        FindPic srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png","000000",0,0.6,srX,srY
         
         tempCount = tempCount + 1
          
@@ -2883,27 +2891,27 @@ Function findShi(x1, y1, x2, y2)
     Dim shiX = -1,shiY = -1
     Dim shiPageFindStartY = 760,shiPageFindEndY = 1700
     //"光","暗","木","水","火"
-    If shiColor = 0 Then 
-        //光
-        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_guang.png", "000000", 0, 0.6, shiX, shiY
-        TracePrint "shi_guang",shiX, shiY
-    ElseIf shiColor = 1 Then
-        //暗
-        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_an.png", "000000", 0, 0.6, shiX, shiY
-        TracePrint "shi_an",shiX, shiY
-    ElseIf shiColor = 2 Then
-        //木
-        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_mu.png", "000000", 0, 0.6, shiX, shiY
-        TracePrint "shi_mu",shiX, shiY
-    ElseIf shiColor = 3 Then
-        //水
-        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_shui.png", "000000", 0, 0.6, shiX, shiY
-        TracePrint "shi_shui",shiX, shiY
-    ElseIf shiColor = 4 Then
-        //火
-        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_huo.png", "000000", 0, 0.6, shiX, shiY
-        TracePrint "shi_huo",shiX, shiY
-    End If
+//    If shiColor = 0 Then 
+//        //光
+//        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_guang.png", "000000", 0, 0.6, shiX, shiY
+//        TracePrint "shi_guang",shiX, shiY
+//    ElseIf shiColor = 1 Then
+//        //暗
+//        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_an.png", "000000", 0, 0.6, shiX, shiY
+//        TracePrint "shi_an",shiX, shiY
+//    ElseIf shiColor = 2 Then
+//        //木
+//        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_mu.png", "000000", 0, 0.6, shiX, shiY
+//        TracePrint "shi_mu",shiX, shiY
+//    ElseIf shiColor = 3 Then
+//        //水
+//        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_shui.png", "000000", 0, 0.6, shiX, shiY
+//        TracePrint "shi_shui",shiX, shiY
+//    ElseIf shiColor = 4 Then
+//        //火
+//        FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, "Attachment:shi_huo.png", "000000", 0, 0.6, shiX, shiY
+//        TracePrint "shi_huo",shiX, shiY
+//    End If
     
   
     If shiX = -1 And shiY = -1 And raidTest Then 
@@ -3004,7 +3012,7 @@ Function findShi(x1, y1, x2, y2)
             If IsNull(ocrchar) = False And ocrchar <> "" Then 
                 bosslv = CInt(ocrchar)
             Else 
-            	bosslv = 0
+                bosslv = 0
             End If
             
             
@@ -3015,7 +3023,7 @@ Function findShi(x1, y1, x2, y2)
                     Else 
                         isShi = False
                     End If
-					isShi = True
+                    isShi = True
                     If isShi Then 
                         TracePrint "史莱姆快速找到到：",isShi,targetX,targetY
                         Exit While
@@ -3182,7 +3190,7 @@ Function findSelfBoss(startY,endY)
             FindMultiColor 8,startY,1069,endY,"2C1E6A","-9|29|24247C,-9|138|23257B,-6|232|211A64,1026|237|261D67,1036|210|050855,1037|60|0E1154,1024|-2|17175B,540|-5|04085B",0,0.9,intX,intY	
         End If
         If intX > -1 And intY > -1 Then 
-			intY = intY+itemHeight\2
+            intY = intY+itemHeight\2
             findResult = intX
             findResult = findResult & ","
             findResult = findResult & intY
@@ -3302,13 +3310,13 @@ Function dawan()
         If tempX = -1 And tempY = -1 Then 
             Delay 500          
             FindMultiColor 874, 1256, 1079, 1454, "009DFF", "-39|-3|00A1FF,10|78|008FFF,-91|12|181515,-103|36|00D8FF,-70|38|494241,-77|85|4F4645,-79|105|00C0FF,-78|129|191716", 0, 0.9, tempX, tempY
-  			If tempX > -1 And tempY > -1 Then 
-  				tempResult = findMultiColorResult_static(874, 1256, 1079, 1454, "009DFF", "-39|-3|00A1FF,10|78|008FFF,-91|12|181515,-103|36|00D8FF,-70|38|494241,-77|85|4F4645,-79|105|00C0FF,-78|129|191716")
-  				If Not tempResult Then 
-  					tempX = -1
-  					tempY = -1
-  				End If
-  			End If
+            If tempX > -1 And tempY > -1 Then 
+                tempResult = findMultiColorResult_static(874, 1256, 1079, 1454, "009DFF", "-39|-3|00A1FF,10|78|008FFF,-91|12|181515,-103|36|00D8FF,-70|38|494241,-77|85|4F4645,-79|105|00C0FF,-78|129|191716")
+                If Not tempResult Then 
+                    tempX = -1
+                    tempY = -1
+                End If
+            End If
             TracePrint "test666",tempX,tempY
             If tempX > -1 And tempY > -1 Then 
                 tempX = 900
@@ -3756,7 +3764,7 @@ Function findshiInNormalMode()
             TracePrint "上滑",count,"次"
             Delay 500
         Else 
-        	Exit While
+            Exit While
         End If
     	
       
@@ -3840,7 +3848,7 @@ End Function
 Function autoGetAward()
     Dim startTime = TickCount()
     Dim intX,intY
-	//点击给定位置胜利图标
+    //点击给定位置胜利图标
     Dim result = FindMultiColorAndClick2Dismiss(400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
     //	FindMultiColor 400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266",0,0.9,intX,intY
     //	If intX > -1 And intY > -1 Then
@@ -3850,14 +3858,14 @@ Function autoGetAward()
     //识别是否能领奖
     //点击领奖
     //领奖结束
-	Dim successGetAward = False
-	Dim timeOut = 1 * 60 * 1000
-	Dim count= 0
+    Dim successGetAward = False
+    Dim timeOut = 1 * 60 * 1000
+    Dim count= 0
     
-   If Not result Then 
-   	autoGetAward = False
-   	Exit Function
-   End If
+    If Not result Then 
+        autoGetAward = False
+        Exit Function
+    End If
     
 
 	
@@ -3872,120 +3880,120 @@ Function autoGetAward()
 		
         Delay 200
         
-		If count Mod 3 = 0 Then 
-			zm.Tap 530, 1170 //点击金币go按钮
-		ElseIf count Mod 3 = 1 Then
-			zm.Tap 540, 1337 //点击抽奖确认
-		ElseIf count Mod 3 = 2 Then
-			zm.Tap 530, 1640 //点击结果确认
-		End If
+        If count Mod 3 = 0 Then 
+            zm.Tap 530, 1170 //点击金币go按钮
+        ElseIf count Mod 3 = 1 Then
+            zm.Tap 540, 1337 //点击抽奖确认
+        ElseIf count Mod 3 = 2 Then
+            zm.Tap 530, 1640 //点击结果确认
+        End If
 		
         Delay 200
         	
         count = count +1
         
-//        result = findMultiColorResult_static(400, 800, 675, 920, "25E572", "13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
-//        //重新找到胜利图标，表示单次领奖完成	结束循环
-//		result = Not result
+        //        result = findMultiColorResult_static(400, 800, 675, 920, "25E572", "13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
+        //        //重新找到胜利图标，表示单次领奖完成	结束循环
+        //		result = Not result
     Wend
 	
-	autoGetAward = True
+    autoGetAward = True
 
 	
 End Function
 
 
 Function raidCheck()
-	Dim intX=-1,intY=-1
-	Dim srResult =  isSR()
-	Delay 200
-	Dim refreshResult = False
-	FindPic 40, 683, 222, 748, "Attachment:refresh.png", "000000", 0, 0.7, intX, intY
-	If intX > -1 And intY > -1 Then 
-		refreshResult = True
-	Else 
-		refreshResult = False
-	End If
-	Dim bossOne = False
-	FindPic normalBossStartX, startY, screenX, normalBossStartENDY, "Attachment:xuetiao.png", "000000", 0, 0.8,intX, intY
-	If intX > -1 And intY > -1 Then 
-		bossOne = True
-	Else 
-		bossOne = False
-	End If
-	Delay 200
-	Dim bossTwo = False
-	FindPic normalBossStartX, startY+itemHeight, screenX, normalBossStartENDY+itemHeight, "Attachment:xuetiao.png", "000000", 0, 0.8,intX, intY
-	If intX > -1 And intY > -1 Then 
-		bossTwo = True
-	Else 
-		bossTwo = False
-	End If
-	Delay 200
-	Dim bossThree = False
-	FindPic normalBossStartX, startY+2*itemHeight, screenX, normalBossStartENDY+2*itemHeight, "Attachment:xuetiao.png", "000000", 0, 0.8,intX, intY
-	If intX > -1 And intY > -1 Then 
-		bossThree = True
-	Else 
-		bossThree = False
-	End If
-	Delay 200
-	Dim storeResult = False
-	storeResult = findRaidStore()
-	Dim tickeFreetEnalbe = False
-	tickeFreetEnalbe = isRaidFreeTicketEnable()
+    Dim intX=-1,intY=-1
+    Dim srResult =  isSR()
+    Delay 200
+    Dim refreshResult = False
+    FindPic 40, 683, 222, 748, "Attachment:refresh.png", "000000", 0, 0.7, intX, intY
+    If intX > -1 And intY > -1 Then 
+        refreshResult = True
+    Else 
+        refreshResult = False
+    End If
+    Dim bossOne = False
+    FindPic normalBossStartX, startY, screenX, normalBossStartENDY, "Attachment:xuetiao.png", "000000", 0, 0.8,intX, intY
+    If intX > -1 And intY > -1 Then 
+        bossOne = True
+    Else 
+        bossOne = False
+    End If
+    Delay 200
+    Dim bossTwo = False
+    FindPic normalBossStartX, startY+itemHeight, screenX, normalBossStartENDY+itemHeight, "Attachment:xuetiao.png", "000000", 0, 0.8,intX, intY
+    If intX > -1 And intY > -1 Then 
+        bossTwo = True
+    Else 
+        bossTwo = False
+    End If
+    Delay 200
+    Dim bossThree = False
+    FindPic normalBossStartX, startY+2*itemHeight, screenX, normalBossStartENDY+2*itemHeight, "Attachment:xuetiao.png", "000000", 0, 0.8,intX, intY
+    If intX > -1 And intY > -1 Then 
+        bossThree = True
+    Else 
+        bossThree = False
+    End If
+    Delay 200
+    Dim storeResult = False
+    storeResult = findRaidStore()
+    Dim tickeFreetEnalbe = False
+    tickeFreetEnalbe = isRaidFreeTicketEnable()
 	
-	Delay 200
-	Dim facheResult = False
-	facheResult = findAndClickSrCheBtn()
+    Delay 200
+    Dim facheResult = False
+    facheResult = findAndClickSrCheBtn()
 	
-	Delay 2000
+    Delay 2000
 
-	Dim srBossBtnResult = False
-	srBossBtnResult = findAndClickSrBossBtn()
+    Dim srBossBtnResult = False
+    srBossBtnResult = findAndClickSrBossBtn()
 	
-	clickSR 
-	loading
-	findBOSS srDialogBossStartX, startY, screenX, screenY
-	Dim srModeBossResult = False
-	If targetX > -1 And targetY > -1 Then 
-		srModeBossResult = True
-	Else 
-		srModeBossResult = False
-	End If
+    clickSR 
+    loading
+    findBOSS srDialogBossStartX, startY, screenX, screenY
+    Dim srModeBossResult = False
+    If targetX > -1 And targetY > -1 Then 
+        srModeBossResult = True
+    Else 
+        srModeBossResult = False
+    End If
 	
 	
-	UI.NewLayout ("检测结果")
-	UI.AddTextView "检测结果", "", "sr标记："
-	UI.AddTextView "检测结果", "", CStr(srResult)
-	UI.NewRow "检测结果", ""
-	UI.AddTextView "检测结果", "", "刷新标记："
-	UI.AddTextView "检测结果", "", CStr(refreshResult)
-	UI.NewRow "检测结果", ""
-	UI.AddTextView "检测结果", "", "第一个boss："
-	UI.AddTextView "检测结果", "", CStr(bossOne)
-	UI.NewRow "检测结果", ""
-	UI.AddTextView "检测结果", "", "第二个boss："
-	UI.AddTextView "检测结果", "", CStr(bossTwo)
-	UI.NewRow "检测结果", ""
-	UI.AddTextView "检测结果", "", "第三个boss："
-	UI.AddTextView "检测结果", "", CStr(bossThree)
-	UI.NewRow "检测结果", ""
-	UI.AddTextView "检测结果", "", "进入raid商店："
-	UI.AddTextView "检测结果", "", CStr(storeResult)
-	UI.NewRow "检测结果", ""
-	UI.AddTextView "检测结果", "", "raid商店免费票可用："
-	UI.AddTextView "检测结果", "", CStr(tickeFreetEnalbe)
-	UI.NewRow "检测结果", ""
-	UI.AddTextView "检测结果", "", "发车模式："
-	UI.AddTextView "检测结果", "", CStr(facheResult)
-	UI.NewRow "检测结果", ""
-	UI.AddTextView "检测结果", "", "切换到raidboss："
-	UI.AddTextView "检测结果", "", CStr(srBossBtnResult)
-	UI.NewRow "检测结果", ""
-	UI.AddTextView "检测结果", "", "Sr模式找到boss："
-	UI.AddTextView "检测结果", "", CStr(srModeBossResult)
-	UI.Show("检测结果")
+    UI.NewLayout ("检测结果")
+    UI.AddTextView "检测结果", "", "sr标记："
+    UI.AddTextView "检测结果", "", CStr(srResult)
+    UI.NewRow "检测结果", ""
+    UI.AddTextView "检测结果", "", "刷新标记："
+    UI.AddTextView "检测结果", "", CStr(refreshResult)
+    UI.NewRow "检测结果", ""
+    UI.AddTextView "检测结果", "", "第一个boss："
+    UI.AddTextView "检测结果", "", CStr(bossOne)
+    UI.NewRow "检测结果", ""
+    UI.AddTextView "检测结果", "", "第二个boss："
+    UI.AddTextView "检测结果", "", CStr(bossTwo)
+    UI.NewRow "检测结果", ""
+    UI.AddTextView "检测结果", "", "第三个boss："
+    UI.AddTextView "检测结果", "", CStr(bossThree)
+    UI.NewRow "检测结果", ""
+    UI.AddTextView "检测结果", "", "进入raid商店："
+    UI.AddTextView "检测结果", "", CStr(storeResult)
+    UI.NewRow "检测结果", ""
+    UI.AddTextView "检测结果", "", "raid商店免费票可用："
+    UI.AddTextView "检测结果", "", CStr(tickeFreetEnalbe)
+    UI.NewRow "检测结果", ""
+    UI.AddTextView "检测结果", "", "发车模式："
+    UI.AddTextView "检测结果", "", CStr(facheResult)
+    UI.NewRow "检测结果", ""
+    UI.AddTextView "检测结果", "", "切换到raidboss："
+    UI.AddTextView "检测结果", "", CStr(srBossBtnResult)
+    UI.NewRow "检测结果", ""
+    UI.AddTextView "检测结果", "", "Sr模式找到boss："
+    UI.AddTextView "检测结果", "", CStr(srModeBossResult)
+    UI.Show("检测结果")
 End Function
 
 
