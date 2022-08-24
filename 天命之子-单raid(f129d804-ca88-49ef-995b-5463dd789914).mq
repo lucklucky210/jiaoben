@@ -254,7 +254,7 @@ Delay 4000
 // TracePrint ocrchar
 //  SnapShot "/sdcard/test.png",100,100,300,300
 
-//findAndClickBtn_width_260_height_90 360, 1582, 722, 1729
+//findAndClickBtn_width_260_height_90 588,1024,886,1157
 
 //While True
 //getAward()	
@@ -1431,7 +1431,7 @@ Function runRaid()
             Delay 1000
             Touch 261,1088,200
             Delay 1000
-            yesBtn 
+            findAndClickBtn_width_260_height_90(588,1024,886,1157)
             Delay 1000
             Touch 514, 1364, 200
             isTicketBuyDone = True
