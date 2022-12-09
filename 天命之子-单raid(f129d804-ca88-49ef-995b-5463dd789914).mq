@@ -1,3 +1,4 @@
+
 Import "zm.luae"
 
 zm.Init
@@ -306,6 +307,8 @@ Dim freeTicketEnable = True
 Dim freeTicketRecordDate =""
 //boss战斗标记
 Dim bossKilled = False
+
+Dim hasSetSuccessConfig = False
 
 Dim selfBossNamePath = "/sdcard/self.png"
 // 一直发车，蹲史莱姆的时候也发车
@@ -1232,11 +1235,11 @@ Function selectCondition()
         Touch 939,709, 200
         TracePrint "点击设定按钮"
         Delay 500
-        FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
+        FindPic 563,1686,897,1816, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
         count = count + 1	
     Wend
     Delay 200
-    FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
+    FindPic 563,1686,897,1816, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
     //点击设定按钮可能受到loading干扰导致点击失败
     If count = 20 And condition_querenX = -1 And condition_querenY = -1 Then 
         TracePrint "点击设定按钮可能受到loading干扰导致点击失败,检测loading"
@@ -1246,106 +1249,69 @@ Function selectCondition()
         Delay 500
         count = 0
         While condition_querenX = -1 And condition_querenY = -1 And count <20
-            FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
+            FindPic 563,1686,897,1816, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
             count = count + 1
             Delay 500	
         Wend
     End If
     count = 0
     Delay 200
-    FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
+    FindPic 563,1686,897,1816, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
     TracePrint "条件确认按钮XY：",condition_querenX,condition_querenY
     If condition_querenX = -1 And condition_querenY = -1 Then 
         TracePrint "未找到条件确认按钮 ，流程错误，重置"
         Exit Function
     End If
-	
-    //设定时间
-    While condition_timeX = -1 And condition_timeY = -1 And count < 20
-        Delay 200
-        FindPic 542, 1604, 763, 1734,"Attachment:condition_time.png", "000000", 0, 0.6, condition_timeX, condition_timeY
-        count = count + 1
-    Wend
-    TracePrint "设定时间XY：",condition_timeX,condition_timeY
-    If count = 20 And condition_timeX = -1 And condition_timeY = -1 Then 
-        loading 
-        FindPic 542, 1604, 763, 1734,"Attachment:condition_time.png", "000000", 0, 0.6, condition_timeX, condition_timeY
-    End If
-    count = 0
-    If condition_timeX = -1 And condition_timeY = -1 Then 
-        TracePrint "设定时间按钮未找到，重置"
-        Exit Function
-    End If
-	
-    While condition_timeX > -1 And condition_timeY > -1 And count < 20
-        Touch condition_timeX + 50, condition_timeY + 50, 200
-        count = count + 1
-        Delay 200
-        FindPic 542, 1604, 763, 1734,"Attachment:condition_time.png", "000000", 0, 0.6, condition_timeX, condition_timeY
-    Wend
-    If count = 20 And condition_timeX > -1 And condition_timeY > -1 Then 
-        loading 
-        Touch condition_timeX + 50, condition_timeY + 50, 200
-        Delay 200
-        FindPic 542, 1604, 763, 1734,"Attachment:condition_time.png", "000000", 0, 0.6, condition_timeX, condition_timeY
-    End If
-    count = 0
-	
-    If condition_timeX > -1 And condition_timeY > -1 Then 
-        Exit Function
-    End If
-	
-	
-    Delay 1000
-    //设定-<未打过>
-    While condition_weicanjiaX = -1 And condition_weicanjiaY = -1 And count <20
-        Delay 200
-        FindPic 517, 1804, 765, 1900, "Attachment:condition_weicanjia.png", "000000", 0, 0.6, condition_weicanjiaX, condition_weicanjiaY
-        count = count + 1
-    Wend
-    TracePrint "<未打过设定按钮>XY:",condition_weicanjiaX,condition_weicanjiaY
-    //判断是否loading导致未找到按钮
-    If count = 20 And condition_weicanjiaX = -1 And condition_weicanjiaY = -1 Then 
-        TracePrint "设定时间后刷新超时,走loading后再读取一次<未打过按钮>坐标"
-        loading 
-        FindPic 517, 1804, 765, 1900, "Attachment:condition_weicanjia.png", "000000", 0, 0.6, condition_weicanjiaX, condition_weicanjiaY
-        TracePrint "<未打过设定按钮>XY:",condition_weicanjiaX,condition_weicanjiaY
-    End If
-    count = 0
-	
-    If condition_weicanjiaX = -1 And condition_weicanjiaY = -1 Then 
-        TracePrint "未找到<未打过按钮>，重置"
-        Exit Function
-    End If
-    // 当勾选完时间后，确保<未打过按钮> 从 未勾选状态 变成勾选状态 
-    While condition_weicanjiaX > -1 And condition_weicanjiaY > -1 And count <20 
-        Touch condition_weicanjiaX + 50, condition_weicanjiaY + 30, 200
-        count = count+1
-        Delay 200
-        FindPic 517, 1804, 765, 1900, "Attachment:condition_weicanjia.png", "000000", 0, 0.6, condition_weicanjiaX, condition_weicanjiaY
-    Wend
-    //超过限制时间，<未打过按钮>没有被点击成功,排除loading导致没点击成功(假定loading能识别到按钮)
-    If count = 20 And condition_weicanjiaX > -1 And condition_weicanjiaY > -1 Then 
-        loading 
-        Touch condition_weicanjiaX + 50, condition_weicanjiaY + 30, 200
-        Delay 200
-        FindPic 517, 1804, 765, 1900, "Attachment:condition_weicanjia.png", "000000", 0, 0.6, condition_weicanjiaX, condition_weicanjiaY
-    End If	
-    If condition_weicanjiaX > -1 And condition_weicanjiaY > -1 Then 
-        TracePrint "<未打过按钮>点击无反应"
-        Exit Function
+    //选择选项卡一
+    Touch 461, 209, 200
+    TracePrint "选择选项卡一"
+    Delay 500
+    
+   
+    If startGetAward Then 
+    	//设定胜利
+    	While Not 胜利已勾选()
+    		Delay 200
+    		Touch 194, 412, 200    		
+    	Wend
+    	//取消设定讨伐中
+    	While 讨伐中已勾选()
+    		Delay 200
+    		Touch 421, 399, 200   		
+    	Wend
+    	//取消设定未参加
+    	While 未参加已勾选()
+    		Delay 200
+    		Touch 445,602, 200   
+    	Wend
+    Else 
+    	//取消设定胜利
+    	While 胜利已勾选()
+    		Delay 200
+    		Touch 194, 412, 200    		
+    	Wend
+    	//设定讨伐中
+    	While Not 讨伐中已勾选()
+    		Delay 200
+    		Touch 421, 399, 200   		
+    	Wend
+    	//设定未参加
+    	While Not 未参加已勾选()
+    		Delay 200
+    		Touch 445,602, 200   
+    	Wend
     End If
 	
     Delay 200
     //都勾选完毕之后，确保确定按钮被点击消失并且只点一一次确认按钮
     Touch condition_querenX + 50, condition_querenY + 50, 200
-    Delay 200
-    FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY		
+    loading
+    FindPic 563,1686,897,1816, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY		
     If condition_querenX > -1 And condition_querenY > -1 Then 
         loading 
         Touch condition_querenX + 50, condition_querenY + 50, 200
         Delay 200
-        FindPic 399, 1402, 683, 1522, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
+        FindPic 563,1686,897,1816, "Attachment:condition_queren.png", "000000", 0, 0.6, condition_querenX, condition_querenY
     End If
 	
     If condition_querenX > -1 And condition_querenY > -1 Then 
@@ -1353,6 +1319,52 @@ Function selectCondition()
 		
     End If
 End Function
+
+Function 胜利已勾选()
+
+	Dim cmpResult
+	Delay 200
+	cmpResult = CmpColor(188,374,"00EAFF", 0.9)
+	If cmpResult = -1 Then 
+		胜利已勾选 = False
+	Else 
+		胜利已勾选 = True
+	End If
+	
+	
+End Function
+
+
+Function 讨伐中已勾选()
+
+	Dim cmpResult
+	Delay 200
+	cmpResult = CmpColor(422,375,"00EAFF", 0.9)
+	If cmpResult = -1 Then 
+		讨伐中已勾选 = False
+	Else 
+		讨伐中已勾选 = True
+	End If
+	
+	
+End Function
+
+Function 未参加已勾选()
+
+	Dim cmpResult
+	Delay 200
+	cmpResult = CmpColor(423,558,"00EAFF", 0.9)
+	If cmpResult = -1 Then 
+		未参加已勾选 = False
+	Else 
+		未参加已勾选 = True
+	End If
+	
+	
+End Function
+
+
+
 
 //raid
 Function runRaid()
@@ -1388,13 +1400,25 @@ Function runRaid()
     End If
     
     //开始领奖，领完再进行raid
+    
     If startGetAward Then 
-        clickNormalRefresh 
+        selectCondition 
+        hasSetSuccessConfig = True
+        count = 0
         While startGetAward
-            autoGetAward 
-            If TickCount() - timeRecord > 30 * 60 * 1000 Then 
-                Exit While
-            End If
+        	If autoGetAward() Then 
+        		count = 0
+        	Else 
+        		count = count +1
+        	End If
+        	If count > 10 Then 
+        		Exit While
+        	End If
+        	Delay 200
+           
+//            If TickCount() - timeRecord > 60 * 60 * 1000 Then 
+//                Exit While
+//            End If
         Wend
         startGetAward = False
     End If
@@ -1462,8 +1486,9 @@ Function runRaid()
     //设定展示顺序
     result = isCondition_OFF()
 	
-    If result And True Then 		
-        selectCondition
+    If hasSetSuccessConfig Or (result And True) Then 		
+        selectCondition 
+        hasSetSuccessConfig = False
     Else 
         clickNormalRefresh 	
 			
@@ -1711,12 +1736,11 @@ End Function
 
 //raid界面，条件是否未设置
 Function isCondition_OFF
-    Dim ocrchar
+    Dim cmpResult
     Delay 200
-    UseDict (0)
-    Delay 200
-    ocrchar = Ocr(776,711,847,753, "808080", 0.9)
-    If StrComp("OFF", ocrchar) = 0 Then 
+    cmpResult = CmpColor(880,711,"00C4FF",0.9)
+
+    If cmpResult = -1 Then 
         isCondition_OFF = True
     Else 
         isCondition_OFF = False
@@ -3857,8 +3881,6 @@ Function autoGetAward()
     //	End If
     //识别是否能领奖
     //点击领奖
-    //领奖结束
-    Dim successGetAward = False
     Dim timeOut = 1 * 60 * 1000
     Dim count= 0
     
@@ -3869,7 +3891,7 @@ Function autoGetAward()
     
 
 	
-    While Not findMultiColorResult_static(400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
+    While Not isSR()
         bossKilled = False
         
         If TickCount() - startTime > timeOut Then
@@ -3881,13 +3903,13 @@ Function autoGetAward()
         Delay 200
         
         If count Mod 3 = 0 Then 
-            zm.Tap 530, 1170 //点击金币go按钮
+        	zm.Tap 530, 1170 //点击金币go按钮
         ElseIf count Mod 3 = 1 Then
-            zm.Tap 540, 1337 //点击抽奖确认
+        	zm.Tap 540, 1337 //点击抽奖确认
         ElseIf count Mod 3 = 2 Then
             zm.Tap 530, 1640 //点击结果确认
         End If
-		
+        
         Delay 200
         	
         count = count +1
