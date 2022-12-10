@@ -2876,6 +2876,7 @@ Function isSR()
     End If
 End Function
 
+
 Function findBOSS(x1, y1, x2, y2)
     //识别度设置为0.8，防止干扰
     Delay 200
@@ -3891,7 +3892,7 @@ Function autoGetAward()
     
 
 	
-    While Not isSR()
+    While Not findMultiColorResult_static(400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
         bossKilled = False
         
         If TickCount() - startTime > timeOut Then
@@ -3904,11 +3905,15 @@ Function autoGetAward()
         
         If count Mod 3 = 0 Then 
         	zm.Tap 530, 1170 //点击金币go按钮
+        	TracePrint "点击金币go按钮"
         ElseIf count Mod 3 = 1 Then
         	zm.Tap 540, 1337 //点击抽奖确认
+        	TracePrint "点击抽奖确认"
         ElseIf count Mod 3 = 2 Then
             zm.Tap 530, 1640 //点击结果确认
+            TracePrint "点击结果确认"
         End If
+       
         
         Delay 200
         	
