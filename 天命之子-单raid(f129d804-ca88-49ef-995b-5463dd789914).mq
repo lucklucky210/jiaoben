@@ -2863,7 +2863,7 @@ Function isSR()
     Dim tempCount = 0
     TracePrint "’“sr"
 
-    While Not findPicResult( srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.pn|Attachment:srtag1.png") And tempCount < 5
+    While Not findPicResult( srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png|Attachment:srtag1.png") And tempCount < 5
         Delay 1000
         tempCount =tempCount +1
     Wend
