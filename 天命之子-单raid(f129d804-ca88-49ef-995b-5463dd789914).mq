@@ -2834,7 +2834,7 @@ Function clickSR()
         Delay 1000
         //        findMultiColorResult 90, 110, 1064, 620, "010105", "-2|3|43AAF0,2|6|1F2024,-6|12|3E8CF0,-18|3|271F5B,-26|19|396AEE,-26|23|0E0C24,-11|19|111213,-11|24|050506,-5|26|3345ED"
         //        FindMultiColor srTagStartX,srTagStartY,srTagEndX,srTagEndY,"31302E","25|-2|2A1F71,19|8|419DF0,7|19|396DEE,28|27|3343ED,10|33|2D25EB,21|37|3C3B39,37|30|2D2C2A,38|42|2A05EB",0,0.9,srX,srY
-        FindPic srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png","000000",0,0.6,srX,srY
+        FindPic srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png|Attachment:srtag1.png","000000",0,0.6,srX,srY
         
         tempCount = tempCount + 1
          
@@ -2849,7 +2849,7 @@ Function clickSR()
         Touch srX, srY, 200
         Delay 1000
         TracePrint "sr按钮是否还存在"
-        FindPic srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png","000000",0,0.6,srX,srY    
+        FindPic srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png|Attachment:srtag1.png","000000",0,0.6,srX,srY    
         tempCount = tempCount +1
     Wend
     TracePrint "sr按钮已消失"
@@ -2863,7 +2863,7 @@ Function isSR()
     Dim tempCount = 0
     TracePrint "找sr"
 
-    While Not findPicResult( srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png") And tempCount < 5
+    While Not findPicResult( srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.pn|Attachment:srtag1.png") And tempCount < 5
         Delay 1000
         tempCount =tempCount +1
     Wend
