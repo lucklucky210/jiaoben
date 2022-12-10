@@ -208,11 +208,11 @@ battlpauseinshi = ReadUIConfig("battlpauseinshi", 90)
 If battlpauseinshi Then 
     battlpauseinshi = CInt(battlpauseinshi)
 Else 
-    battlpauseinshi = 90
+    battlpauseinshi = 60
 End If
 
-If battlpauseinshi < 90 Then 
-    battlpauseinshi = 90
+If battlpauseinshi < 60 Then 
+    battlpauseinshi = 60
 End If
 
 
