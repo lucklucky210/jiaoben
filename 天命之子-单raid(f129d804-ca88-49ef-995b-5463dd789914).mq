@@ -314,8 +314,7 @@ Dim selfBossNamePath = "/sdcard/self.png"
 // 一直发车，蹲史莱姆的时候也发车
 Dim chekaiguan = False
 
-//买票成功
-Dim isTicketBuyDone = False
+
 // 票的购买次数
 Dim ticketBuyCount = 0
 
@@ -1364,6 +1363,53 @@ Function 未参加已勾选()
 End Function
 
 
+Function 买票第一步按钮出现()
+	Dim intX,intY
+	Delay 200
+	FindPic 397,1272,678,1387,"Attachment:买票第一步确认.png","000000",0,0.9,intX,intY
+	If intX > -1 And intY > -1 Then
+		买票第一步按钮出现 = True
+	Else 
+		买票第一步按钮出现 = False
+	End If
+End Function
+
+Function 点击买票第一步按钮直到消失()
+	Dim intX,intY
+	Delay 200
+	FindPic 397, 1272, 678, 1387, "Attachment:买票第一步确认.png", "000000", 0, 0.9, intX, intY
+	While intX > -1 And intY > -1
+		Delay 200
+		Touch intX, intY, 200
+		Delay 500
+		FindPic 397, 1272, 678, 1387, "Attachment:买票第一步确认.png", "000000", 0, 0.9, intX, intY
+	Wend
+	
+End Function
+
+Function 买票第二部确认按钮出现()
+	Dim intX,intY
+	Delay 200
+	FindPic 605,1043,883,1145,"Attachment:买票第二步确认按钮.png","000000",0,0.9,intX,intY
+	If intX > -1 And intY > -1 Then
+		买票第二部确认按钮出现 = True
+	Else 
+		买票第二部确认按钮出现 = False
+	End If
+End Function
+
+Function 点击买票第二步按钮直到消失()
+	Dim intX,intY
+	Delay 200
+	FindPic 605, 1043, 883, 1145, "Attachment:买票第二步确认按钮.png", "000000", 0, 0.9, intX, intY
+	While intX > -1 And intY > -1
+		Delay 200
+		Touch intX, intY, 200
+		Delay 500
+		FindPic 605, 1043, 883, 1145, "Attachment:买票第二步确认按钮.png", "000000", 0, 0.9, intX, intY
+	Wend
+	
+End Function
 
 
 //raid
@@ -1447,26 +1493,31 @@ Function runRaid()
  
 		
     //没票时退出
-    If ticketNum = 0 Then 
-    
-        If ticketBuyCount > 0 Then 
-            TracePrint "点击加号买票"
-            Touch 1026,436, 200
-            Delay 1000
-            Touch 261,1088,200
-            Delay 1000
-            findAndClickBtn_width_260_height_90(588,1024,886,1157)
-            Delay 1000
-            Touch 514, 1364, 200
-            isTicketBuyDone = True
-        End If
+    If ticketNum = 0 And ticketBuyCount > 0 Then 
+    	TracePrint "点击加号买票 直到按钮出现"
+    	While Not 买票第一步按钮出现()
+    		Delay 200
+    		Touch 1026, 436, 200
+    	Wend
+    	
+    	TracePrint "点击钻石图标，直到按钮出现"
+    	While Not 买票第二部确认按钮出现()
+    		Delay 200
+    		Touch 261,1088,200
+    	Wend
+    	点击买票第二步按钮直到消失 
+    	loading
+    	点击买票第一步按钮直到消失 
+    	loading
+    	
         
         Delay 1000
         //不在raid界面
         result = isSR()
         TracePrint "买票后isRaid:",result
         If result = False Then 
-            backToHome
+            backToHome 
+            Exit Function
         End If
         
         ticketstr = myOcrText2ticketNum()
@@ -1477,9 +1528,13 @@ Function runRaid()
             ticketNum = 0
         End If
     	
-        If isTicketBuyDone And ticketNum>0  Then 
+        If  ticketNum>0  Then 
             ticketBuyCount = ticketBuyCount - 1
-            isTicketBuyDone = False
+
+        End If
+        If ticketNum = 0 Then 
+        	
+        	Exit Function
         End If
     End If
 		
@@ -2876,6 +2931,12 @@ Function isSR()
     End If
 End Function
 
+Function isSRQuick()
+
+ isSRQuick = findPicResultWithCount(srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png|Attachment:srtag1.png",1)
+	
+End Function
+
 
 Function findBOSS(x1, y1, x2, y2)
     //识别度设置为0.8，防止干扰
@@ -3892,14 +3953,8 @@ Function autoGetAward()
     
 
 	
-    While Not findMultiColorResult_static(400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
+    While Not isSRQuick()
         bossKilled = False
-        
-        If TickCount() - startTime > timeOut Then
-            //领奖状态下，超时，结束领奖
-            autoGetAward =False
-            Exit Function
-        End If
 		
         Delay 200
         
