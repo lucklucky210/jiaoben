@@ -208,11 +208,11 @@ battlpauseinshi = ReadUIConfig("battlpauseinshi", 90)
 If battlpauseinshi Then 
     battlpauseinshi = CInt(battlpauseinshi)
 Else 
-    battlpauseinshi = 60
+    battlpauseinshi = 30
 End If
 
-If battlpauseinshi < 60 Then 
-    battlpauseinshi = 60
+If battlpauseinshi < 30 Then 
+    battlpauseinshi = 30
 End If
 
 
@@ -298,11 +298,13 @@ Dim arr()
 Dim ticketNum = -1
 Dim isShi = False
 Dim bossPicPath = "/sdcard/boss.png"
-Dim shiPicPath = "/sdcard/shi.png"
+Dim bossPicPath1 = "/sdcard/boss1.png"
+Dim bossPicPath2 = "/sdcard/boss2.png"
+
+
 Dim bossPicCount = 0
 Dim shiPicCount = 0
-Dim targetBossPicPath =Null
-Dim targetShiPicPath =Null
+
 Dim freeTicketEnable = True
 Dim freeTicketRecordDate =""
 //boss战斗标记
@@ -408,7 +410,8 @@ Dim totalShiCount = 0
 //TracePrint appIsSuspend()
 //findRaidStore
 //findAndClickBtn_width_260_height_90(539, 1039, 901, 1208)
-//gEndScript
+//getShiPicPath()
+//EndScript
 
 //////////////
 setConfig 
@@ -602,6 +605,43 @@ Function startupAPP()
     count = 0
     loading 
 	
+	
+End Function
+
+//获取采集的史莱姆图片集合路径
+Function getShiPicPath()
+	
+	Dim t = zm.DirScan("/sdcard/", "shi*.png", 1)
+	Dim tempPathResult = ""
+	If t Then 
+		For Each v In t
+			TracePrint v
+		Next
+		tempPathResult = Join(t,"|")
+	End If
+
+	TracePrint tempPathResult
+	getShiPicPath = tempPathResult
+End Function
+
+//获取需要新保存的史莱姆图片路径
+Function getShiPicSavePath()
+	Dim t = zm.DirScan("/sdcard/", "shi*.png", 1)
+	Dim tempPathResult = ""
+	Dim tempCount= 0
+	If t Then 
+		For Each v In t
+			TracePrint v
+			tempCount = tempCount +1
+		Next
+		
+	End If
+	If tempCount > 0 Then 
+		tempPathResult = "/sdcard/" & CStr(tempCount) & ".png"
+	Else 
+		tempPathResult = "/sdcard/shi.png"
+	End If
+	getShiPicSavePath = tempPathResult
 	
 End Function
 
@@ -3003,28 +3043,15 @@ Function findShi(x1, y1, x2, y2)
     If shiX = -1 And shiY = -1 And raidTest Then 
         TracePrint "测试功能开启：",raidTest
         TracePrint "内部资源没有找到史莱姆，使用外部资源寻找"
-        If IsNull(targetShiPicPath) = False And Dir.Exist(targetShiPicPath) <> 0 Then 
+        Dim tempShiPath = getShiPicSavePath()
+        If isStrEmpty(tempShiPath) = False Then 
             Delay 200
-            FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, targetShiPicPath, "000000", 0, 0.8, shiX, shiY
+            FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, tempShiPath, "000000", 0, 0.8, shiX, shiY
             TracePrint "外部路径找到的史莱姆坐标：",shiX,shiY
         Else 
             TracePrint "外部路径为空"
         End If
     	
-        If IsNull(targetBossPicPath) = False And Dir.Exist(targetBossPicPath) <> 0 Then 
-            Delay 200
-            FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, targetBossPicPath, "000000", 0, 0.8, tempShiX, tempShiY
-            TracePrint "外部路径找到的boss坐标：",tempShiX,tempShiY
-        Else 
-            TracePrint "外部路径为空"
-        End If   	
-        If shiY>-1 And tempShiY>-1 And getNumberDiff(shiY, tempShiY) < itemHeight\2 Then 
-            TracePrint "外部路径找到的boss坐标和史莱姆坐标相同，删除外部图片"
-            shiX = -1
-            shiY = -1
-            Dir.Delete targetBossPicPath
-            Dir.Delete targetShiPicPath
-        End If
     End If
     TracePrint "当前页面史莱姆坐标：",shiX,shiY
     Dim selfBossLocResult
@@ -3135,27 +3162,7 @@ Function findShi(x1, y1, x2, y2)
                     End If
                     TracePrint "自己车：",isSelf
                 End If
-                //            	Delay 200
-                //            	FindPic 317 - 10, targetY - 100 - 10, 460 + 10, targetY - 10 + 10, "Attachment:shi_an.png", "000000", 0, 0.8, intX, intY
-                //    			If intX > -1 And intY > -1 Then 
-                //    				isShi = True
-                //    			Else 
-                //    				isShi = False
-                //    			End If	
-    			
-                //    			If IsNull(targetShiPicPath) = False And Dir.Exist(targetShiPicPath) <> 0 Then 
-                //    				Delay 200
-                //    				FindPic 317 - 10, targetY - 100 - 10, 460 + 10, targetY - 10 + 10, targetShiPicPath, "000000", 0, 0.8, intX, intY
-                //    				If intX > -1 And intY > -1 Then 
-                //    					isShi = True
-                //    				Else
-                //    					isShi = False
-                //    				End If
-                //    				TracePrint "史莱姆快速查找结果22：",isShi
-                //    				If isShi  Then 
-                //    					Exit While
-                //    				End If
-                //    			End If
+
             End If
         Else 
             targetX = -1
@@ -3209,6 +3216,17 @@ Function findShi(x1, y1, x2, y2)
   
 End Function
 
+Function isStrEmpty(str)
+	Dim mycomp = StrComp("",str)
+	If IsNull(mycomp) Then 
+		isStrEmpty = True
+	ElseIf mycomp = 0 Then
+		isStrEmpty = True
+	Else 
+		isStrEmpty = False
+	End If
+End Function
+
 
 
 //保存指定区域的图片作为识别boss或者史莱姆的材料
@@ -3218,40 +3236,39 @@ Function saveBossOrShiPic(y, bosslv)
     If bosslv <> 30 Then 
         Exit Function  
     End If
-    If IsNull(targetBossPicPath) = False And IsNull(targetShiPicPath) = False And Dir.Exist(targetBossPicPath) <>0 And Dir.Exist(targetShiPicPath) <> 0  Then 
-        Exit Function  	
-    End If 
+
     Dim picX = -1,picY = -1
     Dim catchStartX=317,catchStartY = y - 100,catchEndX = 460,catchEndY =  y-10
     If Dir.Exist(bossPicPath) = 0 Then 	
         SnapShot bossPicPath, catchStartX, catchStartY, catchEndX,catchEndY
         TracePrint "boss图片不存在，采集boss图片"
         bossPicCount = bossPicCount + 1
+    ElseIf Dir.Exist(bossPicPath1) = 0 Then
+     	SnapShot bossPicPath1, catchStartX, catchStartY, catchEndX,catchEndY
+        TracePrint "boss图片1不存在，采集boss图片"
+        bossPicCount = bossPicCount + 1
+    ElseIf Dir.Exist(bossPicPath2) = 0 Then
+    	SnapShot bossPicPath2, catchStartX, catchStartY, catchEndX,catchEndY
+        TracePrint "boss图片2不存在，采集boss图片"
+        bossPicCount = bossPicCount + 1
     Else 
         Delay 200
-        FindPic catchStartX - 50, catchStartY - 50, catchEndX + 50, catchEndY + 50, bossPicPath, "000000", 0, 0.8, picX, picY
+        FindPic catchStartX - 50, catchStartY - 50, catchEndX + 50, catchEndY + 50, bossPicPath&"|"&bossPicPath1&"|"&bossPicPath2, "000000", 0, 0.8, picX, picY
         Delay 200
         TracePrint "boss图片存在，寻找boss坐标XY,",picX,picY
         If picX > -1 And picY > -1 Then 	
             bossPicCount = bossPicCount + 1
             TracePrint "boss图片存在,找到boss，数量加1"
-            //            		saveBossOrShiPic = 0
-        ElseIf Dir.Exist(shiPicPath) = 0 Then 
-            SnapShot shiPicPath, catchStartX,catchStartY, catchEndX, catchEndY
-            shiPicCount = shiPicCount + 1
-            TracePrint "boss图片存在，没找到boss，史莱姆图片不存在，采集史莱姆图片"
-            
-            //            			saveBossOrShiPic = -1
         Else 
             Delay 200
-            FindPic catchStartX-50,catchStartY-50, catchEndX+50, catchEndY+50, shiPicPath, "000000", 0, 0.8, picX, picY
+            FindPic catchStartX-50,catchStartY-50, catchEndX+50, catchEndY+50, getShiPicPath(), "000000", 0, 0.8, picX, picY
             If picX > -1 And picY > -1 Then 
                 shiPicCount = shiPicCount + 1	
                 TracePrint "boss图片存在，没找到boss,史莱姆图片存在，寻找史莱姆坐标,",picX,picY
                 //            				saveBossOrShiPic = 1
-            Else 
-                TracePrint "boss图片存在，没找到boss，史莱姆图片也存在，没找到史莱姆，史莱姆图片出错,重置两张图片"
-                Dir.Delete(bossPicPath) And Dir.Delete(shiPicPath)
+            Else                
+                SnapShot getShiPicSavePath(), catchStartX, catchStartY, catchEndX, catchEndY
+                TracePrint "boss图片存在，没找到boss，没找到史莱姆，增加史莱姆图片"
                 //            				saveBossOrShiPic = -1
             End If
         End If
@@ -3804,7 +3821,7 @@ Function findshiInNormalMode()
     
     // 极速模式开启时，如果没有史莱姆，直接寻找boss
     If raidTest Then 
-        If fastmode And IsNull(targetBossPicPath) = False And Dir.Exist(targetBossPicPath) <> 0 Then 
+        If fastmode Then 
             srMode = False
         End If
     Else 
@@ -3857,31 +3874,8 @@ Function findshiInNormalMode()
 		
     Wend
    
-    If IsNull(targetBossPicPath) = True And IsNull(targetShiPicPath) = True Then 
-        tempBossPicCount = bossPicCount - tempBossPicCount
-        tempShiPicCount = shiPicCount - tempShiPicCount
-        TracePrint "tempBossPicCount:",tempBossPicCount
-        TracePrint "tempShiPicCount:",tempShiPicCount
-        If tempBossPicCount > tempShiPicCount +2 Then 
-            targetBossPicPath = bossPicPath
-            targetShiPicPath = shiPicPath
-        ElseIf tempShiPicCount > tempBossPicCount + 2 Then
-            targetBossPicPath = shiPicPath
-            targetShiPicPath = bossPicPath
-        Else 
-            targetBossPicPath = Null
-            targetShiPicPath = Null
-        End If
-    	
-    End If
-    TracePrint "targetBossPicPath",targetBossPicPath
-    TracePrint "targetShiPicPath",targetShiPicPath
 
-    //    If Dir.Exist(targetBossPicPath) = 0 Or Dir.Exist(targetShiPicPath) = 0 Then 
-    //    	targetBossPicPath = ""
-    //    	targetShiPicPath = ""
-    //    	TracePrint "boss或者史莱姆的采集图片不存在，重置targetBossPicPath和targetShiPicPath"
-    //    End If
+
    
     TracePrint "循环结束后boss结果XY",targetX,targetY
 
@@ -3935,7 +3929,7 @@ Function autoGetAward()
     Dim startTime = TickCount()
     Dim intX,intY
     //点击给定位置胜利图标
-    Dim result = FindMultiColorAndClick2Dismiss(400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
+    Dim result = FindMultiColorAndClick2Dismiss(368,771,686,1090,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266")
     //	FindMultiColor 400,800,675,920,"25E572","13|-1|25E46C,5|4|23DF6F,-1|-29|44F4E1,74|-1|27E164,98|-29|44F4DD,132|-22|41EDC5,125|-3|24DC6C,161|6|1E1B1A,218|-7|26E266",0,0.9,intX,intY
     //	If intX > -1 And intY > -1 Then
     //		TracePrint intX
