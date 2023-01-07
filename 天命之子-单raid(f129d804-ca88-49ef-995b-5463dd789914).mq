@@ -637,13 +637,49 @@ Function getShiPicSavePath()
 		
 	End If
 	If tempCount > 0 Then 
-		tempPathResult = "/sdcard/" & CStr(tempCount) & ".png"
+		tempPathResult = "/sdcard/shi" & CStr(tempCount) & ".png"
 	Else 
 		tempPathResult = "/sdcard/shi.png"
 	End If
 	getShiPicSavePath = tempPathResult
 	
 End Function
+
+Function getBossPicPath()
+	
+	Dim t = zm.DirScan("/sdcard/", "boss*.png", 1)
+	Dim tempPathResult = ""
+	If t Then 
+		For Each v In t
+			TracePrint v
+		Next
+		tempPathResult = Join(t,"|")
+	End If
+
+	TracePrint tempPathResult
+	getBossPicPath = tempPathResult
+End Function
+
+Function getBossPicSavePath()
+	Dim t = zm.DirScan("/sdcard/", "boss*.png", 1)
+	Dim tempPathResult = ""
+	Dim tempCount= 0
+	If t Then 
+		For Each v In t
+			TracePrint v
+			tempCount = tempCount +1
+		Next
+		
+	End If
+	If tempCount > 0 Then 
+		tempPathResult = "/sdcard/boss" & CStr(tempCount) & ".png"
+	Else 
+		tempPathResult = "/sdcard/boss.png"
+	End If
+	getBossPicSavePath = tempPathResult
+	
+End Function
+
 
 Function clickNotice()
     Dim intX,intY,tempCount=0
@@ -3043,7 +3079,7 @@ Function findShi(x1, y1, x2, y2)
     If shiX = -1 And shiY = -1 And raidTest Then 
         TracePrint "测试功能开启：",raidTest
         TracePrint "内部资源没有找到史莱姆，使用外部资源寻找"
-        Dim tempShiPath = getShiPicSavePath()
+        Dim tempShiPath = getShiPicPath()
         If isStrEmpty(tempShiPath) = False Then 
             Delay 200
             FindPic 317 - 10, shiPageFindStartY, 460 + 10, shiPageFindEndY, tempShiPath, "000000", 0, 0.8, shiX, shiY
@@ -3253,7 +3289,7 @@ Function saveBossOrShiPic(y, bosslv)
         bossPicCount = bossPicCount + 1
     Else 
         Delay 200
-        FindPic catchStartX - 50, catchStartY - 50, catchEndX + 50, catchEndY + 50, bossPicPath&"|"&bossPicPath1&"|"&bossPicPath2, "000000", 0, 0.8, picX, picY
+        FindPic catchStartX - 50, catchStartY - 50, catchEndX + 50, catchEndY + 50, getBossPicPath(), "000000", 0, 0.8, picX, picY
         Delay 200
         TracePrint "boss图片存在，寻找boss坐标XY,",picX,picY
         If picX > -1 And picY > -1 Then 	
