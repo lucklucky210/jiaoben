@@ -121,6 +121,7 @@ Dim migongNanduSet = 0
 Dim pvp = False
 //极速模式
 Dim fastmode = False
+Dim caiji = False
 //重置时间设置
 Dim resetTimeSet = 3
 //测试功能开关
@@ -451,6 +452,9 @@ Function setConfig()
 	
     fastmode = ReadUIConfig("fastmode", False)
     TracePrint "fastmode",fastmode
+    
+    caiji = ReadUIConfig("caiji", False)
+    TracePrint "caiji",caiji
 	
     ditie = ReadUIConfig("ditie", False)
     TracePrint "ditie",ditie
@@ -3271,6 +3275,9 @@ End Function
 Function saveBossOrShiPic(y, bosslv)
     If bosslv <> 30 Then 
         Exit Function  
+    End If
+    If caiji = False Then 
+    	Exit Function
     End If
 
     Dim picX = -1,picY = -1
