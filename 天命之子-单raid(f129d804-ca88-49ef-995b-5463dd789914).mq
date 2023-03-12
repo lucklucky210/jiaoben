@@ -205,15 +205,15 @@ TracePrint "呼叫SR：",callSrHelp
 recordShi = ReadUIConfig("recordShi", False)
 TracePrint "史莱姆截图：",recordShi
 
-battlpauseinshi = ReadUIConfig("battlpauseinshi", 90)
+battlpauseinshi = ReadUIConfig("battlpauseinshi", 15)
 If battlpauseinshi Then 
     battlpauseinshi = CInt(battlpauseinshi)
 Else 
-    battlpauseinshi = 30
+    battlpauseinshi = 15
 End If
 
-If battlpauseinshi < 30 Then 
-    battlpauseinshi = 30
+If battlpauseinshi < 15 Then 
+    battlpauseinshi = 15
 End If
 
 
@@ -2365,22 +2365,28 @@ Function facheche()
             count = 450
             Exit While
         End If
-        Delay 2000
+        Delay 1000
     Wend
-    If isChe Then 
-        TracePrint "出车，准备进车"
-        Touch 528, 1527, 200
-        Delay 200
-        Touch 541, 1513, 200
-        Delay 5000
-        If facheMode <> 1 Then 
+    
+  	If isChe Then 
+  		TracePrint "出车，准备进车"
+  		intX = -1
+  		intY = -1
+  		count = 0
+  		While Not isFindDaRaid() And count <450
+  			Touch 528, 1527, 200
+        	Delay 200
+        	Touch 541, 1513, 200
+        	Delay 200
+        	count = count +1
+  		Wend
+  		If facheMode <> 1 Then 
             TracePrint "不是自发自打，退出打车界面"
             KeyPress "Back"
             Delay 2000
             facheche = True
             Exit Function
-        End If 
-		
+        End If
         Dim daResult = daRaid()
         loading 
         loading
@@ -2397,11 +2403,48 @@ Function facheche()
 			
         End If
         facheche = True
+        
     ElseIf count = 450 Then
         TracePrint "等待发车超时"
         facheche = False
-        resetScript 	
-    End If
+        resetScript 
+
+  	End If
+//    If isChe Then 
+//        TracePrint "出车，准备进车"
+//        Touch 528, 1527, 200
+//        Delay 200
+//        Touch 541, 1513, 200
+//        Delay 5000
+//        If facheMode <> 1 Then 
+//            TracePrint "不是自发自打，退出打车界面"
+//            KeyPress "Back"
+//            Delay 2000
+//            facheche = True
+//            Exit Function
+//        End If 
+//		
+//        Dim daResult = daRaid()
+//        loading 
+//        loading
+//        If daResult And True Then 
+//            //等待打完
+//            If isShi Then 
+//                totalShiCount = totalShiCount+1	
+//            End If
+//            dawan() 
+//			
+//        Else 
+//            // 没打成,返回sr界面
+//            findAndClickBtn_width_260_height_90 0, 1475, screenX, screenY
+//			
+//        End If
+//        facheche = True
+//    ElseIf count = 450 Then
+//        TracePrint "等待发车超时"
+//        facheche = False
+//        resetScript 	
+//    End If
 	
 	
 End Function
@@ -2999,7 +3042,7 @@ Function isSR()
     TracePrint "找sr"
 
     While Not findPicResult( srTagStartX,srTagStartY,srTagEndX,srTagEndY,"Attachment:srtag.png|Attachment:srtag1.png") And tempCount < 5
-        Delay 1000
+        Delay 200
         tempCount =tempCount +1
     Wend
     If tempCount = 5 Then 
@@ -3353,6 +3396,19 @@ Function findSelfBoss(startY,endY)
     End If
     findSelfBoss = findResult
 	
+End Function
+
+Function isFindDaRaid()
+	TracePrint "准备页面准备识别"
+	Dim count = 0
+    Dim daX =-1,daY =-1
+    Delay 200
+	FindMultiColor 764, 532, 1051, 783, "00D2FC", "1|5|005FE0,10|3|000019,4|16|00001A,18|13|00C7FF,22|22|0066E0,28|29|000016,29|36|00B7FF,35|31|005AE0,47|31|00001A", 0, 0.9, daX, daY
+	If daX > 0 And daY > 0 Then 
+		isFindDaRaid = True
+	Else 
+		isFindDaRaid = False
+	End If
 End Function
 
 //找到打按钮并开始打
