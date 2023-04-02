@@ -545,7 +545,6 @@ While True
         startupAPP 	
     End If
 	
-    Delay 1000
 	
 Wend
 
@@ -1710,7 +1709,6 @@ Function runRaid()
                 End If
         		
             End If
-            Delay 1000
             Exit Function
 			
         Else 
@@ -2378,12 +2376,20 @@ Function facheche()
         	Delay 200
         	Touch 541, 1513, 200
         	Delay 200
+        	Touch 541, 1249, 200
+        	Delay 200
         	count = count +1
   		Wend
   		If facheMode <> 1 Then 
             TracePrint "不是自发自打，退出打车界面"
-            KeyPress "Back"
+			KeyPress "Back"
             Delay 2000
+			count = 0
+			While isFindDaRaid() And count <10
+				KeyPress "Back"
+            	Delay 2000
+				count = count +1
+			Wend       
             facheche = True
             Exit Function
         End If
