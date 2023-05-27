@@ -279,6 +279,10 @@ Delay 4000
 //Else 
 //	Log.Close
 //End If
+Dim intX,intY
+//FindPic 597,1040,913,1188,"Attachment:pause2.png","000000",0,0.9,intX,intY
+// TracePrint intX,intY
+//  EndScript
 Log.Open 
  
 Function clickReward()
@@ -3434,7 +3438,7 @@ Function daRaid()
         FindMultiColor 764,532,1051,783,"00D2FC","1|5|005FE0,10|3|000019,4|16|00001A,18|13|00C7FF,22|22|0066E0,28|29|000016,29|36|00B7FF,35|31|005AE0,47|31|00001A",0,0.9,daX,daY
         //        FindPic 0, 0, 0, 0, "Attachment:test555.png", "000000", 0, 0.5, daX, daY
         Delay 200
-        FindPic 811, 396, 1066, 521, "Attachment:doubleda.png", "000000", 0, 0.8, doubledaX, doubledaY
+        FindPic 811, 300, 1066, 450, "Attachment:doubleda.png", "000000", 0, 0.8, doubledaX, doubledaY
         Delay 200
         count = count +1
     Wend
@@ -3446,7 +3450,7 @@ Function daRaid()
             While doubledaX > -1 And doubledaY > -1
                 Touch doubledaX, doubledaY, 100
                 Delay 500
-                FindPic 811,396,1066,521,"Attachment:doubleda.png","000000",0,0.8,doubledaX,doubledaY
+                FindPic 811,300,1066,450,"Attachment:doubleda.png","000000",0,0.8,doubledaX,doubledaY
             Wend	
         End If
        
@@ -3539,9 +3543,9 @@ Function dawan()
         //打屎暂停一分钟
         If tempX = -1 And tempY = -1 And pauseCount = 0 And isShi Then 
             Delay 500
-            FindMultiColor 525, 1407, 922, 1839, "00E0FE", "-18|5|00DCFE,-24|39|00B0F5,-15|78|007DEB,89|82|007AEA,219|5|00DCFE,221|75|0080EB,203|13|0082EC,-3|64|00D5FC,91|14|0083EC", 0, 0.9, tempX, tempY
-        	
-            //            FindPic 546,1656,853,1773,"Attachment:pausebattle.png","000000",0,0.8,tempX,tempY
+            //FindMultiColor 578,1037,921,1180, "00E0FE", "-18|5|00DCFE,-24|39|00B0F5,-15|78|007DEB,89|82|007AEA,219|5|00DCFE,221|75|0080EB,203|13|0082EC,-3|64|00D5FC,91|14|0083EC", 0, 0.9, tempX, tempY
+        	FindPic 597,1040,913,1188,"Attachment:pause2.png","000000",0,0.9,tempX,tempY
+//             FindPic 546,1656,853,1773,"Attachment:pausebattle.png|Attachment:pause2.png","000000",0,0.8,tempX,tempY
             If tempX = -1 And tempY = -1 Then 
                 KeyPress "Back"
                 TracePrint "按暂停"
